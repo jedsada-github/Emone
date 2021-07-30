@@ -1,0 +1,13 @@
+stm32l5xx_gyroscope.c:88:9:BSP_GYRO_Init	24	static
+stm32l5xx_gyroscope.c:143:6:BSP_GYRO_LowPower	8	static
+stm32l5xx_gyroscope.c:163:9:BSP_GYRO_ReadID	8	static
+stm32l5xx_gyroscope.c:178:6:BSP_GYRO_Reset	8	static
+stm32l5xx_gyroscope.c:192:6:BSP_GYRO_ITConfig	8	static
+stm32l5xx_gyroscope.c:216:6:BSP_GYRO_EnableIT	8	static
+stm32l5xx_gyroscope.c:232:6:BSP_GYRO_DisableIT	8	static
+stm32l5xx_gyroscope.c:245:6:BSP_GYRO_GetXYZ	8	static
+stm32l5xx_gyroscope.c:268:9:GYRO_IO_DeInit	8	static
+stm32l5xx_gyroscope.c:133:6:BSP_GYRO_DeInit	8	static
+stm32l5xx_gyroscope.c:272:9:GYRO_IO_Write	8	static
+stm32l5xx_gyroscope.c:256:9:GYRO_IO_Init	16	static
+stm32l5xx_gyroscope.c:278:9:GYRO_IO_Read	8	static

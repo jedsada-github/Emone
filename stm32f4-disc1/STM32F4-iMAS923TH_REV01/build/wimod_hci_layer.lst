@@ -1,0 +1,762 @@
+ARM GAS  /tmp/ccABQDE0.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"wimod_hci_layer.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.WiMOD_HCI_ProcessRxMessage,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	WiMOD_HCI_ProcessRxMessage:
+  26              	.LVL0:
+  27              	.LFB136:
+  28              		.file 1 "Src/Wimod/wimod_hci_layer.c"
+   1:Src/Wimod/wimod_hci_layer.c **** /**
+   2:Src/Wimod/wimod_hci_layer.c ****  ******************************************************************************
+   3:Src/Wimod/wimod_hci_layer.c ****  * @file           : wimod_hci_layer.c
+   4:Src/Wimod/wimod_hci_layer.c ****  * @abstract       : WiMOD HCI Message Layer
+   5:Src/Wimod/wimod_hci_layer.c ****  * @disclaimer     : This example code is provided by IMST GmbH on an "ASIS"
+   6:Src/Wimod/wimod_hci_layer.c ****  *                   basis without any warranties.
+   7:Src/Wimod/wimod_hci_layer.c ****  * @maintain by    : Anol Paisal <anol.paisal@emone.co.th> @ 2018
+   8:Src/Wimod/wimod_hci_layer.c ****  * @version        : 0.1
+   9:Src/Wimod/wimod_hci_layer.c ****  * @date           : 18.05.2016
+  10:Src/Wimod/wimod_hci_layer.c ****  ******************************************************************************
+  11:Src/Wimod/wimod_hci_layer.c ****  * @attention
+  12:Src/Wimod/wimod_hci_layer.c ****  *
+  13:Src/Wimod/wimod_hci_layer.c ****  ******************************************************************************
+  14:Src/Wimod/wimod_hci_layer.c ****  */
+  15:Src/Wimod/wimod_hci_layer.c **** 
+  16:Src/Wimod/wimod_hci_layer.c **** /* Includes ------------------------------------------------------------------*/
+  17:Src/Wimod/wimod_hci_layer.c **** #include "wimod_hci_layer.h"
+  18:Src/Wimod/wimod_hci_layer.c **** 
+  19:Src/Wimod/wimod_hci_layer.c **** /* Function prototypes -------------------------------------------------------*/
+  20:Src/Wimod/wimod_hci_layer.c **** /* SLIP Message Receiver Callback */
+  21:Src/Wimod/wimod_hci_layer.c **** static uint8_t *WiMOD_HCI_ProcessRxMessage(uint8_t *rxData, int32_t rxLength);
+  22:Src/Wimod/wimod_hci_layer.c **** 
+  23:Src/Wimod/wimod_hci_layer.c **** /* Private typedef -----------------------------------------------------------*/
+  24:Src/Wimod/wimod_hci_layer.c **** typedef struct
+  25:Src/Wimod/wimod_hci_layer.c **** {
+  26:Src/Wimod/wimod_hci_layer.c ****     uint32_t CRCErrors;                 /* CRC Error counter */
+  27:Src/Wimod/wimod_hci_layer.c ****     TWiMOD_HCI_Message *RxMessage;      /* RxMessage */
+  28:Src/Wimod/wimod_hci_layer.c ****     TWiMOD_HCI_CbRxMessage CbRxMessage; /* Receiver callback */
+  29:Src/Wimod/wimod_hci_layer.c **** } TWiMOD_HCI_MsgLayer;
+  30:Src/Wimod/wimod_hci_layer.c **** 
+ARM GAS  /tmp/ccABQDE0.s 			page 2
+
+
+  31:Src/Wimod/wimod_hci_layer.c **** /* Private variables ---------------------------------------------------------*/
+  32:Src/Wimod/wimod_hci_layer.c **** /* Reserve HCI Instance */
+  33:Src/Wimod/wimod_hci_layer.c **** static TWiMOD_HCI_MsgLayer HCI;
+  34:Src/Wimod/wimod_hci_layer.c **** 
+  35:Src/Wimod/wimod_hci_layer.c **** /* Reserve one TxBuffer */
+  36:Src/Wimod/wimod_hci_layer.c **** static uint8_t TxBuffer[((sizeof(TWiMOD_HCI_Message) * 2U) + 2U)];
+  37:Src/Wimod/wimod_hci_layer.c **** 
+  38:Src/Wimod/wimod_hci_layer.c **** /**
+  39:Src/Wimod/wimod_hci_layer.c ****  * @brief  Init HCI Message layer
+  40:Src/Wimod/wimod_hci_layer.c ****  * @param
+  41:Src/Wimod/wimod_hci_layer.c ****  * @retval uint8_t
+  42:Src/Wimod/wimod_hci_layer.c ****  */
+  43:Src/Wimod/wimod_hci_layer.c **** uint8_t WiMOD_HCI_Init(UART_HandleTypeDef *comPort, 
+  44:Src/Wimod/wimod_hci_layer.c ****                        TWiMOD_HCI_CbRxMessage cbRxMessage, /* HCI msg recv. callback */
+  45:Src/Wimod/wimod_hci_layer.c ****                        TWiMOD_HCI_Message *rxMessage)      /* intial rxMessage */
+  46:Src/Wimod/wimod_hci_layer.c **** {
+  47:Src/Wimod/wimod_hci_layer.c ****     /* Init error counter */
+  48:Src/Wimod/wimod_hci_layer.c ****     HCI.CRCErrors = 0U;
+  49:Src/Wimod/wimod_hci_layer.c **** 
+  50:Src/Wimod/wimod_hci_layer.c ****     /* Save receiver callback */
+  51:Src/Wimod/wimod_hci_layer.c ****     HCI.CbRxMessage = cbRxMessage;
+  52:Src/Wimod/wimod_hci_layer.c **** 
+  53:Src/Wimod/wimod_hci_layer.c ****     /* Save RxMessage */
+  54:Src/Wimod/wimod_hci_layer.c ****     HCI.RxMessage = rxMessage;
+  55:Src/Wimod/wimod_hci_layer.c **** 
+  56:Src/Wimod/wimod_hci_layer.c ****     /* Init SLIP */
+  57:Src/Wimod/wimod_hci_layer.c ****     SLIP_Init(WiMOD_HCI_ProcessRxMessage);
+  58:Src/Wimod/wimod_hci_layer.c **** 
+  59:Src/Wimod/wimod_hci_layer.c ****     /* Init first RxBuffer to SAP_ID of HCI message, size without 16-Bit Length Field */
+  60:Src/Wimod/wimod_hci_layer.c ****     SLIP_SetRxBuffer(&rxMessage->SapID, sizeof(TWiMOD_HCI_Message) - sizeof(uint16_t));
+  61:Src/Wimod/wimod_hci_layer.c **** 
+  62:Src/Wimod/wimod_hci_layer.c ****     /* Init serial device */
+  63:Src/Wimod/wimod_hci_layer.c ****     return (SerialDevice_Open(comPort, Baudrate_115200, DataBits_8, Parity_None));
+  64:Src/Wimod/wimod_hci_layer.c **** }
+  65:Src/Wimod/wimod_hci_layer.c **** 
+  66:Src/Wimod/wimod_hci_layer.c **** /**
+  67:Src/Wimod/wimod_hci_layer.c ****  * @brief  Send a HCI message (with or without payload)
+  68:Src/Wimod/wimod_hci_layer.c ****  * @param
+  69:Src/Wimod/wimod_hci_layer.c ****  * @retval int32_t
+  70:Src/Wimod/wimod_hci_layer.c ****  */
+  71:Src/Wimod/wimod_hci_layer.c **** int32_t WiMOD_HCI_SendMessage(TWiMOD_HCI_Message *txMessage)
+  72:Src/Wimod/wimod_hci_layer.c **** {
+  73:Src/Wimod/wimod_hci_layer.c ****     uint8_t i        = 0U;
+  74:Src/Wimod/wimod_hci_layer.c ****     int8_t  txLength = 0;
+  75:Src/Wimod/wimod_hci_layer.c **** 
+  76:Src/Wimod/wimod_hci_layer.c ****     /* 
+  77:Src/Wimod/wimod_hci_layer.c ****      * 1.  Check parameter
+  78:Src/Wimod/wimod_hci_layer.c ****      * 1.1 Check ptr 
+  79:Src/Wimod/wimod_hci_layer.c ****      */
+  80:Src/Wimod/wimod_hci_layer.c ****     if (!txMessage)
+  81:Src/Wimod/wimod_hci_layer.c ****     {
+  82:Src/Wimod/wimod_hci_layer.c ****         /* Error */
+  83:Src/Wimod/wimod_hci_layer.c ****         return WIMOD_HCI_LAYER_FAILED;
+  84:Src/Wimod/wimod_hci_layer.c ****     }
+  85:Src/Wimod/wimod_hci_layer.c **** 
+  86:Src/Wimod/wimod_hci_layer.c ****     /* 2. Calculate CRC16 over header and optional payload */
+  87:Src/Wimod/wimod_hci_layer.c ****     uint16_t crc16 = CRC16_Calc(&txMessage->SapID, txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE, C
+ARM GAS  /tmp/ccABQDE0.s 			page 3
+
+
+  88:Src/Wimod/wimod_hci_layer.c **** 
+  89:Src/Wimod/wimod_hci_layer.c ****     /* 2.1 Get 1's complement !!! */
+  90:Src/Wimod/wimod_hci_layer.c ****     crc16 = ~crc16;
+  91:Src/Wimod/wimod_hci_layer.c **** 
+  92:Src/Wimod/wimod_hci_layer.c ****     /* 2.2 Attach CRC16 and correct length, LSB first */
+  93:Src/Wimod/wimod_hci_layer.c ****     txMessage->Payload[txMessage->Length] = LOBYTE(crc16);
+  94:Src/Wimod/wimod_hci_layer.c ****     txMessage->Payload[txMessage->Length + 1U] = HIBYTE(crc16);
+  95:Src/Wimod/wimod_hci_layer.c **** 
+  96:Src/Wimod/wimod_hci_layer.c ****     /* 
+  97:Src/Wimod/wimod_hci_layer.c ****      * 3. Perform SLIP encoding
+  98:Src/Wimod/wimod_hci_layer.c ****      *    - start transmission with SAP ID
+  99:Src/Wimod/wimod_hci_layer.c ****      *    - correct length by header size
+ 100:Src/Wimod/wimod_hci_layer.c ****      */
+ 101:Src/Wimod/wimod_hci_layer.c ****     txLength = SLIP_EncodeData(TxBuffer, sizeof(TxBuffer), &txMessage->SapID,
+ 102:Src/Wimod/wimod_hci_layer.c ****                                txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SI
+ 103:Src/Wimod/wimod_hci_layer.c **** 
+ 104:Src/Wimod/wimod_hci_layer.c ****     /* Message ok ? */
+ 105:Src/Wimod/wimod_hci_layer.c ****     if (txLength > 0U)
+ 106:Src/Wimod/wimod_hci_layer.c ****     {
+ 107:Src/Wimod/wimod_hci_layer.c ****         /* Send wakeup chars */
+ 108:Src/Wimod/wimod_hci_layer.c ****         for (i = 0U; i < 40U; i++)
+ 109:Src/Wimod/wimod_hci_layer.c ****         {
+ 110:Src/Wimod/wimod_hci_layer.c ****             SerialDevice_SendByte(SLIP_END);
+ 111:Src/Wimod/wimod_hci_layer.c ****         }
+ 112:Src/Wimod/wimod_hci_layer.c **** 
+ 113:Src/Wimod/wimod_hci_layer.c ****         /* 4. Send octet sequence over serial device */
+ 114:Src/Wimod/wimod_hci_layer.c ****         if (SerialDevice_SendData(TxBuffer, txLength) > 0U)
+ 115:Src/Wimod/wimod_hci_layer.c ****         {
+ 116:Src/Wimod/wimod_hci_layer.c ****             /* Return ok */
+ 117:Src/Wimod/wimod_hci_layer.c ****             return WIMOD_HCI_LAYER_SUCCESS;
+ 118:Src/Wimod/wimod_hci_layer.c ****         }
+ 119:Src/Wimod/wimod_hci_layer.c ****     }
+ 120:Src/Wimod/wimod_hci_layer.c **** 
+ 121:Src/Wimod/wimod_hci_layer.c ****     /* Error - SLIP layer couldn't encode message - buffer to small ? */
+ 122:Src/Wimod/wimod_hci_layer.c ****     return WIMOD_HCI_LAYER_FAILED;
+ 123:Src/Wimod/wimod_hci_layer.c **** }
+ 124:Src/Wimod/wimod_hci_layer.c **** 
+ 125:Src/Wimod/wimod_hci_layer.c **** /**
+ 126:Src/Wimod/wimod_hci_layer.c ****  * @brief  Read incoming serial data
+ 127:Src/Wimod/wimod_hci_layer.c ****  * @param
+ 128:Src/Wimod/wimod_hci_layer.c ****  * @retval none 
+ 129:Src/Wimod/wimod_hci_layer.c ****  */
+ 130:Src/Wimod/wimod_hci_layer.c **** void WiMOD_HCI_Process()
+ 131:Src/Wimod/wimod_hci_layer.c **** {
+ 132:Src/Wimod/wimod_hci_layer.c ****     uint8_t rxBuf[WIMOD_HCI_RX_BUF_MAX] = { 0U };
+ 133:Src/Wimod/wimod_hci_layer.c ****     int32_t rxLength = 0U;
+ 134:Src/Wimod/wimod_hci_layer.c **** 
+ 135:Src/Wimod/wimod_hci_layer.c ****     /* Read small chunk of data */
+ 136:Src/Wimod/wimod_hci_layer.c ****     rxLength = SerialDevice_ReadData(rxBuf, sizeof(rxBuf));
+ 137:Src/Wimod/wimod_hci_layer.c **** 
+ 138:Src/Wimod/wimod_hci_layer.c ****     /* data available ? */
+ 139:Src/Wimod/wimod_hci_layer.c ****     if (rxLength > 0U)
+ 140:Src/Wimod/wimod_hci_layer.c ****     {
+ 141:Src/Wimod/wimod_hci_layer.c ****         /* 
+ 142:Src/Wimod/wimod_hci_layer.c ****          * Yes, forward to SLIP decoder, decoded SLIP message will be passed to
+ 143:Src/Wimod/wimod_hci_layer.c ****          * function "WiMOD_HCI_ProcessRxMessage"
+ 144:Src/Wimod/wimod_hci_layer.c ****          */
+ARM GAS  /tmp/ccABQDE0.s 			page 4
+
+
+ 145:Src/Wimod/wimod_hci_layer.c ****         SLIP_DecodeData(rxBuf, rxLength);
+ 146:Src/Wimod/wimod_hci_layer.c ****     }
+ 147:Src/Wimod/wimod_hci_layer.c **** }
+ 148:Src/Wimod/wimod_hci_layer.c **** 
+ 149:Src/Wimod/wimod_hci_layer.c **** /**
+ 150:Src/Wimod/wimod_hci_layer.c ****  * @brief  process received SLIP message and return new rxBuffer
+ 151:Src/Wimod/wimod_hci_layer.c ****  * @param
+ 152:Src/Wimod/wimod_hci_layer.c ****  * @retval uint8_t 
+ 153:Src/Wimod/wimod_hci_layer.c ****  */
+ 154:Src/Wimod/wimod_hci_layer.c **** static uint8_t *WiMOD_HCI_ProcessRxMessage(uint8_t *rxData, int32_t rxLength)
+ 155:Src/Wimod/wimod_hci_layer.c **** {
+  29              		.loc 1 155 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 155 1 is_stmt 0 view .LVU1
+  34 0000 38B5     		push	{r3, r4, r5, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 3, -16
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+ 156:Src/Wimod/wimod_hci_layer.c ****     /* Check min length */
+ 157:Src/Wimod/wimod_hci_layer.c ****     if (rxLength >= (WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SIZE))
+  41              		.loc 1 157 5 is_stmt 1 view .LVU2
+  42              		.loc 1 157 8 is_stmt 0 view .LVU3
+  43 0002 0329     		cmp	r1, #3
+  44 0004 04D8     		bhi	.L6
+  45              	.LVL1:
+  46              	.L2:
+ 158:Src/Wimod/wimod_hci_layer.c ****     {
+ 159:Src/Wimod/wimod_hci_layer.c ****         if (CRC16_Check(rxData, rxLength, CRC16_INIT_VALUE))
+ 160:Src/Wimod/wimod_hci_layer.c ****         {
+ 161:Src/Wimod/wimod_hci_layer.c ****             /* Receiver registered ? */
+ 162:Src/Wimod/wimod_hci_layer.c ****             if (HCI.CbRxMessage)
+ 163:Src/Wimod/wimod_hci_layer.c ****             {
+ 164:Src/Wimod/wimod_hci_layer.c ****                 /* Yes, complete message info */
+ 165:Src/Wimod/wimod_hci_layer.c ****                 HCI.RxMessage->Length = rxLength - (WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_S
+ 166:Src/Wimod/wimod_hci_layer.c **** 
+ 167:Src/Wimod/wimod_hci_layer.c ****                 /* Call upper layer receiver and save new RxMessage */
+ 168:Src/Wimod/wimod_hci_layer.c ****                 HCI.RxMessage = (*HCI.CbRxMessage)(HCI.RxMessage);
+ 169:Src/Wimod/wimod_hci_layer.c ****             }
+ 170:Src/Wimod/wimod_hci_layer.c ****         }
+ 171:Src/Wimod/wimod_hci_layer.c ****         else
+ 172:Src/Wimod/wimod_hci_layer.c ****         {
+ 173:Src/Wimod/wimod_hci_layer.c ****             HCI.CRCErrors++;
+ 174:Src/Wimod/wimod_hci_layer.c ****         }
+ 175:Src/Wimod/wimod_hci_layer.c ****     }
+ 176:Src/Wimod/wimod_hci_layer.c **** 
+ 177:Src/Wimod/wimod_hci_layer.c ****     /* Free HCI message available ? */
+ 178:Src/Wimod/wimod_hci_layer.c ****     if (HCI.RxMessage)
+  47              		.loc 1 178 5 is_stmt 1 view .LVU4
+  48              		.loc 1 178 12 is_stmt 0 view .LVU5
+  49 0006 0E4B     		ldr	r3, .L7
+  50 0008 5868     		ldr	r0, [r3, #4]
+  51              		.loc 1 178 8 view .LVU6
+ARM GAS  /tmp/ccABQDE0.s 			page 5
+
+
+  52 000a 00B1     		cbz	r0, .L1
+ 179:Src/Wimod/wimod_hci_layer.c ****     {
+ 180:Src/Wimod/wimod_hci_layer.c ****         /* Yes, return pointer to first byte */
+ 181:Src/Wimod/wimod_hci_layer.c ****         return &HCI.RxMessage->SapID;
+  53              		.loc 1 181 9 is_stmt 1 view .LVU7
+  54              		.loc 1 181 16 is_stmt 0 view .LVU8
+  55 000c 0230     		adds	r0, r0, #2
+  56              	.L1:
+ 182:Src/Wimod/wimod_hci_layer.c ****     }
+ 183:Src/Wimod/wimod_hci_layer.c **** 
+ 184:Src/Wimod/wimod_hci_layer.c ****     /* Error, disable SLIP decoder */
+ 185:Src/Wimod/wimod_hci_layer.c ****     return WIMOD_HCI_LAYER_FAILED;
+ 186:Src/Wimod/wimod_hci_layer.c **** }
+  57              		.loc 1 186 1 view .LVU9
+  58 000e 38BD     		pop	{r3, r4, r5, pc}
+  59              	.LVL2:
+  60              	.L6:
+ 159:Src/Wimod/wimod_hci_layer.c ****         {
+  61              		.loc 1 159 9 is_stmt 1 view .LVU10
+ 159:Src/Wimod/wimod_hci_layer.c ****         {
+  62              		.loc 1 159 13 is_stmt 0 view .LVU11
+  63 0010 8CB2     		uxth	r4, r1
+  64 0012 4FF6FF72 		movw	r2, #65535
+  65 0016 2146     		mov	r1, r4
+  66              	.LVL3:
+ 159:Src/Wimod/wimod_hci_layer.c ****         {
+  67              		.loc 1 159 13 view .LVU12
+  68 0018 FFF7FEFF 		bl	CRC16_Check
+  69              	.LVL4:
+ 159:Src/Wimod/wimod_hci_layer.c ****         {
+  70              		.loc 1 159 12 view .LVU13
+  71 001c 50B1     		cbz	r0, .L3
+ 162:Src/Wimod/wimod_hci_layer.c ****             {
+  72              		.loc 1 162 13 is_stmt 1 view .LVU14
+ 162:Src/Wimod/wimod_hci_layer.c ****             {
+  73              		.loc 1 162 20 is_stmt 0 view .LVU15
+  74 001e 084B     		ldr	r3, .L7
+  75 0020 9B68     		ldr	r3, [r3, #8]
+ 162:Src/Wimod/wimod_hci_layer.c ****             {
+  76              		.loc 1 162 16 view .LVU16
+  77 0022 002B     		cmp	r3, #0
+  78 0024 EFD0     		beq	.L2
+ 165:Src/Wimod/wimod_hci_layer.c **** 
+  79              		.loc 1 165 17 is_stmt 1 view .LVU17
+ 165:Src/Wimod/wimod_hci_layer.c **** 
+  80              		.loc 1 165 20 is_stmt 0 view .LVU18
+  81 0026 064D     		ldr	r5, .L7
+  82 0028 6868     		ldr	r0, [r5, #4]
+ 165:Src/Wimod/wimod_hci_layer.c **** 
+  83              		.loc 1 165 50 view .LVU19
+  84 002a 211F     		subs	r1, r4, #4
+ 165:Src/Wimod/wimod_hci_layer.c **** 
+  85              		.loc 1 165 39 view .LVU20
+  86 002c 0180     		strh	r1, [r0]	@ movhi
+ 168:Src/Wimod/wimod_hci_layer.c ****             }
+  87              		.loc 1 168 17 is_stmt 1 view .LVU21
+ 168:Src/Wimod/wimod_hci_layer.c ****             }
+ARM GAS  /tmp/ccABQDE0.s 			page 6
+
+
+  88              		.loc 1 168 34 is_stmt 0 view .LVU22
+  89 002e 9847     		blx	r3
+  90              	.LVL5:
+ 168:Src/Wimod/wimod_hci_layer.c ****             }
+  91              		.loc 1 168 31 view .LVU23
+  92 0030 6860     		str	r0, [r5, #4]
+  93 0032 E8E7     		b	.L2
+  94              	.L3:
+ 173:Src/Wimod/wimod_hci_layer.c ****         }
+  95              		.loc 1 173 13 is_stmt 1 view .LVU24
+ 173:Src/Wimod/wimod_hci_layer.c ****         }
+  96              		.loc 1 173 16 is_stmt 0 view .LVU25
+  97 0034 024A     		ldr	r2, .L7
+  98 0036 1368     		ldr	r3, [r2]
+ 173:Src/Wimod/wimod_hci_layer.c ****         }
+  99              		.loc 1 173 26 view .LVU26
+ 100 0038 0133     		adds	r3, r3, #1
+ 101 003a 1360     		str	r3, [r2]
+ 102 003c E3E7     		b	.L2
+ 103              	.L8:
+ 104 003e 00BF     		.align	2
+ 105              	.L7:
+ 106 0040 00000000 		.word	.LANCHOR0
+ 107              		.cfi_endproc
+ 108              	.LFE136:
+ 110              		.section	.text.WiMOD_HCI_Init,"ax",%progbits
+ 111              		.align	1
+ 112              		.global	WiMOD_HCI_Init
+ 113              		.syntax unified
+ 114              		.thumb
+ 115              		.thumb_func
+ 116              		.fpu fpv4-sp-d16
+ 118              	WiMOD_HCI_Init:
+ 119              	.LVL6:
+ 120              	.LFB133:
+  46:Src/Wimod/wimod_hci_layer.c ****     /* Init error counter */
+ 121              		.loc 1 46 1 is_stmt 1 view -0
+ 122              		.cfi_startproc
+ 123              		@ args = 0, pretend = 0, frame = 0
+ 124              		@ frame_needed = 0, uses_anonymous_args = 0
+  46:Src/Wimod/wimod_hci_layer.c ****     /* Init error counter */
+ 125              		.loc 1 46 1 is_stmt 0 view .LVU28
+ 126 0000 70B5     		push	{r4, r5, r6, lr}
+ 127              	.LCFI1:
+ 128              		.cfi_def_cfa_offset 16
+ 129              		.cfi_offset 4, -16
+ 130              		.cfi_offset 5, -12
+ 131              		.cfi_offset 6, -8
+ 132              		.cfi_offset 14, -4
+ 133 0002 0546     		mov	r5, r0
+ 134 0004 1446     		mov	r4, r2
+  48:Src/Wimod/wimod_hci_layer.c **** 
+ 135              		.loc 1 48 5 is_stmt 1 view .LVU29
+  48:Src/Wimod/wimod_hci_layer.c **** 
+ 136              		.loc 1 48 19 is_stmt 0 view .LVU30
+ 137 0006 0A4B     		ldr	r3, .L11
+ 138 0008 0026     		movs	r6, #0
+ARM GAS  /tmp/ccABQDE0.s 			page 7
+
+
+ 139 000a 1E60     		str	r6, [r3]
+  51:Src/Wimod/wimod_hci_layer.c **** 
+ 140              		.loc 1 51 5 is_stmt 1 view .LVU31
+  51:Src/Wimod/wimod_hci_layer.c **** 
+ 141              		.loc 1 51 21 is_stmt 0 view .LVU32
+ 142 000c 9960     		str	r1, [r3, #8]
+  54:Src/Wimod/wimod_hci_layer.c **** 
+ 143              		.loc 1 54 5 is_stmt 1 view .LVU33
+  54:Src/Wimod/wimod_hci_layer.c **** 
+ 144              		.loc 1 54 19 is_stmt 0 view .LVU34
+ 145 000e 5A60     		str	r2, [r3, #4]
+  57:Src/Wimod/wimod_hci_layer.c **** 
+ 146              		.loc 1 57 5 is_stmt 1 view .LVU35
+ 147 0010 0848     		ldr	r0, .L11+4
+ 148              	.LVL7:
+  57:Src/Wimod/wimod_hci_layer.c **** 
+ 149              		.loc 1 57 5 is_stmt 0 view .LVU36
+ 150 0012 FFF7FEFF 		bl	SLIP_Init
+ 151              	.LVL8:
+  60:Src/Wimod/wimod_hci_layer.c **** 
+ 152              		.loc 1 60 5 is_stmt 1 view .LVU37
+ 153 0016 4FF49871 		mov	r1, #304
+ 154 001a A01C     		adds	r0, r4, #2
+ 155 001c FFF7FEFF 		bl	SLIP_SetRxBuffer
+ 156              	.LVL9:
+  63:Src/Wimod/wimod_hci_layer.c **** }
+ 157              		.loc 1 63 5 view .LVU38
+  63:Src/Wimod/wimod_hci_layer.c **** }
+ 158              		.loc 1 63 13 is_stmt 0 view .LVU39
+ 159 0020 3346     		mov	r3, r6
+ 160 0022 3246     		mov	r2, r6
+ 161 0024 4FF4E131 		mov	r1, #115200
+ 162 0028 2846     		mov	r0, r5
+ 163 002a FFF7FEFF 		bl	SerialDevice_Open
+ 164              	.LVL10:
+  64:Src/Wimod/wimod_hci_layer.c **** 
+ 165              		.loc 1 64 1 view .LVU40
+ 166 002e 70BD     		pop	{r4, r5, r6, pc}
+ 167              	.LVL11:
+ 168              	.L12:
+  64:Src/Wimod/wimod_hci_layer.c **** 
+ 169              		.loc 1 64 1 view .LVU41
+ 170              		.align	2
+ 171              	.L11:
+ 172 0030 00000000 		.word	.LANCHOR0
+ 173 0034 00000000 		.word	WiMOD_HCI_ProcessRxMessage
+ 174              		.cfi_endproc
+ 175              	.LFE133:
+ 177              		.section	.text.WiMOD_HCI_SendMessage,"ax",%progbits
+ 178              		.align	1
+ 179              		.global	WiMOD_HCI_SendMessage
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 183              		.fpu fpv4-sp-d16
+ 185              	WiMOD_HCI_SendMessage:
+ 186              	.LVL12:
+ARM GAS  /tmp/ccABQDE0.s 			page 8
+
+
+ 187              	.LFB134:
+  72:Src/Wimod/wimod_hci_layer.c ****     uint8_t i        = 0U;
+ 188              		.loc 1 72 1 is_stmt 1 view -0
+ 189              		.cfi_startproc
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+  73:Src/Wimod/wimod_hci_layer.c ****     int8_t  txLength = 0;
+ 192              		.loc 1 73 5 view .LVU43
+  74:Src/Wimod/wimod_hci_layer.c **** 
+ 193              		.loc 1 74 5 view .LVU44
+  80:Src/Wimod/wimod_hci_layer.c ****     {
+ 194              		.loc 1 80 5 view .LVU45
+  80:Src/Wimod/wimod_hci_layer.c ****     {
+ 195              		.loc 1 80 8 is_stmt 0 view .LVU46
+ 196 0000 80B3     		cbz	r0, .L17
+  72:Src/Wimod/wimod_hci_layer.c ****     uint8_t i        = 0U;
+ 197              		.loc 1 72 1 view .LVU47
+ 198 0002 38B5     		push	{r3, r4, r5, lr}
+ 199              	.LCFI2:
+ 200              		.cfi_def_cfa_offset 16
+ 201              		.cfi_offset 3, -16
+ 202              		.cfi_offset 4, -12
+ 203              		.cfi_offset 5, -8
+ 204              		.cfi_offset 14, -4
+ 205 0004 0446     		mov	r4, r0
+  87:Src/Wimod/wimod_hci_layer.c **** 
+ 206              		.loc 1 87 5 is_stmt 1 view .LVU48
+  87:Src/Wimod/wimod_hci_layer.c **** 
+ 207              		.loc 1 87 22 is_stmt 0 view .LVU49
+ 208 0006 0546     		mov	r5, r0
+  87:Src/Wimod/wimod_hci_layer.c **** 
+ 209              		.loc 1 87 61 view .LVU50
+ 210 0008 35F8021B 		ldrh	r1, [r5], #2
+  87:Src/Wimod/wimod_hci_layer.c **** 
+ 211              		.loc 1 87 22 view .LVU51
+ 212 000c 0231     		adds	r1, r1, #2
+ 213 000e 4FF6FF72 		movw	r2, #65535
+ 214 0012 89B2     		uxth	r1, r1
+ 215 0014 2846     		mov	r0, r5
+ 216              	.LVL13:
+  87:Src/Wimod/wimod_hci_layer.c **** 
+ 217              		.loc 1 87 22 view .LVU52
+ 218 0016 FFF7FEFF 		bl	CRC16_Calc
+ 219              	.LVL14:
+  90:Src/Wimod/wimod_hci_layer.c **** 
+ 220              		.loc 1 90 5 is_stmt 1 view .LVU53
+  90:Src/Wimod/wimod_hci_layer.c **** 
+ 221              		.loc 1 90 11 is_stmt 0 view .LVU54
+ 222 001a C243     		mvns	r2, r0
+ 223 001c 92B2     		uxth	r2, r2
+ 224              	.LVL15:
+  93:Src/Wimod/wimod_hci_layer.c ****     txMessage->Payload[txMessage->Length + 1U] = HIBYTE(crc16);
+ 225              		.loc 1 93 5 is_stmt 1 view .LVU55
+  93:Src/Wimod/wimod_hci_layer.c ****     txMessage->Payload[txMessage->Length + 1U] = HIBYTE(crc16);
+ 226              		.loc 1 93 33 is_stmt 0 view .LVU56
+ 227 001e 2388     		ldrh	r3, [r4]
+  93:Src/Wimod/wimod_hci_layer.c ****     txMessage->Payload[txMessage->Length + 1U] = HIBYTE(crc16);
+ARM GAS  /tmp/ccABQDE0.s 			page 9
+
+
+ 228              		.loc 1 93 43 view .LVU57
+ 229 0020 E118     		adds	r1, r4, r3
+ 230 0022 0A71     		strb	r2, [r1, #4]
+  94:Src/Wimod/wimod_hci_layer.c **** 
+ 231              		.loc 1 94 5 is_stmt 1 view .LVU58
+  94:Src/Wimod/wimod_hci_layer.c **** 
+ 232              		.loc 1 94 42 is_stmt 0 view .LVU59
+ 233 0024 591C     		adds	r1, r3, #1
+  94:Src/Wimod/wimod_hci_layer.c **** 
+ 234              		.loc 1 94 48 view .LVU60
+ 235 0026 0C44     		add	r4, r4, r1
+ 236              	.LVL16:
+  94:Src/Wimod/wimod_hci_layer.c **** 
+ 237              		.loc 1 94 48 view .LVU61
+ 238 0028 120A     		lsrs	r2, r2, #8
+ 239              	.LVL17:
+  94:Src/Wimod/wimod_hci_layer.c **** 
+ 240              		.loc 1 94 48 view .LVU62
+ 241 002a 2271     		strb	r2, [r4, #4]
+ 101:Src/Wimod/wimod_hci_layer.c ****                                txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SI
+ 242              		.loc 1 101 5 is_stmt 1 view .LVU63
+ 101:Src/Wimod/wimod_hci_layer.c ****                                txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SI
+ 243              		.loc 1 101 16 is_stmt 0 view .LVU64
+ 244 002c 0433     		adds	r3, r3, #4
+ 245 002e 2A46     		mov	r2, r5
+ 246 0030 40F26621 		movw	r1, #614
+ 247 0034 0C48     		ldr	r0, .L24
+ 248              	.LVL18:
+ 101:Src/Wimod/wimod_hci_layer.c ****                                txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SI
+ 249              		.loc 1 101 16 view .LVU65
+ 250 0036 FFF7FEFF 		bl	SLIP_EncodeData
+ 251              	.LVL19:
+ 101:Src/Wimod/wimod_hci_layer.c ****                                txMessage->Length + WIMOD_HCI_MSG_HEADER_SIZE + WIMOD_HCI_MSG_FCS_SI
+ 252              		.loc 1 101 14 view .LVU66
+ 253 003a 45B2     		sxtb	r5, r0
+ 254              	.LVL20:
+ 105:Src/Wimod/wimod_hci_layer.c ****     {
+ 255              		.loc 1 105 5 is_stmt 1 view .LVU67
+ 105:Src/Wimod/wimod_hci_layer.c ****     {
+ 256              		.loc 1 105 8 is_stmt 0 view .LVU68
+ 257 003c 85B9     		cbnz	r5, .L18
+ 122:Src/Wimod/wimod_hci_layer.c **** }
+ 258              		.loc 1 122 12 view .LVU69
+ 259 003e 0020     		movs	r0, #0
+ 260              	.LVL21:
+ 261              	.L13:
+ 123:Src/Wimod/wimod_hci_layer.c **** 
+ 262              		.loc 1 123 1 view .LVU70
+ 263 0040 38BD     		pop	{r3, r4, r5, pc}
+ 264              	.LVL22:
+ 265              	.L16:
+ 110:Src/Wimod/wimod_hci_layer.c ****         }
+ 266              		.loc 1 110 13 is_stmt 1 discriminator 3 view .LVU71
+ 267 0042 C020     		movs	r0, #192
+ 268 0044 FFF7FEFF 		bl	SerialDevice_SendByte
+ 269              	.LVL23:
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ARM GAS  /tmp/ccABQDE0.s 			page 10
+
+
+ 270              		.loc 1 108 31 discriminator 3 view .LVU72
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ 271              		.loc 1 108 32 is_stmt 0 discriminator 3 view .LVU73
+ 272 0048 0134     		adds	r4, r4, #1
+ 273              	.LVL24:
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ 274              		.loc 1 108 32 discriminator 3 view .LVU74
+ 275 004a E4B2     		uxtb	r4, r4
+ 276              	.LVL25:
+ 277              	.L15:
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ 278              		.loc 1 108 22 is_stmt 1 discriminator 1 view .LVU75
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ 279              		.loc 1 108 9 is_stmt 0 discriminator 1 view .LVU76
+ 280 004c 272C     		cmp	r4, #39
+ 281 004e F8D9     		bls	.L16
+ 114:Src/Wimod/wimod_hci_layer.c ****         {
+ 282              		.loc 1 114 9 is_stmt 1 view .LVU77
+ 114:Src/Wimod/wimod_hci_layer.c ****         {
+ 283              		.loc 1 114 13 is_stmt 0 view .LVU78
+ 284 0050 2946     		mov	r1, r5
+ 285 0052 0548     		ldr	r0, .L24
+ 286 0054 FFF7FEFF 		bl	SerialDevice_SendData
+ 287              	.LVL26:
+ 114:Src/Wimod/wimod_hci_layer.c ****         {
+ 288              		.loc 1 114 12 view .LVU79
+ 289 0058 0028     		cmp	r0, #0
+ 290 005a F1D0     		beq	.L13
+ 117:Src/Wimod/wimod_hci_layer.c ****         }
+ 291              		.loc 1 117 20 view .LVU80
+ 292 005c 0120     		movs	r0, #1
+ 293 005e EFE7     		b	.L13
+ 294              	.LVL27:
+ 295              	.L18:
+ 108:Src/Wimod/wimod_hci_layer.c ****         {
+ 296              		.loc 1 108 16 view .LVU81
+ 297 0060 0024     		movs	r4, #0
+ 298 0062 F3E7     		b	.L15
+ 299              	.LVL28:
+ 300              	.L17:
+ 301              	.LCFI3:
+ 302              		.cfi_def_cfa_offset 0
+ 303              		.cfi_restore 3
+ 304              		.cfi_restore 4
+ 305              		.cfi_restore 5
+ 306              		.cfi_restore 14
+  83:Src/Wimod/wimod_hci_layer.c ****     }
+ 307              		.loc 1 83 16 view .LVU82
+ 308 0064 0020     		movs	r0, #0
+ 309              	.LVL29:
+ 123:Src/Wimod/wimod_hci_layer.c **** 
+ 310              		.loc 1 123 1 view .LVU83
+ 311 0066 7047     		bx	lr
+ 312              	.L25:
+ 313              		.align	2
+ 314              	.L24:
+ 315 0068 00000000 		.word	.LANCHOR1
+ARM GAS  /tmp/ccABQDE0.s 			page 11
+
+
+ 316              		.cfi_endproc
+ 317              	.LFE134:
+ 319              		.section	.text.WiMOD_HCI_Process,"ax",%progbits
+ 320              		.align	1
+ 321              		.global	WiMOD_HCI_Process
+ 322              		.syntax unified
+ 323              		.thumb
+ 324              		.thumb_func
+ 325              		.fpu fpv4-sp-d16
+ 327              	WiMOD_HCI_Process:
+ 328              	.LFB135:
+ 131:Src/Wimod/wimod_hci_layer.c ****     uint8_t rxBuf[WIMOD_HCI_RX_BUF_MAX] = { 0U };
+ 329              		.loc 1 131 1 is_stmt 1 view -0
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 256
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 333 0000 00B5     		push	{lr}
+ 334              	.LCFI4:
+ 335              		.cfi_def_cfa_offset 4
+ 336              		.cfi_offset 14, -4
+ 337 0002 C1B0     		sub	sp, sp, #260
+ 338              	.LCFI5:
+ 339              		.cfi_def_cfa_offset 264
+ 132:Src/Wimod/wimod_hci_layer.c ****     int32_t rxLength = 0U;
+ 340              		.loc 1 132 5 view .LVU85
+ 132:Src/Wimod/wimod_hci_layer.c ****     int32_t rxLength = 0U;
+ 341              		.loc 1 132 13 is_stmt 0 view .LVU86
+ 342 0004 0021     		movs	r1, #0
+ 343 0006 0091     		str	r1, [sp]
+ 344 0008 FB22     		movs	r2, #251
+ 345 000a 01A8     		add	r0, sp, #4
+ 346 000c FFF7FEFF 		bl	memset
+ 347              	.LVL30:
+ 133:Src/Wimod/wimod_hci_layer.c **** 
+ 348              		.loc 1 133 5 is_stmt 1 view .LVU87
+ 136:Src/Wimod/wimod_hci_layer.c **** 
+ 349              		.loc 1 136 5 view .LVU88
+ 136:Src/Wimod/wimod_hci_layer.c **** 
+ 350              		.loc 1 136 16 is_stmt 0 view .LVU89
+ 351 0010 FF21     		movs	r1, #255
+ 352 0012 6846     		mov	r0, sp
+ 353 0014 FFF7FEFF 		bl	SerialDevice_ReadData
+ 354              	.LVL31:
+ 139:Src/Wimod/wimod_hci_layer.c ****     {
+ 355              		.loc 1 139 5 is_stmt 1 view .LVU90
+ 139:Src/Wimod/wimod_hci_layer.c ****     {
+ 356              		.loc 1 139 8 is_stmt 0 view .LVU91
+ 357 0018 10B9     		cbnz	r0, .L29
+ 358              	.LVL32:
+ 359              	.L26:
+ 147:Src/Wimod/wimod_hci_layer.c **** 
+ 360              		.loc 1 147 1 view .LVU92
+ 361 001a 41B0     		add	sp, sp, #260
+ 362              	.LCFI6:
+ 363              		.cfi_remember_state
+ 364              		.cfi_def_cfa_offset 4
+ 365              		@ sp needed
+ARM GAS  /tmp/ccABQDE0.s 			page 12
+
+
+ 366 001c 5DF804FB 		ldr	pc, [sp], #4
+ 367              	.LVL33:
+ 368              	.L29:
+ 369              	.LCFI7:
+ 370              		.cfi_restore_state
+ 147:Src/Wimod/wimod_hci_layer.c **** 
+ 371              		.loc 1 147 1 view .LVU93
+ 372 0020 0146     		mov	r1, r0
+ 145:Src/Wimod/wimod_hci_layer.c ****     }
+ 373              		.loc 1 145 9 is_stmt 1 view .LVU94
+ 374 0022 6846     		mov	r0, sp
+ 375              	.LVL34:
+ 145:Src/Wimod/wimod_hci_layer.c ****     }
+ 376              		.loc 1 145 9 is_stmt 0 view .LVU95
+ 377 0024 FFF7FEFF 		bl	SLIP_DecodeData
+ 378              	.LVL35:
+ 147:Src/Wimod/wimod_hci_layer.c **** 
+ 379              		.loc 1 147 1 view .LVU96
+ 380 0028 F7E7     		b	.L26
+ 381              		.cfi_endproc
+ 382              	.LFE135:
+ 384              		.comm	huart3,64,4
+ 385              		.comm	huart2,64,4
+ 386              		.section	.bss.HCI,"aw",%nobits
+ 387              		.align	2
+ 388              		.set	.LANCHOR0,. + 0
+ 391              	HCI:
+ 392 0000 00000000 		.space	12
+ 392      00000000 
+ 392      00000000 
+ 393              		.section	.bss.TxBuffer,"aw",%nobits
+ 394              		.align	2
+ 395              		.set	.LANCHOR1,. + 0
+ 398              	TxBuffer:
+ 399 0000 00000000 		.space	614
+ 399      00000000 
+ 399      00000000 
+ 399      00000000 
+ 399      00000000 
+ 400              		.text
+ 401              	.Letext0:
+ 402              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 403              		.file 3 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h"
+ 404              		.file 4 "/usr/include/newlib/sys/_types.h"
+ 405              		.file 5 "/usr/include/newlib/sys/reent.h"
+ 406              		.file 6 "/usr/include/newlib/sys/lock.h"
+ 407              		.file 7 "/usr/include/newlib/sys/_stdint.h"
+ 408              		.file 8 "/usr/include/newlib/ctype.h"
+ 409              		.file 9 "Drivers/CMSIS/Include/core_cm4.h"
+ 410              		.file 10 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h"
+ 411              		.file 11 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 412              		.file 12 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 413              		.file 13 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 414              		.file 14 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 415              		.file 15 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 416              		.file 16 "Inc/STM32F4xx_Inc/stm32f4xx_board_conf.h"
+ 417              		.file 17 "Inc/Wimod_Inc/serial_device.h"
+ARM GAS  /tmp/ccABQDE0.s 			page 13
+
+
+ 418              		.file 18 "Inc/Wimod_Inc/wimod_hci_layer.h"
+ 419              		.file 19 "Inc/Wimod_Inc/crc16.h"
+ 420              		.file 20 "Inc/Wimod_Inc/slip.h"
+ 421              		.file 21 "<built-in>"
+ARM GAS  /tmp/ccABQDE0.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 wimod_hci_layer.c
+     /tmp/ccABQDE0.s:18     .text.WiMOD_HCI_ProcessRxMessage:0000000000000000 $t
+     /tmp/ccABQDE0.s:25     .text.WiMOD_HCI_ProcessRxMessage:0000000000000000 WiMOD_HCI_ProcessRxMessage
+     /tmp/ccABQDE0.s:106    .text.WiMOD_HCI_ProcessRxMessage:0000000000000040 $d
+     /tmp/ccABQDE0.s:111    .text.WiMOD_HCI_Init:0000000000000000 $t
+     /tmp/ccABQDE0.s:118    .text.WiMOD_HCI_Init:0000000000000000 WiMOD_HCI_Init
+     /tmp/ccABQDE0.s:172    .text.WiMOD_HCI_Init:0000000000000030 $d
+     /tmp/ccABQDE0.s:178    .text.WiMOD_HCI_SendMessage:0000000000000000 $t
+     /tmp/ccABQDE0.s:185    .text.WiMOD_HCI_SendMessage:0000000000000000 WiMOD_HCI_SendMessage
+     /tmp/ccABQDE0.s:315    .text.WiMOD_HCI_SendMessage:0000000000000068 $d
+     /tmp/ccABQDE0.s:320    .text.WiMOD_HCI_Process:0000000000000000 $t
+     /tmp/ccABQDE0.s:327    .text.WiMOD_HCI_Process:0000000000000000 WiMOD_HCI_Process
+                            *COM*:0000000000000040 huart3
+                            *COM*:0000000000000040 huart2
+     /tmp/ccABQDE0.s:387    .bss.HCI:0000000000000000 $d
+     /tmp/ccABQDE0.s:391    .bss.HCI:0000000000000000 HCI
+     /tmp/ccABQDE0.s:394    .bss.TxBuffer:0000000000000000 $d
+     /tmp/ccABQDE0.s:398    .bss.TxBuffer:0000000000000000 TxBuffer
+
+UNDEFINED SYMBOLS
+CRC16_Check
+SLIP_Init
+SLIP_SetRxBuffer
+SerialDevice_Open
+CRC16_Calc
+SLIP_EncodeData
+SerialDevice_SendByte
+SerialDevice_SendData
+memset
+SerialDevice_ReadData
+SLIP_DecodeData

@@ -1,0 +1,3573 @@
+ARM GAS  /tmp/cctQ98eH.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"serial_device.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.SetDevEUI.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 70B3D58F 		.ascii	"p\263\325\217\361\001x|\000"
+  20      F101787C 
+  20      00
+  21              		.section	.text.SetDevEUI,"ax",%progbits
+  22              		.align	1
+  23              		.arch armv7e-m
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  27              		.fpu fpv4-sp-d16
+  29              	SetDevEUI:
+  30              	.LFB151:
+  31              		.file 1 "Src/Wimod/serial_device.c"
+   1:Src/Wimod/serial_device.c **** /**
+   2:Src/Wimod/serial_device.c ****  ******************************************************************************
+   3:Src/Wimod/serial_device.c ****  * @file           : serial_device.c
+   4:Src/Wimod/serial_device.c ****  * @abstract       : Serial Device Abstraction
+   5:Src/Wimod/serial_device.c ****  * @disclaimer     : This example code is provided by IMST GmbH on an "ASIS"
+   6:Src/Wimod/serial_device.c ****  *                   basis without any warranties.
+   7:Src/Wimod/serial_device.c ****  * @maintain by    : Anol Paisal <anol.paisal@emone.co.th> @ 2018
+   8:Src/Wimod/serial_device.c ****  * @version        : 0.1
+   9:Src/Wimod/serial_device.c ****  * @date           : 18.05.2016
+  10:Src/Wimod/serial_device.c ****  ******************************************************************************
+  11:Src/Wimod/serial_device.c ****  * @attention
+  12:Src/Wimod/serial_device.c ****  *
+  13:Src/Wimod/serial_device.c ****  ******************************************************************************
+  14:Src/Wimod/serial_device.c ****  */
+  15:Src/Wimod/serial_device.c **** 
+  16:Src/Wimod/serial_device.c **** /* Includes ------------------------------------------------------------------*/
+  17:Src/Wimod/serial_device.c **** #include "serial_device.h"
+  18:Src/Wimod/serial_device.c **** 
+  19:Src/Wimod/serial_device.c **** /* Function prototypes -------------------------------------------------------*/
+  20:Src/Wimod/serial_device.c **** static void Ping(void);
+  21:Src/Wimod/serial_device.c **** static void GetNwkStatus(void);
+  22:Src/Wimod/serial_device.c **** static void GetCustomCFG(void);
+  23:Src/Wimod/serial_device.c **** static void SetCustomCFG(void);
+  24:Src/Wimod/serial_device.c **** static void ActivateABP(void);
+  25:Src/Wimod/serial_device.c **** static void ActivateOTA(void);
+ARM GAS  /tmp/cctQ98eH.s 			page 2
+
+
+  26:Src/Wimod/serial_device.c **** static void Reactivate(void);
+  27:Src/Wimod/serial_device.c **** static void Deactivate(void);
+  28:Src/Wimod/serial_device.c **** static void SetRadioStack(void);
+  29:Src/Wimod/serial_device.c **** static void GetRadioStack(void);
+  30:Src/Wimod/serial_device.c **** static void GetSupportBand(void);
+  31:Src/Wimod/serial_device.c **** static void GetDevEUI(void);
+  32:Src/Wimod/serial_device.c **** static void SetDevEUI(void);
+  33:Src/Wimod/serial_device.c **** static void GetOPMODE(void);
+  34:Src/Wimod/serial_device.c **** static void SetOPMODE(void);
+  35:Src/Wimod/serial_device.c **** static void ClearOPMODE(void);
+  36:Src/Wimod/serial_device.c **** static void ClearRTCAlarm(void);
+  37:Src/Wimod/serial_device.c **** static void GetRTC(void);
+  38:Src/Wimod/serial_device.c **** static void SetRTC(void);
+  39:Src/Wimod/serial_device.c **** static void GetAlarm(void);
+  40:Src/Wimod/serial_device.c **** static void SetAlarm(void);
+  41:Src/Wimod/serial_device.c **** static void GetFirmwareVersion(void);
+  42:Src/Wimod/serial_device.c **** static void GetDeviceInfo(void);
+  43:Src/Wimod/serial_device.c **** static void GetDeviceStatus(void);
+  44:Src/Wimod/serial_device.c **** static void Reset(void);
+  45:Src/Wimod/serial_device.c **** static void Join(void);
+  46:Src/Wimod/serial_device.c **** static void SendUData(void);
+  47:Src/Wimod/serial_device.c **** static void SendCData(void);
+  48:Src/Wimod/serial_device.c **** static void FactoryReset(void);
+  49:Src/Wimod/serial_device.c **** static void GetLinkADR(void);
+  50:Src/Wimod/serial_device.c **** static void SetLinkADR(void);
+  51:Src/Wimod/serial_device.c **** 
+  52:Src/Wimod/serial_device.c **** /* Private variables ---------------------------------------------------------*/
+  53:Src/Wimod/serial_device.c **** uint8_t UsartTextString[USARTTEXTSTRINGSIZE];
+  54:Src/Wimod/serial_device.c **** 
+  55:Src/Wimod/serial_device.c **** /**
+  56:Src/Wimod/serial_device.c ****  * @brief  Open serial device
+  57:Src/Wimod/serial_device.c ****  * @param  
+  58:Src/Wimod/serial_device.c ****  * @retval uint8_t
+  59:Src/Wimod/serial_device.c ****  */
+  60:Src/Wimod/serial_device.c **** uint8_t SerialDevice_Open(UART_HandleTypeDef *huart, uint32_t baudRate, int32_t dataBits, uint8_t p
+  61:Src/Wimod/serial_device.c **** {
+  62:Src/Wimod/serial_device.c ****     uint8_t ret = 0U;
+  63:Src/Wimod/serial_device.c **** 
+  64:Src/Wimod/serial_device.c ****     /* Init uart struture */
+  65:Src/Wimod/serial_device.c ****     huart->Init.BaudRate = baudRate;
+  66:Src/Wimod/serial_device.c ****     huart->Init.WordLength = dataBits;
+  67:Src/Wimod/serial_device.c ****     huart->Init.StopBits = UART_STOPBITS_1;
+  68:Src/Wimod/serial_device.c ****     huart->Init.Parity = parity;
+  69:Src/Wimod/serial_device.c **** 
+  70:Src/Wimod/serial_device.c ****     if (HAL_UART_Init(huart) == HAL_OK)
+  71:Src/Wimod/serial_device.c ****     {
+  72:Src/Wimod/serial_device.c ****         return SERIAL_DEVICE_SUCCESS;
+  73:Src/Wimod/serial_device.c ****     }
+  74:Src/Wimod/serial_device.c ****     else
+  75:Src/Wimod/serial_device.c ****     {
+  76:Src/Wimod/serial_device.c ****         ret = SerialDevice_Close();
+  77:Src/Wimod/serial_device.c ****     }
+  78:Src/Wimod/serial_device.c **** 
+  79:Src/Wimod/serial_device.c ****     /* Error */
+  80:Src/Wimod/serial_device.c ****     return ret;
+  81:Src/Wimod/serial_device.c **** }
+  82:Src/Wimod/serial_device.c **** 
+ARM GAS  /tmp/cctQ98eH.s 			page 3
+
+
+  83:Src/Wimod/serial_device.c **** /**
+  84:Src/Wimod/serial_device.c ****  * @brief  close serial device
+  85:Src/Wimod/serial_device.c ****  * @param  
+  86:Src/Wimod/serial_device.c ****  * @retval uint8_t
+  87:Src/Wimod/serial_device.c ****  */
+  88:Src/Wimod/serial_device.c **** uint8_t SerialDevice_Close()
+  89:Src/Wimod/serial_device.c **** {
+  90:Src/Wimod/serial_device.c ****     /* Deinit uart struture */
+  91:Src/Wimod/serial_device.c ****     HAL_UART_DeInit(&huart3);
+  92:Src/Wimod/serial_device.c **** 
+  93:Src/Wimod/serial_device.c ****     /* Error */
+  94:Src/Wimod/serial_device.c ****     return SERIAL_DEVICE_FAILED;
+  95:Src/Wimod/serial_device.c **** }
+  96:Src/Wimod/serial_device.c **** 
+  97:Src/Wimod/serial_device.c **** /**
+  98:Src/Wimod/serial_device.c ****  * @brief  Send data via UART3
+  99:Src/Wimod/serial_device.c ****  * @param  
+ 100:Src/Wimod/serial_device.c ****  * @retval int32_t
+ 101:Src/Wimod/serial_device.c ****  */
+ 102:Src/Wimod/serial_device.c **** int32_t SerialDevice_SendData(uint8_t *txBuffer, int32_t txLength)
+ 103:Src/Wimod/serial_device.c **** {
+ 104:Src/Wimod/serial_device.c ****     /* Transmit the data via UART3 */ 
+ 105:Src/Wimod/serial_device.c ****     if (HAL_UART_Transmit(&huart3, txBuffer, txLength, HAL_MAX_DELAY) != HAL_ERROR)
+ 106:Src/Wimod/serial_device.c ****     {
+ 107:Src/Wimod/serial_device.c ****         return txLength;
+ 108:Src/Wimod/serial_device.c ****     }
+ 109:Src/Wimod/serial_device.c **** 
+ 110:Src/Wimod/serial_device.c ****     /* Error */
+ 111:Src/Wimod/serial_device.c ****     return SERIAL_DEVICE_FAILED;
+ 112:Src/Wimod/serial_device.c **** }
+ 113:Src/Wimod/serial_device.c **** 
+ 114:Src/Wimod/serial_device.c **** /**
+ 115:Src/Wimod/serial_device.c ****  * @brief  Send single byte via UART3
+ 116:Src/Wimod/serial_device.c ****  * @param  
+ 117:Src/Wimod/serial_device.c ****  * @retval uint8_t
+ 118:Src/Wimod/serial_device.c ****  */
+ 119:Src/Wimod/serial_device.c **** uint8_t SerialDevice_SendByte(uint8_t txByte)
+ 120:Src/Wimod/serial_device.c **** {
+ 121:Src/Wimod/serial_device.c ****     /* Transmit data 1 byte via UART3 */ 
+ 122:Src/Wimod/serial_device.c ****     if (HAL_UART_Transmit(&huart3, &txByte, 1U, HAL_MAX_DELAY) != HAL_ERROR)
+ 123:Src/Wimod/serial_device.c ****     {
+ 124:Src/Wimod/serial_device.c ****         return SERIAL_DEVICE_SUCCESS;
+ 125:Src/Wimod/serial_device.c ****     }
+ 126:Src/Wimod/serial_device.c **** 
+ 127:Src/Wimod/serial_device.c ****     /* Error */
+ 128:Src/Wimod/serial_device.c ****     return SERIAL_DEVICE_FAILED;
+ 129:Src/Wimod/serial_device.c **** }
+ 130:Src/Wimod/serial_device.c **** 
+ 131:Src/Wimod/serial_device.c **** /**
+ 132:Src/Wimod/serial_device.c ****  * @brief  Read data via UART3
+ 133:Src/Wimod/serial_device.c ****  * @param  
+ 134:Src/Wimod/serial_device.c ****  * @retval int32_t
+ 135:Src/Wimod/serial_device.c ****  */
+ 136:Src/Wimod/serial_device.c **** int32_t SerialDevice_ReadData(uint8_t *rxBuffer, int32_t rxBufferSize)
+ 137:Src/Wimod/serial_device.c **** {
+ 138:Src/Wimod/serial_device.c ****     /* Read the data via UART3 */ 
+ 139:Src/Wimod/serial_device.c ****     if (HAL_UART_Receive(&huart3, rxBuffer, rxBufferSize, 500U) != HAL_ERROR)
+ARM GAS  /tmp/cctQ98eH.s 			page 4
+
+
+ 140:Src/Wimod/serial_device.c ****     {
+ 141:Src/Wimod/serial_device.c ****         return rxBufferSize;
+ 142:Src/Wimod/serial_device.c ****     }
+ 143:Src/Wimod/serial_device.c **** 
+ 144:Src/Wimod/serial_device.c ****     /* Error */
+ 145:Src/Wimod/serial_device.c ****     return SERIAL_DEVICE_FAILED;
+ 146:Src/Wimod/serial_device.c **** }
+ 147:Src/Wimod/serial_device.c **** 
+ 148:Src/Wimod/serial_device.c **** /**
+ 149:Src/Wimod/serial_device.c ****  * @brief  Print data via UART2
+ 150:Src/Wimod/serial_device.c ****  * @param  
+ 151:Src/Wimod/serial_device.c ****  * @retval uint8_t
+ 152:Src/Wimod/serial_device.c ****  */
+ 153:Src/Wimod/serial_device.c **** uint8_t SerialDevice_Printf(const char* fmt, ...)
+ 154:Src/Wimod/serial_device.c **** {
+ 155:Src/Wimod/serial_device.c ****     char buff[USART2_TX_BUFF_MAX];
+ 156:Src/Wimod/serial_device.c ****     va_list args;
+ 157:Src/Wimod/serial_device.c **** 
+ 158:Src/Wimod/serial_device.c ****     if (fmt == NULL)
+ 159:Src/Wimod/serial_device.c ****     {
+ 160:Src/Wimod/serial_device.c ****         /* Error */
+ 161:Src/Wimod/serial_device.c ****         return SERIAL_DEVICE_FAILED;
+ 162:Src/Wimod/serial_device.c ****     }
+ 163:Src/Wimod/serial_device.c **** 
+ 164:Src/Wimod/serial_device.c ****     va_start(args, fmt);
+ 165:Src/Wimod/serial_device.c ****     vsnprintf(buff, sizeof(buff), fmt, args);
+ 166:Src/Wimod/serial_device.c ****     HAL_UART_Transmit(&huart2, (uint8_t*)buff, strlen(buff), HAL_MAX_DELAY);
+ 167:Src/Wimod/serial_device.c ****     va_end(args);
+ 168:Src/Wimod/serial_device.c **** 
+ 169:Src/Wimod/serial_device.c ****     return SERIAL_DEVICE_SUCCESS;
+ 170:Src/Wimod/serial_device.c **** }
+ 171:Src/Wimod/serial_device.c **** 
+ 172:Src/Wimod/serial_device.c **** /**
+ 173:Src/Wimod/serial_device.c ****  * @brief  Check if any Application Command for L6470 has been entered by USART
+ 174:Src/Wimod/serial_device.c ****  *         so to proceed to decode and perform the command.
+ 175:Src/Wimod/serial_device.c ****  * @param  
+ 176:Src/Wimod/serial_device.c ****  * @retval none
+ 177:Src/Wimod/serial_device.c ****  */
+ 178:Src/Wimod/serial_device.c **** void SerialDevice_CheckAppCmd(void)
+ 179:Src/Wimod/serial_device.c **** {
+ 180:Src/Wimod/serial_device.c ****     /* Checks the UART2 is in idle state */
+ 181:Src/Wimod/serial_device.c ****     if (huart2.gState == HAL_UART_STATE_READY)
+ 182:Src/Wimod/serial_device.c ****     {
+ 183:Src/Wimod/serial_device.c **** 
+ 184:Src/Wimod/serial_device.c ****         /* Checks one character has been at least entered */
+ 185:Src/Wimod/serial_device.c ****         if (strchr((char *)UsartTextString, '\r') != NULL)
+ 186:Src/Wimod/serial_device.c ****         {
+ 187:Src/Wimod/serial_device.c ****             /* Decode the entered command string */
+ 188:Src/Wimod/serial_device.c ****             strtok((char *)UsartTextString, "\r");
+ 189:Src/Wimod/serial_device.c **** 
+ 190:Src/Wimod/serial_device.c ****             /* Handle commands */
+ 191:Src/Wimod/serial_device.c ****             switch (UsartTextString[0U])
+ 192:Src/Wimod/serial_device.c ****             {
+ 193:Src/Wimod/serial_device.c ****           	/* case 'e': */
+ 194:Src/Wimod/serial_device.c ****            	/* case 'x': */
+ 195:Src/Wimod/serial_device.c ****            	/* run = false; */
+ 196:Src/Wimod/serial_device.c ****            	/* 	break; */
+ARM GAS  /tmp/cctQ98eH.s 			page 5
+
+
+ 197:Src/Wimod/serial_device.c ****             case 'N':
+ 198:Src/Wimod/serial_device.c ****                 GetNwkStatus();
+ 199:Src/Wimod/serial_device.c ****                 break;
+ 200:Src/Wimod/serial_device.c ****             case 'O':
+ 201:Src/Wimod/serial_device.c ****                 SetCustomCFG();
+ 202:Src/Wimod/serial_device.c ****                 break;
+ 203:Src/Wimod/serial_device.c ****             case 'C':
+ 204:Src/Wimod/serial_device.c ****                 GetCustomCFG();
+ 205:Src/Wimod/serial_device.c ****                 break;
+ 206:Src/Wimod/serial_device.c ****             case 'A':
+ 207:Src/Wimod/serial_device.c ****                 ActivateABP();
+ 208:Src/Wimod/serial_device.c ****                 break;
+ 209:Src/Wimod/serial_device.c ****             case 'R':
+ 210:Src/Wimod/serial_device.c ****                 Reactivate();
+ 211:Src/Wimod/serial_device.c ****                 break;
+ 212:Src/Wimod/serial_device.c ****             case 'D':
+ 213:Src/Wimod/serial_device.c ****                 Deactivate();
+ 214:Src/Wimod/serial_device.c ****                 break;
+ 215:Src/Wimod/serial_device.c ****             case 'T':
+ 216:Src/Wimod/serial_device.c ****                 ActivateOTA();
+ 217:Src/Wimod/serial_device.c ****                 break;
+ 218:Src/Wimod/serial_device.c ****             case 'j':
+ 219:Src/Wimod/serial_device.c ****                 /* Join network */
+ 220:Src/Wimod/serial_device.c ****                 Join();
+ 221:Src/Wimod/serial_device.c ****                 break;
+ 222:Src/Wimod/serial_device.c ****             case 'S':
+ 223:Src/Wimod/serial_device.c ****                 SetRadioStack();
+ 224:Src/Wimod/serial_device.c ****                 break;
+ 225:Src/Wimod/serial_device.c ****             case 'K':
+ 226:Src/Wimod/serial_device.c ****                 GetRadioStack();
+ 227:Src/Wimod/serial_device.c ****                 break;
+ 228:Src/Wimod/serial_device.c ****             case 'G':
+ 229:Src/Wimod/serial_device.c ****                 GetSupportBand();
+ 230:Src/Wimod/serial_device.c ****                 break;
+ 231:Src/Wimod/serial_device.c ****             case 'o':
+ 232:Src/Wimod/serial_device.c ****                 /* Get opmode */
+ 233:Src/Wimod/serial_device.c ****                 GetOPMODE();
+ 234:Src/Wimod/serial_device.c ****                 break;
+ 235:Src/Wimod/serial_device.c ****             case 'm':
+ 236:Src/Wimod/serial_device.c ****                 /* Set opmode */
+ 237:Src/Wimod/serial_device.c ****                 SetOPMODE();
+ 238:Src/Wimod/serial_device.c ****                 break;
+ 239:Src/Wimod/serial_device.c ****             case 'n':
+ 240:Src/Wimod/serial_device.c ****                 /* Clear opmode */
+ 241:Src/Wimod/serial_device.c ****                 ClearOPMODE();
+ 242:Src/Wimod/serial_device.c ****                 break;
+ 243:Src/Wimod/serial_device.c ****             case 'E':
+ 244:Src/Wimod/serial_device.c ****                 GetDevEUI();
+ 245:Src/Wimod/serial_device.c ****                 break;
+ 246:Src/Wimod/serial_device.c ****             case 'e':
+ 247:Src/Wimod/serial_device.c ****                 /* Set dev eui */
+ 248:Src/Wimod/serial_device.c ****                 SetDevEUI();
+ 249:Src/Wimod/serial_device.c ****                 break;
+ 250:Src/Wimod/serial_device.c ****             case '-':
+ 251:Src/Wimod/serial_device.c ****                 /* Get rtc */
+ 252:Src/Wimod/serial_device.c ****                 ClearRTCAlarm();
+ 253:Src/Wimod/serial_device.c ****                 break;
+ARM GAS  /tmp/cctQ98eH.s 			page 6
+
+
+ 254:Src/Wimod/serial_device.c ****             case 't':
+ 255:Src/Wimod/serial_device.c ****                 /* Get rtc */
+ 256:Src/Wimod/serial_device.c ****                 GetRTC();
+ 257:Src/Wimod/serial_device.c ****                 break;
+ 258:Src/Wimod/serial_device.c ****             case '*':
+ 259:Src/Wimod/serial_device.c ****                 /* Set RTC */
+ 260:Src/Wimod/serial_device.c ****                 SetRTC();
+ 261:Src/Wimod/serial_device.c ****                 break;
+ 262:Src/Wimod/serial_device.c ****             case 'a':
+ 263:Src/Wimod/serial_device.c ****                 /* Get rtc alarm */
+ 264:Src/Wimod/serial_device.c ****                 GetAlarm();
+ 265:Src/Wimod/serial_device.c ****                 break;
+ 266:Src/Wimod/serial_device.c ****             case '+':
+ 267:Src/Wimod/serial_device.c ****                 /* Set rtc alarm */
+ 268:Src/Wimod/serial_device.c ****                 SetAlarm();
+ 269:Src/Wimod/serial_device.c ****                 break;
+ 270:Src/Wimod/serial_device.c ****             case 's':
+ 271:Src/Wimod/serial_device.c ****                 /* Device status */
+ 272:Src/Wimod/serial_device.c ****                 GetDeviceStatus();
+ 273:Src/Wimod/serial_device.c ****                 break;
+ 274:Src/Wimod/serial_device.c ****             case 'r':
+ 275:Src/Wimod/serial_device.c ****                 /* Seset device */
+ 276:Src/Wimod/serial_device.c ****                 Reset();
+ 277:Src/Wimod/serial_device.c ****                 break;
+ 278:Src/Wimod/serial_device.c ****             case 'f':
+ 279:Src/Wimod/serial_device.c ****                 /* Get firmware version */
+ 280:Src/Wimod/serial_device.c ****                 GetFirmwareVersion();
+ 281:Src/Wimod/serial_device.c ****                 break;
+ 282:Src/Wimod/serial_device.c ****             case 'i':
+ 283:Src/Wimod/serial_device.c ****                 /* Get device info */
+ 284:Src/Wimod/serial_device.c ****                 GetDeviceInfo();
+ 285:Src/Wimod/serial_device.c ****                 break;
+ 286:Src/Wimod/serial_device.c ****             case 'p':
+ 287:Src/Wimod/serial_device.c ****                 /* Ping device */
+ 288:Src/Wimod/serial_device.c ****                 Ping();
+ 289:Src/Wimod/serial_device.c ****                 break;
+ 290:Src/Wimod/serial_device.c ****             case 'u':
+ 291:Src/Wimod/serial_device.c ****                 /* Send u-data */
+ 292:Src/Wimod/serial_device.c ****                 SendUData();
+ 293:Src/Wimod/serial_device.c ****                 break;
+ 294:Src/Wimod/serial_device.c ****             case 'c':
+ 295:Src/Wimod/serial_device.c ****                 /* Send c-data */
+ 296:Src/Wimod/serial_device.c ****                 SendCData();
+ 297:Src/Wimod/serial_device.c ****                 break;
+ 298:Src/Wimod/serial_device.c ****             case 'Z':
+ 299:Src/Wimod/serial_device.c ****                 /* Factory reset */
+ 300:Src/Wimod/serial_device.c ****                 FactoryReset();
+ 301:Src/Wimod/serial_device.c ****                 break;
+ 302:Src/Wimod/serial_device.c ****             case 'Q':
+ 303:Src/Wimod/serial_device.c ****                 /* Get Link ADR */
+ 304:Src/Wimod/serial_device.c ****                 GetLinkADR();
+ 305:Src/Wimod/serial_device.c ****                 break;
+ 306:Src/Wimod/serial_device.c ****             case 'W':
+ 307:Src/Wimod/serial_device.c ****                 /* Set Link ADR */
+ 308:Src/Wimod/serial_device.c ****                 SetLinkADR();
+ 309:Src/Wimod/serial_device.c ****                 break;
+ 310:Src/Wimod/serial_device.c ****             case ' ':
+ARM GAS  /tmp/cctQ98eH.s 			page 7
+
+
+ 311:Src/Wimod/serial_device.c ****                 USART_ShowMenu();
+ 312:Src/Wimod/serial_device.c ****                 break;
+ 313:Src/Wimod/serial_device.c ****             }
+ 314:Src/Wimod/serial_device.c **** 
+ 315:Src/Wimod/serial_device.c ****             HAL_UART_Abort(&huart2);
+ 316:Src/Wimod/serial_device.c ****             memset(&UsartTextString, 0x00U, sizeof(UsartTextString));
+ 317:Src/Wimod/serial_device.c ****         }
+ 318:Src/Wimod/serial_device.c **** 
+ 319:Src/Wimod/serial_device.c ****         /* Prepare to receive a text string via USART with UART_IT_RXNE */
+ 320:Src/Wimod/serial_device.c ****         HAL_UART_Receive_IT(&huart2, UsartTextString, USARTTEXTSTRINGSIZE);
+ 321:Src/Wimod/serial_device.c ****     }
+ 322:Src/Wimod/serial_device.c **** }
+ 323:Src/Wimod/serial_device.c **** 
+ 324:Src/Wimod/serial_device.c **** /**
+ 325:Src/Wimod/serial_device.c ****  * @brief  GetNwkStatus
+ 326:Src/Wimod/serial_device.c ****  * @param  
+ 327:Src/Wimod/serial_device.c ****  * @retval none
+ 328:Src/Wimod/serial_device.c ****  */
+ 329:Src/Wimod/serial_device.c **** static void GetNwkStatus(void)
+ 330:Src/Wimod/serial_device.c **** {
+ 331:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetNwkStatus\n\r");
+ 332:Src/Wimod/serial_device.c **** 
+ 333:Src/Wimod/serial_device.c ****     /* Send get network status message */
+ 334:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetNkwStatus();
+ 335:Src/Wimod/serial_device.c **** }
+ 336:Src/Wimod/serial_device.c **** 
+ 337:Src/Wimod/serial_device.c **** /**
+ 338:Src/Wimod/serial_device.c ****  * @brief  Set Custom CFG
+ 339:Src/Wimod/serial_device.c ****  * @param  
+ 340:Src/Wimod/serial_device.c ****  * @retval none
+ 341:Src/Wimod/serial_device.c ****  */
+ 342:Src/Wimod/serial_device.c **** static void SetCustomCFG(void)
+ 343:Src/Wimod/serial_device.c **** {
+ 344:Src/Wimod/serial_device.c ****     SerialDevice_Printf("SetCustomCFG\n\r");
+ 345:Src/Wimod/serial_device.c **** 
+ 346:Src/Wimod/serial_device.c ****     /* Send set custom config message (dBd) */
+ 347:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetCustomConfig(0U);
+ 348:Src/Wimod/serial_device.c **** }
+ 349:Src/Wimod/serial_device.c **** 
+ 350:Src/Wimod/serial_device.c **** /**
+ 351:Src/Wimod/serial_device.c ****  * @brief  Get Custom CFG
+ 352:Src/Wimod/serial_device.c ****  * @param  
+ 353:Src/Wimod/serial_device.c ****  * @retval none
+ 354:Src/Wimod/serial_device.c ****  */
+ 355:Src/Wimod/serial_device.c **** static void GetCustomCFG(void)
+ 356:Src/Wimod/serial_device.c **** {
+ 357:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetCustomCFG\n\r");
+ 358:Src/Wimod/serial_device.c **** 
+ 359:Src/Wimod/serial_device.c ****     /* Send get custom config message */
+ 360:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetCustomConfig();
+ 361:Src/Wimod/serial_device.c **** }
+ 362:Src/Wimod/serial_device.c **** 
+ 363:Src/Wimod/serial_device.c **** /**
+ 364:Src/Wimod/serial_device.c ****  * @brief  Activate ABP
+ 365:Src/Wimod/serial_device.c ****  * @param  
+ 366:Src/Wimod/serial_device.c ****  * @retval none
+ 367:Src/Wimod/serial_device.c ****  */
+ARM GAS  /tmp/cctQ98eH.s 			page 8
+
+
+ 368:Src/Wimod/serial_device.c **** static void ActivateABP(void)
+ 369:Src/Wimod/serial_device.c **** {
+ 370:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_ACTIVATE_DEVICE_REQ, ABP_ACTIVATE_PAYLOAD, 36U);
+ 371:Src/Wimod/serial_device.c **** 
+ 372:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Activate ABP\n\r");
+ 373:Src/Wimod/serial_device.c **** }
+ 374:Src/Wimod/serial_device.c **** 
+ 375:Src/Wimod/serial_device.c **** /**
+ 376:Src/Wimod/serial_device.c ****  * @brief  Activate OTA 
+ 377:Src/Wimod/serial_device.c ****  * @param  
+ 378:Src/Wimod/serial_device.c ****  * @retval none
+ 379:Src/Wimod/serial_device.c ****  */
+ 380:Src/Wimod/serial_device.c **** static void ActivateOTA(void)
+ 381:Src/Wimod/serial_device.c **** {
+ 382:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 383:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_SET_JOIN_PARAM_REQ, OTA_ACTIVATE_PAYLOAD, 24U);
+ 384:Src/Wimod/serial_device.c **** 
+ 385:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Activate OTA\n\r");
+ 386:Src/Wimod/serial_device.c **** }
+ 387:Src/Wimod/serial_device.c **** 
+ 388:Src/Wimod/serial_device.c **** 
+ 389:Src/Wimod/serial_device.c **** /**
+ 390:Src/Wimod/serial_device.c ****  * @brief  Reactivate ABP
+ 391:Src/Wimod/serial_device.c ****  * @param  
+ 392:Src/Wimod/serial_device.c ****  * @retval none
+ 393:Src/Wimod/serial_device.c ****  */
+ 394:Src/Wimod/serial_device.c **** static void Reactivate(void)
+ 395:Src/Wimod/serial_device.c **** {
+ 396:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Reactivate\n\r");
+ 397:Src/Wimod/serial_device.c **** 
+ 398:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 399:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_REACTIVATE_DEVICE_REQ, NULL, 0U);
+ 400:Src/Wimod/serial_device.c **** }
+ 401:Src/Wimod/serial_device.c **** 
+ 402:Src/Wimod/serial_device.c **** /**
+ 403:Src/Wimod/serial_device.c ****  * @brief  Deactivate device 
+ 404:Src/Wimod/serial_device.c ****  * @param  
+ 405:Src/Wimod/serial_device.c ****  * @retval none
+ 406:Src/Wimod/serial_device.c ****  */
+ 407:Src/Wimod/serial_device.c **** static void Deactivate(void)
+ 408:Src/Wimod/serial_device.c **** {
+ 409:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Deactivate\n\r");
+ 410:Src/Wimod/serial_device.c **** 
+ 411:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 412:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_DEACTIVATE_DEVICE_REQ, NULL, 0U);
+ 413:Src/Wimod/serial_device.c **** }
+ 414:Src/Wimod/serial_device.c **** 
+ 415:Src/Wimod/serial_device.c **** /**
+ 416:Src/Wimod/serial_device.c ****  * @brief  Get Support Band 
+ 417:Src/Wimod/serial_device.c ****  * @param  
+ 418:Src/Wimod/serial_device.c ****  * @retval none
+ 419:Src/Wimod/serial_device.c ****  */
+ 420:Src/Wimod/serial_device.c **** static void GetSupportBand(void)
+ 421:Src/Wimod/serial_device.c **** {
+ 422:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetSupportBand\n\r");
+ 423:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_SUPPORTED_BANDS_REQ, NULL, 0U);
+ 424:Src/Wimod/serial_device.c **** }
+ARM GAS  /tmp/cctQ98eH.s 			page 9
+
+
+ 425:Src/Wimod/serial_device.c **** 
+ 426:Src/Wimod/serial_device.c **** /**
+ 427:Src/Wimod/serial_device.c ****  * @brief  Get Radio Stack
+ 428:Src/Wimod/serial_device.c ****  * @param  
+ 429:Src/Wimod/serial_device.c ****  * @retval none
+ 430:Src/Wimod/serial_device.c ****  */
+ 431:Src/Wimod/serial_device.c **** static void GetRadioStack(void)
+ 432:Src/Wimod/serial_device.c **** {
+ 433:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetRadioStack\n\r");
+ 434:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_RSTACK_CONFIG_REQ, NULL, 0U);
+ 435:Src/Wimod/serial_device.c **** }
+ 436:Src/Wimod/serial_device.c **** 
+ 437:Src/Wimod/serial_device.c **** /**
+ 438:Src/Wimod/serial_device.c ****  * @brief  Set Radio Stack
+ 439:Src/Wimod/serial_device.c ****  * @param  
+ 440:Src/Wimod/serial_device.c ****  * @retval none
+ 441:Src/Wimod/serial_device.c ****  */
+ 442:Src/Wimod/serial_device.c **** static void SetRadioStack(void)
+ 443:Src/Wimod/serial_device.c **** {
+ 444:Src/Wimod/serial_device.c ****     SerialDevice_Printf("SetRadioStack\n\r");
+ 445:Src/Wimod/serial_device.c **** 
+ 446:Src/Wimod/serial_device.c ****     uint8_t data[7U];
+ 447:Src/Wimod/serial_device.c **** 
+ 448:Src/Wimod/serial_device.c ****     data[0U] = 0x05U; /* Default Data Rate Index */
+ 449:Src/Wimod/serial_device.c ****     data[1U] = 0x10U; /* Default TX Power Level (EIRP) */
+ 450:Src/Wimod/serial_device.c ****     /* Bit 0: 0 = Adaptive Data Rate disabled 1 = Adaptive Data Rate enabled */
+ 451:Src/Wimod/serial_device.c ****     /* Bit 1: 0 = Duty Cycle Control disabled 1 = Duty Cycle Control enabled (Customer Mode require
+ 452:Src/Wimod/serial_device.c ****     /* Bit 2: 0 = Class A selected 1 = Class C selected */
+ 453:Src/Wimod/serial_device.c ****     /* Bit 6: 0 = standard RF packet output format 1 = extended RF packet output format: Tx/Rx chan
+ 454:Src/Wimod/serial_device.c ****     /* attached Bit 7: 0 = Rx MAC Command Forwarding disabled 1 = Rx MAC Command Forwarding enabled
+ 455:Src/Wimod/serial_device.c ****     data[2U] = 0b11000111;
+ 456:Src/Wimod/serial_device.c ****     data[3U] = 0x00U; /* Power Saving Mode 0x00 : off 0x01 : automatic */
+ 457:Src/Wimod/serial_device.c ****     data[4U] = 0x07U; /* Number of Retransmissions */
+ 458:Src/Wimod/serial_device.c ****     data[5U] = 0x12U; /* Band Index AS923TH */
+ 459:Src/Wimod/serial_device.c ****     data[6U] = 0x0FU; /* Header MAC Cmd Capacity */
+ 460:Src/Wimod/serial_device.c **** 
+ 461:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 462:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_SET_RSTACK_CONFIG_REQ, data, 7U);
+ 463:Src/Wimod/serial_device.c **** }
+ 464:Src/Wimod/serial_device.c **** 
+ 465:Src/Wimod/serial_device.c **** /**
+ 466:Src/Wimod/serial_device.c ****  * @brief  get DEV EUI 64 bit
+ 467:Src/Wimod/serial_device.c ****  * @param  
+ 468:Src/Wimod/serial_device.c ****  * @retval none
+ 469:Src/Wimod/serial_device.c ****  */
+ 470:Src/Wimod/serial_device.c **** static void GetDevEUI(void)
+ 471:Src/Wimod/serial_device.c **** {
+ 472:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetDevEUI\n\r");
+ 473:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_DEVICE_EUI_REQ, NULL, 0U);
+ 474:Src/Wimod/serial_device.c **** }
+ 475:Src/Wimod/serial_device.c **** 
+ 476:Src/Wimod/serial_device.c **** /**
+ 477:Src/Wimod/serial_device.c ****  * @brief  Set DEV EUI 64 bit
+ 478:Src/Wimod/serial_device.c ****  *         this parameter can only be written in "Customer mode"
+ 479:Src/Wimod/serial_device.c ****  * @param  
+ 480:Src/Wimod/serial_device.c ****  * @retval none
+ 481:Src/Wimod/serial_device.c ****  */
+ARM GAS  /tmp/cctQ98eH.s 			page 10
+
+
+ 482:Src/Wimod/serial_device.c **** static void SetDevEUI(void)
+ 483:Src/Wimod/serial_device.c **** {
+  32              		.loc 1 483 1 view -0
+  33              		.cfi_startproc
+  34              		@ args = 0, pretend = 0, frame = 8
+  35              		@ frame_needed = 0, uses_anonymous_args = 0
+  36 0000 00B5     		push	{lr}
+  37              	.LCFI0:
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 14, -4
+  40 0002 83B0     		sub	sp, sp, #12
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 16
+ 484:Src/Wimod/serial_device.c ****     uint8_t eui[] = { 0x70U, 0xB3U, 0xD5U, 0x8FU, 0xF1U, 0x01U, 0x78U, 0x7CU };
+  43              		.loc 1 484 5 view .LVU1
+  44              		.loc 1 484 13 is_stmt 0 view .LVU2
+  45 0004 064A     		ldr	r2, .L3
+  46 0006 6B46     		mov	r3, sp
+  47 0008 92E80300 		ldm	r2, {r0, r1}
+  48 000c 83E80300 		stm	r3, {r0, r1}
+ 485:Src/Wimod/serial_device.c **** 
+ 486:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_SET_DEVICE_EUI_REQ, eui, 8U);
+  49              		.loc 1 486 5 is_stmt 1 view .LVU3
+  50 0010 0822     		movs	r2, #8
+  51 0012 1946     		mov	r1, r3
+  52 0014 2520     		movs	r0, #37
+  53 0016 FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+  54              	.LVL0:
+ 487:Src/Wimod/serial_device.c **** }
+  55              		.loc 1 487 1 is_stmt 0 view .LVU4
+  56 001a 03B0     		add	sp, sp, #12
+  57              	.LCFI2:
+  58              		.cfi_def_cfa_offset 4
+  59              		@ sp needed
+  60 001c 5DF804FB 		ldr	pc, [sp], #4
+  61              	.L4:
+  62              		.align	2
+  63              	.L3:
+  64 0020 00000000 		.word	.LC0
+  65              		.cfi_endproc
+  66              	.LFE151:
+  68              		.section	.text.SerialDevice_Close,"ax",%progbits
+  69              		.align	1
+  70              		.global	SerialDevice_Close
+  71              		.syntax unified
+  72              		.thumb
+  73              		.thumb_func
+  74              		.fpu fpv4-sp-d16
+  76              	SerialDevice_Close:
+  77              	.LFB134:
+  89:Src/Wimod/serial_device.c ****     /* Deinit uart struture */
+  78              		.loc 1 89 1 is_stmt 1 view -0
+  79              		.cfi_startproc
+  80              		@ args = 0, pretend = 0, frame = 0
+  81              		@ frame_needed = 0, uses_anonymous_args = 0
+  82 0000 08B5     		push	{r3, lr}
+  83              	.LCFI3:
+ARM GAS  /tmp/cctQ98eH.s 			page 11
+
+
+  84              		.cfi_def_cfa_offset 8
+  85              		.cfi_offset 3, -8
+  86              		.cfi_offset 14, -4
+  91:Src/Wimod/serial_device.c **** 
+  87              		.loc 1 91 5 view .LVU6
+  88 0002 0248     		ldr	r0, .L7
+  89 0004 FFF7FEFF 		bl	HAL_UART_DeInit
+  90              	.LVL1:
+  94:Src/Wimod/serial_device.c **** }
+  91              		.loc 1 94 5 view .LVU7
+  95:Src/Wimod/serial_device.c **** 
+  92              		.loc 1 95 1 is_stmt 0 view .LVU8
+  93 0008 0020     		movs	r0, #0
+  94 000a 08BD     		pop	{r3, pc}
+  95              	.L8:
+  96              		.align	2
+  97              	.L7:
+  98 000c 00000000 		.word	huart3
+  99              		.cfi_endproc
+ 100              	.LFE134:
+ 102              		.section	.text.SerialDevice_Open,"ax",%progbits
+ 103              		.align	1
+ 104              		.global	SerialDevice_Open
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ 108              		.fpu fpv4-sp-d16
+ 110              	SerialDevice_Open:
+ 111              	.LVL2:
+ 112              	.LFB133:
+  61:Src/Wimod/serial_device.c ****     uint8_t ret = 0U;
+ 113              		.loc 1 61 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+  61:Src/Wimod/serial_device.c ****     uint8_t ret = 0U;
+ 117              		.loc 1 61 1 is_stmt 0 view .LVU10
+ 118 0000 10B5     		push	{r4, lr}
+ 119              	.LCFI4:
+ 120              		.cfi_def_cfa_offset 8
+ 121              		.cfi_offset 4, -8
+ 122              		.cfi_offset 14, -4
+  62:Src/Wimod/serial_device.c **** 
+ 123              		.loc 1 62 5 is_stmt 1 view .LVU11
+ 124              	.LVL3:
+  65:Src/Wimod/serial_device.c ****     huart->Init.WordLength = dataBits;
+ 125              		.loc 1 65 5 view .LVU12
+  65:Src/Wimod/serial_device.c ****     huart->Init.WordLength = dataBits;
+ 126              		.loc 1 65 26 is_stmt 0 view .LVU13
+ 127 0002 4160     		str	r1, [r0, #4]
+  66:Src/Wimod/serial_device.c ****     huart->Init.StopBits = UART_STOPBITS_1;
+ 128              		.loc 1 66 5 is_stmt 1 view .LVU14
+  66:Src/Wimod/serial_device.c ****     huart->Init.StopBits = UART_STOPBITS_1;
+ 129              		.loc 1 66 28 is_stmt 0 view .LVU15
+ 130 0004 8260     		str	r2, [r0, #8]
+  67:Src/Wimod/serial_device.c ****     huart->Init.Parity = parity;
+ 131              		.loc 1 67 5 is_stmt 1 view .LVU16
+ARM GAS  /tmp/cctQ98eH.s 			page 12
+
+
+  67:Src/Wimod/serial_device.c ****     huart->Init.Parity = parity;
+ 132              		.loc 1 67 26 is_stmt 0 view .LVU17
+ 133 0006 0022     		movs	r2, #0
+ 134              	.LVL4:
+  67:Src/Wimod/serial_device.c ****     huart->Init.Parity = parity;
+ 135              		.loc 1 67 26 view .LVU18
+ 136 0008 C260     		str	r2, [r0, #12]
+  68:Src/Wimod/serial_device.c **** 
+ 137              		.loc 1 68 5 is_stmt 1 view .LVU19
+  68:Src/Wimod/serial_device.c **** 
+ 138              		.loc 1 68 24 is_stmt 0 view .LVU20
+ 139 000a 0361     		str	r3, [r0, #16]
+  70:Src/Wimod/serial_device.c ****     {
+ 140              		.loc 1 70 5 is_stmt 1 view .LVU21
+  70:Src/Wimod/serial_device.c ****     {
+ 141              		.loc 1 70 9 is_stmt 0 view .LVU22
+ 142 000c FFF7FEFF 		bl	HAL_UART_Init
+ 143              	.LVL5:
+  70:Src/Wimod/serial_device.c ****     {
+ 144              		.loc 1 70 8 view .LVU23
+ 145 0010 08B9     		cbnz	r0, .L13
+  72:Src/Wimod/serial_device.c ****     }
+ 146              		.loc 1 72 16 view .LVU24
+ 147 0012 0120     		movs	r0, #1
+ 148              	.LVL6:
+ 149              	.L10:
+  81:Src/Wimod/serial_device.c **** 
+ 150              		.loc 1 81 1 view .LVU25
+ 151 0014 10BD     		pop	{r4, pc}
+ 152              	.LVL7:
+ 153              	.L13:
+  76:Src/Wimod/serial_device.c ****     }
+ 154              		.loc 1 76 9 is_stmt 1 view .LVU26
+  76:Src/Wimod/serial_device.c ****     }
+ 155              		.loc 1 76 15 is_stmt 0 view .LVU27
+ 156 0016 FFF7FEFF 		bl	SerialDevice_Close
+ 157              	.LVL8:
+  80:Src/Wimod/serial_device.c **** }
+ 158              		.loc 1 80 5 is_stmt 1 view .LVU28
+  80:Src/Wimod/serial_device.c **** }
+ 159              		.loc 1 80 12 is_stmt 0 view .LVU29
+ 160 001a FBE7     		b	.L10
+ 161              		.cfi_endproc
+ 162              	.LFE133:
+ 164              		.section	.text.SerialDevice_SendData,"ax",%progbits
+ 165              		.align	1
+ 166              		.global	SerialDevice_SendData
+ 167              		.syntax unified
+ 168              		.thumb
+ 169              		.thumb_func
+ 170              		.fpu fpv4-sp-d16
+ 172              	SerialDevice_SendData:
+ 173              	.LVL9:
+ 174              	.LFB135:
+ 103:Src/Wimod/serial_device.c ****     /* Transmit the data via UART3 */ 
+ 175              		.loc 1 103 1 is_stmt 1 view -0
+ 176              		.cfi_startproc
+ARM GAS  /tmp/cctQ98eH.s 			page 13
+
+
+ 177              		@ args = 0, pretend = 0, frame = 0
+ 178              		@ frame_needed = 0, uses_anonymous_args = 0
+ 103:Src/Wimod/serial_device.c ****     /* Transmit the data via UART3 */ 
+ 179              		.loc 1 103 1 is_stmt 0 view .LVU31
+ 180 0000 10B5     		push	{r4, lr}
+ 181              	.LCFI5:
+ 182              		.cfi_def_cfa_offset 8
+ 183              		.cfi_offset 4, -8
+ 184              		.cfi_offset 14, -4
+ 185 0002 0C46     		mov	r4, r1
+ 105:Src/Wimod/serial_device.c ****     {
+ 186              		.loc 1 105 5 is_stmt 1 view .LVU32
+ 105:Src/Wimod/serial_device.c ****     {
+ 187              		.loc 1 105 9 is_stmt 0 view .LVU33
+ 188 0004 4FF0FF33 		mov	r3, #-1
+ 189 0008 8AB2     		uxth	r2, r1
+ 190 000a 0146     		mov	r1, r0
+ 191              	.LVL10:
+ 105:Src/Wimod/serial_device.c ****     {
+ 192              		.loc 1 105 9 view .LVU34
+ 193 000c 0348     		ldr	r0, .L17
+ 194              	.LVL11:
+ 105:Src/Wimod/serial_device.c ****     {
+ 195              		.loc 1 105 9 view .LVU35
+ 196 000e FFF7FEFF 		bl	HAL_UART_Transmit
+ 197              	.LVL12:
+ 105:Src/Wimod/serial_device.c ****     {
+ 198              		.loc 1 105 8 view .LVU36
+ 199 0012 0128     		cmp	r0, #1
+ 200 0014 00D1     		bne	.L15
+ 111:Src/Wimod/serial_device.c **** }
+ 201              		.loc 1 111 12 view .LVU37
+ 202 0016 0024     		movs	r4, #0
+ 203              	.LVL13:
+ 204              	.L15:
+ 112:Src/Wimod/serial_device.c **** 
+ 205              		.loc 1 112 1 view .LVU38
+ 206 0018 2046     		mov	r0, r4
+ 207 001a 10BD     		pop	{r4, pc}
+ 208              	.L18:
+ 209              		.align	2
+ 210              	.L17:
+ 211 001c 00000000 		.word	huart3
+ 212              		.cfi_endproc
+ 213              	.LFE135:
+ 215              		.section	.text.SerialDevice_SendByte,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	SerialDevice_SendByte
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 221              		.fpu fpv4-sp-d16
+ 223              	SerialDevice_SendByte:
+ 224              	.LVL14:
+ 225              	.LFB136:
+ 120:Src/Wimod/serial_device.c ****     /* Transmit data 1 byte via UART3 */ 
+ 226              		.loc 1 120 1 is_stmt 1 view -0
+ARM GAS  /tmp/cctQ98eH.s 			page 14
+
+
+ 227              		.cfi_startproc
+ 228              		@ args = 0, pretend = 0, frame = 8
+ 229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 120:Src/Wimod/serial_device.c ****     /* Transmit data 1 byte via UART3 */ 
+ 230              		.loc 1 120 1 is_stmt 0 view .LVU40
+ 231 0000 00B5     		push	{lr}
+ 232              	.LCFI6:
+ 233              		.cfi_def_cfa_offset 4
+ 234              		.cfi_offset 14, -4
+ 235 0002 83B0     		sub	sp, sp, #12
+ 236              	.LCFI7:
+ 237              		.cfi_def_cfa_offset 16
+ 238 0004 8DF80700 		strb	r0, [sp, #7]
+ 122:Src/Wimod/serial_device.c ****     {
+ 239              		.loc 1 122 5 is_stmt 1 view .LVU41
+ 122:Src/Wimod/serial_device.c ****     {
+ 240              		.loc 1 122 9 is_stmt 0 view .LVU42
+ 241 0008 4FF0FF33 		mov	r3, #-1
+ 242 000c 0122     		movs	r2, #1
+ 243 000e 0DF10701 		add	r1, sp, #7
+ 244 0012 0548     		ldr	r0, .L23
+ 245              	.LVL15:
+ 122:Src/Wimod/serial_device.c ****     {
+ 246              		.loc 1 122 9 view .LVU43
+ 247 0014 FFF7FEFF 		bl	HAL_UART_Transmit
+ 248              	.LVL16:
+ 122:Src/Wimod/serial_device.c ****     {
+ 249              		.loc 1 122 8 view .LVU44
+ 250 0018 0128     		cmp	r0, #1
+ 251 001a 03D1     		bne	.L21
+ 128:Src/Wimod/serial_device.c **** }
+ 252              		.loc 1 128 12 view .LVU45
+ 253 001c 0020     		movs	r0, #0
+ 254              	.L20:
+ 129:Src/Wimod/serial_device.c **** 
+ 255              		.loc 1 129 1 view .LVU46
+ 256 001e 03B0     		add	sp, sp, #12
+ 257              	.LCFI8:
+ 258              		.cfi_remember_state
+ 259              		.cfi_def_cfa_offset 4
+ 260              		@ sp needed
+ 261 0020 5DF804FB 		ldr	pc, [sp], #4
+ 262              	.L21:
+ 263              	.LCFI9:
+ 264              		.cfi_restore_state
+ 124:Src/Wimod/serial_device.c ****     }
+ 265              		.loc 1 124 16 view .LVU47
+ 266 0024 0120     		movs	r0, #1
+ 267 0026 FAE7     		b	.L20
+ 268              	.L24:
+ 269              		.align	2
+ 270              	.L23:
+ 271 0028 00000000 		.word	huart3
+ 272              		.cfi_endproc
+ 273              	.LFE136:
+ 275              		.section	.text.SerialDevice_ReadData,"ax",%progbits
+ 276              		.align	1
+ARM GAS  /tmp/cctQ98eH.s 			page 15
+
+
+ 277              		.global	SerialDevice_ReadData
+ 278              		.syntax unified
+ 279              		.thumb
+ 280              		.thumb_func
+ 281              		.fpu fpv4-sp-d16
+ 283              	SerialDevice_ReadData:
+ 284              	.LVL17:
+ 285              	.LFB137:
+ 137:Src/Wimod/serial_device.c ****     /* Read the data via UART3 */ 
+ 286              		.loc 1 137 1 is_stmt 1 view -0
+ 287              		.cfi_startproc
+ 288              		@ args = 0, pretend = 0, frame = 0
+ 289              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137:Src/Wimod/serial_device.c ****     /* Read the data via UART3 */ 
+ 290              		.loc 1 137 1 is_stmt 0 view .LVU49
+ 291 0000 10B5     		push	{r4, lr}
+ 292              	.LCFI10:
+ 293              		.cfi_def_cfa_offset 8
+ 294              		.cfi_offset 4, -8
+ 295              		.cfi_offset 14, -4
+ 296 0002 0C46     		mov	r4, r1
+ 139:Src/Wimod/serial_device.c ****     {
+ 297              		.loc 1 139 5 is_stmt 1 view .LVU50
+ 139:Src/Wimod/serial_device.c ****     {
+ 298              		.loc 1 139 9 is_stmt 0 view .LVU51
+ 299 0004 4FF4FA73 		mov	r3, #500
+ 300 0008 8AB2     		uxth	r2, r1
+ 301 000a 0146     		mov	r1, r0
+ 302              	.LVL18:
+ 139:Src/Wimod/serial_device.c ****     {
+ 303              		.loc 1 139 9 view .LVU52
+ 304 000c 0348     		ldr	r0, .L28
+ 305              	.LVL19:
+ 139:Src/Wimod/serial_device.c ****     {
+ 306              		.loc 1 139 9 view .LVU53
+ 307 000e FFF7FEFF 		bl	HAL_UART_Receive
+ 308              	.LVL20:
+ 139:Src/Wimod/serial_device.c ****     {
+ 309              		.loc 1 139 8 view .LVU54
+ 310 0012 0128     		cmp	r0, #1
+ 311 0014 00D1     		bne	.L26
+ 145:Src/Wimod/serial_device.c **** }
+ 312              		.loc 1 145 12 view .LVU55
+ 313 0016 0024     		movs	r4, #0
+ 314              	.LVL21:
+ 315              	.L26:
+ 146:Src/Wimod/serial_device.c **** 
+ 316              		.loc 1 146 1 view .LVU56
+ 317 0018 2046     		mov	r0, r4
+ 318 001a 10BD     		pop	{r4, pc}
+ 319              	.L29:
+ 320              		.align	2
+ 321              	.L28:
+ 322 001c 00000000 		.word	huart3
+ 323              		.cfi_endproc
+ 324              	.LFE137:
+ 326              		.section	.text.SerialDevice_Printf,"ax",%progbits
+ARM GAS  /tmp/cctQ98eH.s 			page 16
+
+
+ 327              		.align	1
+ 328              		.global	SerialDevice_Printf
+ 329              		.syntax unified
+ 330              		.thumb
+ 331              		.thumb_func
+ 332              		.fpu fpv4-sp-d16
+ 334              	SerialDevice_Printf:
+ 335              	.LVL22:
+ 336              	.LFB138:
+ 154:Src/Wimod/serial_device.c ****     char buff[USART2_TX_BUFF_MAX];
+ 337              		.loc 1 154 1 is_stmt 1 view -0
+ 338              		.cfi_startproc
+ 339              		@ args = 4, pretend = 16, frame = 264
+ 340              		@ frame_needed = 0, uses_anonymous_args = 1
+ 154:Src/Wimod/serial_device.c ****     char buff[USART2_TX_BUFF_MAX];
+ 341              		.loc 1 154 1 is_stmt 0 view .LVU58
+ 342 0000 0FB4     		push	{r0, r1, r2, r3}
+ 343              	.LCFI11:
+ 344              		.cfi_def_cfa_offset 16
+ 345              		.cfi_offset 0, -16
+ 346              		.cfi_offset 1, -12
+ 347              		.cfi_offset 2, -8
+ 348              		.cfi_offset 3, -4
+ 349 0002 00B5     		push	{lr}
+ 350              	.LCFI12:
+ 351              		.cfi_def_cfa_offset 20
+ 352              		.cfi_offset 14, -20
+ 353 0004 C3B0     		sub	sp, sp, #268
+ 354              	.LCFI13:
+ 355              		.cfi_def_cfa_offset 288
+ 356 0006 449A     		ldr	r2, [sp, #272]
+ 155:Src/Wimod/serial_device.c ****     va_list args;
+ 357              		.loc 1 155 5 is_stmt 1 view .LVU59
+ 156:Src/Wimod/serial_device.c **** 
+ 358              		.loc 1 156 5 view .LVU60
+ 158:Src/Wimod/serial_device.c ****     {
+ 359              		.loc 1 158 5 view .LVU61
+ 158:Src/Wimod/serial_device.c ****     {
+ 360              		.loc 1 158 8 is_stmt 0 view .LVU62
+ 361 0008 B2B1     		cbz	r2, .L32
+ 164:Src/Wimod/serial_device.c ****     vsnprintf(buff, sizeof(buff), fmt, args);
+ 362              		.loc 1 164 5 is_stmt 1 view .LVU63
+ 363 000a 45AB     		add	r3, sp, #276
+ 364 000c 0193     		str	r3, [sp, #4]
+ 165:Src/Wimod/serial_device.c ****     HAL_UART_Transmit(&huart2, (uint8_t*)buff, strlen(buff), HAL_MAX_DELAY);
+ 365              		.loc 1 165 5 view .LVU64
+ 366 000e 4FF48071 		mov	r1, #256
+ 367 0012 02A8     		add	r0, sp, #8
+ 368 0014 FFF7FEFF 		bl	vsnprintf
+ 369              	.LVL23:
+ 166:Src/Wimod/serial_device.c ****     va_end(args);
+ 370              		.loc 1 166 5 view .LVU65
+ 166:Src/Wimod/serial_device.c ****     va_end(args);
+ 371              		.loc 1 166 48 is_stmt 0 view .LVU66
+ 372 0018 02A8     		add	r0, sp, #8
+ 373 001a FFF7FEFF 		bl	strlen
+ 374              	.LVL24:
+ARM GAS  /tmp/cctQ98eH.s 			page 17
+
+
+ 166:Src/Wimod/serial_device.c ****     va_end(args);
+ 375              		.loc 1 166 5 view .LVU67
+ 376 001e 4FF0FF33 		mov	r3, #-1
+ 377 0022 82B2     		uxth	r2, r0
+ 378 0024 02A9     		add	r1, sp, #8
+ 379 0026 0548     		ldr	r0, .L34
+ 380 0028 FFF7FEFF 		bl	HAL_UART_Transmit
+ 381              	.LVL25:
+ 167:Src/Wimod/serial_device.c **** 
+ 382              		.loc 1 167 5 is_stmt 1 view .LVU68
+ 169:Src/Wimod/serial_device.c **** }
+ 383              		.loc 1 169 5 view .LVU69
+ 169:Src/Wimod/serial_device.c **** }
+ 384              		.loc 1 169 12 is_stmt 0 view .LVU70
+ 385 002c 0120     		movs	r0, #1
+ 386              	.L31:
+ 170:Src/Wimod/serial_device.c **** 
+ 387              		.loc 1 170 1 view .LVU71
+ 388 002e 43B0     		add	sp, sp, #268
+ 389              	.LCFI14:
+ 390              		.cfi_remember_state
+ 391              		.cfi_def_cfa_offset 20
+ 392              		@ sp needed
+ 393 0030 5DF804EB 		ldr	lr, [sp], #4
+ 394              	.LCFI15:
+ 395              		.cfi_restore 14
+ 396              		.cfi_def_cfa_offset 16
+ 397 0034 04B0     		add	sp, sp, #16
+ 398              	.LCFI16:
+ 399              		.cfi_restore 3
+ 400              		.cfi_restore 2
+ 401              		.cfi_restore 1
+ 402              		.cfi_restore 0
+ 403              		.cfi_def_cfa_offset 0
+ 404 0036 7047     		bx	lr
+ 405              	.L32:
+ 406              	.LCFI17:
+ 407              		.cfi_restore_state
+ 161:Src/Wimod/serial_device.c ****     }
+ 408              		.loc 1 161 16 view .LVU72
+ 409 0038 0020     		movs	r0, #0
+ 410 003a F8E7     		b	.L31
+ 411              	.L35:
+ 412              		.align	2
+ 413              	.L34:
+ 414 003c 00000000 		.word	huart2
+ 415              		.cfi_endproc
+ 416              	.LFE138:
+ 418              		.section	.rodata.GetNwkStatus.str1.4,"aMS",%progbits,1
+ 419              		.align	2
+ 420              	.LC1:
+ 421 0000 4765744E 		.ascii	"GetNwkStatus\012\015\000"
+ 421      776B5374 
+ 421      61747573 
+ 421      0A0D00
+ 422              		.section	.text.GetNwkStatus,"ax",%progbits
+ 423              		.align	1
+ARM GAS  /tmp/cctQ98eH.s 			page 18
+
+
+ 424              		.syntax unified
+ 425              		.thumb
+ 426              		.thumb_func
+ 427              		.fpu fpv4-sp-d16
+ 429              	GetNwkStatus:
+ 430              	.LFB140:
+ 330:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetNwkStatus\n\r");
+ 431              		.loc 1 330 1 is_stmt 1 view -0
+ 432              		.cfi_startproc
+ 433              		@ args = 0, pretend = 0, frame = 0
+ 434              		@ frame_needed = 0, uses_anonymous_args = 0
+ 435 0000 08B5     		push	{r3, lr}
+ 436              	.LCFI18:
+ 437              		.cfi_def_cfa_offset 8
+ 438              		.cfi_offset 3, -8
+ 439              		.cfi_offset 14, -4
+ 331:Src/Wimod/serial_device.c **** 
+ 440              		.loc 1 331 5 view .LVU74
+ 441 0002 0348     		ldr	r0, .L38
+ 442 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 443              	.LVL26:
+ 334:Src/Wimod/serial_device.c **** }
+ 444              		.loc 1 334 5 view .LVU75
+ 445 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetNkwStatus
+ 446              	.LVL27:
+ 335:Src/Wimod/serial_device.c **** 
+ 447              		.loc 1 335 1 is_stmt 0 view .LVU76
+ 448 000c 08BD     		pop	{r3, pc}
+ 449              	.L39:
+ 450 000e 00BF     		.align	2
+ 451              	.L38:
+ 452 0010 00000000 		.word	.LC1
+ 453              		.cfi_endproc
+ 454              	.LFE140:
+ 456              		.section	.rodata.SetCustomCFG.str1.4,"aMS",%progbits,1
+ 457              		.align	2
+ 458              	.LC2:
+ 459 0000 53657443 		.ascii	"SetCustomCFG\012\015\000"
+ 459      7573746F 
+ 459      6D434647 
+ 459      0A0D00
+ 460              		.section	.text.SetCustomCFG,"ax",%progbits
+ 461              		.align	1
+ 462              		.syntax unified
+ 463              		.thumb
+ 464              		.thumb_func
+ 465              		.fpu fpv4-sp-d16
+ 467              	SetCustomCFG:
+ 468              	.LFB141:
+ 343:Src/Wimod/serial_device.c ****     SerialDevice_Printf("SetCustomCFG\n\r");
+ 469              		.loc 1 343 1 is_stmt 1 view -0
+ 470              		.cfi_startproc
+ 471              		@ args = 0, pretend = 0, frame = 0
+ 472              		@ frame_needed = 0, uses_anonymous_args = 0
+ 473 0000 08B5     		push	{r3, lr}
+ 474              	.LCFI19:
+ 475              		.cfi_def_cfa_offset 8
+ARM GAS  /tmp/cctQ98eH.s 			page 19
+
+
+ 476              		.cfi_offset 3, -8
+ 477              		.cfi_offset 14, -4
+ 344:Src/Wimod/serial_device.c **** 
+ 478              		.loc 1 344 5 view .LVU78
+ 479 0002 0348     		ldr	r0, .L42
+ 480 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 481              	.LVL28:
+ 347:Src/Wimod/serial_device.c **** }
+ 482              		.loc 1 347 5 view .LVU79
+ 483 0008 0020     		movs	r0, #0
+ 484 000a FFF7FEFF 		bl	WiMOD_LoRaWAN_SetCustomConfig
+ 485              	.LVL29:
+ 348:Src/Wimod/serial_device.c **** 
+ 486              		.loc 1 348 1 is_stmt 0 view .LVU80
+ 487 000e 08BD     		pop	{r3, pc}
+ 488              	.L43:
+ 489              		.align	2
+ 490              	.L42:
+ 491 0010 00000000 		.word	.LC2
+ 492              		.cfi_endproc
+ 493              	.LFE141:
+ 495              		.section	.rodata.GetCustomCFG.str1.4,"aMS",%progbits,1
+ 496              		.align	2
+ 497              	.LC3:
+ 498 0000 47657443 		.ascii	"GetCustomCFG\012\015\000"
+ 498      7573746F 
+ 498      6D434647 
+ 498      0A0D00
+ 499              		.section	.text.GetCustomCFG,"ax",%progbits
+ 500              		.align	1
+ 501              		.syntax unified
+ 502              		.thumb
+ 503              		.thumb_func
+ 504              		.fpu fpv4-sp-d16
+ 506              	GetCustomCFG:
+ 507              	.LFB142:
+ 356:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetCustomCFG\n\r");
+ 508              		.loc 1 356 1 is_stmt 1 view -0
+ 509              		.cfi_startproc
+ 510              		@ args = 0, pretend = 0, frame = 0
+ 511              		@ frame_needed = 0, uses_anonymous_args = 0
+ 512 0000 08B5     		push	{r3, lr}
+ 513              	.LCFI20:
+ 514              		.cfi_def_cfa_offset 8
+ 515              		.cfi_offset 3, -8
+ 516              		.cfi_offset 14, -4
+ 357:Src/Wimod/serial_device.c **** 
+ 517              		.loc 1 357 5 view .LVU82
+ 518 0002 0348     		ldr	r0, .L46
+ 519 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 520              	.LVL30:
+ 360:Src/Wimod/serial_device.c **** }
+ 521              		.loc 1 360 5 view .LVU83
+ 522 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetCustomConfig
+ 523              	.LVL31:
+ 361:Src/Wimod/serial_device.c **** 
+ 524              		.loc 1 361 1 is_stmt 0 view .LVU84
+ARM GAS  /tmp/cctQ98eH.s 			page 20
+
+
+ 525 000c 08BD     		pop	{r3, pc}
+ 526              	.L47:
+ 527 000e 00BF     		.align	2
+ 528              	.L46:
+ 529 0010 00000000 		.word	.LC3
+ 530              		.cfi_endproc
+ 531              	.LFE142:
+ 533              		.section	.rodata.ActivateABP.str1.4,"aMS",%progbits,1
+ 534              		.align	2
+ 535              	.LC4:
+ 536 0000 41637469 		.ascii	"Activate ABP\012\015\000"
+ 536      76617465 
+ 536      20414250 
+ 536      0A0D00
+ 537              		.section	.text.ActivateABP,"ax",%progbits
+ 538              		.align	1
+ 539              		.syntax unified
+ 540              		.thumb
+ 541              		.thumb_func
+ 542              		.fpu fpv4-sp-d16
+ 544              	ActivateABP:
+ 545              	.LFB143:
+ 369:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_ACTIVATE_DEVICE_REQ, ABP_ACTIVATE_PAYLOAD, 36U);
+ 546              		.loc 1 369 1 is_stmt 1 view -0
+ 547              		.cfi_startproc
+ 548              		@ args = 0, pretend = 0, frame = 0
+ 549              		@ frame_needed = 0, uses_anonymous_args = 0
+ 550 0000 08B5     		push	{r3, lr}
+ 551              	.LCFI21:
+ 552              		.cfi_def_cfa_offset 8
+ 553              		.cfi_offset 3, -8
+ 554              		.cfi_offset 14, -4
+ 370:Src/Wimod/serial_device.c **** 
+ 555              		.loc 1 370 5 view .LVU86
+ 556 0002 2422     		movs	r2, #36
+ 557 0004 0349     		ldr	r1, .L50
+ 558 0006 0120     		movs	r0, #1
+ 559 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 560              	.LVL32:
+ 372:Src/Wimod/serial_device.c **** }
+ 561              		.loc 1 372 5 view .LVU87
+ 562 000c 0248     		ldr	r0, .L50+4
+ 563 000e FFF7FEFF 		bl	SerialDevice_Printf
+ 564              	.LVL33:
+ 373:Src/Wimod/serial_device.c **** 
+ 565              		.loc 1 373 1 is_stmt 0 view .LVU88
+ 566 0012 08BD     		pop	{r3, pc}
+ 567              	.L51:
+ 568              		.align	2
+ 569              	.L50:
+ 570 0014 00000000 		.word	ABP_ACTIVATE_PAYLOAD
+ 571 0018 00000000 		.word	.LC4
+ 572              		.cfi_endproc
+ 573              	.LFE143:
+ 575              		.section	.rodata.Reactivate.str1.4,"aMS",%progbits,1
+ 576              		.align	2
+ 577              	.LC5:
+ARM GAS  /tmp/cctQ98eH.s 			page 21
+
+
+ 578 0000 52656163 		.ascii	"Reactivate\012\015\000"
+ 578      74697661 
+ 578      74650A0D 
+ 578      00
+ 579              		.section	.text.Reactivate,"ax",%progbits
+ 580              		.align	1
+ 581              		.syntax unified
+ 582              		.thumb
+ 583              		.thumb_func
+ 584              		.fpu fpv4-sp-d16
+ 586              	Reactivate:
+ 587              	.LFB145:
+ 395:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Reactivate\n\r");
+ 588              		.loc 1 395 1 is_stmt 1 view -0
+ 589              		.cfi_startproc
+ 590              		@ args = 0, pretend = 0, frame = 0
+ 591              		@ frame_needed = 0, uses_anonymous_args = 0
+ 592 0000 08B5     		push	{r3, lr}
+ 593              	.LCFI22:
+ 594              		.cfi_def_cfa_offset 8
+ 595              		.cfi_offset 3, -8
+ 596              		.cfi_offset 14, -4
+ 396:Src/Wimod/serial_device.c **** 
+ 597              		.loc 1 396 5 view .LVU90
+ 598 0002 0448     		ldr	r0, .L54
+ 599 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 600              	.LVL34:
+ 399:Src/Wimod/serial_device.c **** }
+ 601              		.loc 1 399 5 view .LVU91
+ 602 0008 0022     		movs	r2, #0
+ 603 000a 1146     		mov	r1, r2
+ 604 000c 1D20     		movs	r0, #29
+ 605 000e FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 606              	.LVL35:
+ 400:Src/Wimod/serial_device.c **** 
+ 607              		.loc 1 400 1 is_stmt 0 view .LVU92
+ 608 0012 08BD     		pop	{r3, pc}
+ 609              	.L55:
+ 610              		.align	2
+ 611              	.L54:
+ 612 0014 00000000 		.word	.LC5
+ 613              		.cfi_endproc
+ 614              	.LFE145:
+ 616              		.section	.rodata.Deactivate.str1.4,"aMS",%progbits,1
+ 617              		.align	2
+ 618              	.LC6:
+ 619 0000 44656163 		.ascii	"Deactivate\012\015\000"
+ 619      74697661 
+ 619      74650A0D 
+ 619      00
+ 620              		.section	.text.Deactivate,"ax",%progbits
+ 621              		.align	1
+ 622              		.syntax unified
+ 623              		.thumb
+ 624              		.thumb_func
+ 625              		.fpu fpv4-sp-d16
+ 627              	Deactivate:
+ARM GAS  /tmp/cctQ98eH.s 			page 22
+
+
+ 628              	.LFB146:
+ 408:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Deactivate\n\r");
+ 629              		.loc 1 408 1 is_stmt 1 view -0
+ 630              		.cfi_startproc
+ 631              		@ args = 0, pretend = 0, frame = 0
+ 632              		@ frame_needed = 0, uses_anonymous_args = 0
+ 633 0000 08B5     		push	{r3, lr}
+ 634              	.LCFI23:
+ 635              		.cfi_def_cfa_offset 8
+ 636              		.cfi_offset 3, -8
+ 637              		.cfi_offset 14, -4
+ 409:Src/Wimod/serial_device.c **** 
+ 638              		.loc 1 409 5 view .LVU94
+ 639 0002 0448     		ldr	r0, .L58
+ 640 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 641              	.LVL36:
+ 412:Src/Wimod/serial_device.c **** }
+ 642              		.loc 1 412 5 view .LVU95
+ 643 0008 0022     		movs	r2, #0
+ 644 000a 1146     		mov	r1, r2
+ 645 000c 2120     		movs	r0, #33
+ 646 000e FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 647              	.LVL37:
+ 413:Src/Wimod/serial_device.c **** 
+ 648              		.loc 1 413 1 is_stmt 0 view .LVU96
+ 649 0012 08BD     		pop	{r3, pc}
+ 650              	.L59:
+ 651              		.align	2
+ 652              	.L58:
+ 653 0014 00000000 		.word	.LC6
+ 654              		.cfi_endproc
+ 655              	.LFE146:
+ 657              		.section	.rodata.ActivateOTA.str1.4,"aMS",%progbits,1
+ 658              		.align	2
+ 659              	.LC7:
+ 660 0000 41637469 		.ascii	"Activate OTA\012\015\000"
+ 660      76617465 
+ 660      204F5441 
+ 660      0A0D00
+ 661              		.section	.text.ActivateOTA,"ax",%progbits
+ 662              		.align	1
+ 663              		.syntax unified
+ 664              		.thumb
+ 665              		.thumb_func
+ 666              		.fpu fpv4-sp-d16
+ 668              	ActivateOTA:
+ 669              	.LFB144:
+ 381:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 670              		.loc 1 381 1 is_stmt 1 view -0
+ 671              		.cfi_startproc
+ 672              		@ args = 0, pretend = 0, frame = 0
+ 673              		@ frame_needed = 0, uses_anonymous_args = 0
+ 674 0000 08B5     		push	{r3, lr}
+ 675              	.LCFI24:
+ 676              		.cfi_def_cfa_offset 8
+ 677              		.cfi_offset 3, -8
+ 678              		.cfi_offset 14, -4
+ARM GAS  /tmp/cctQ98eH.s 			page 23
+
+
+ 383:Src/Wimod/serial_device.c **** 
+ 679              		.loc 1 383 5 view .LVU98
+ 680 0002 1822     		movs	r2, #24
+ 681 0004 0349     		ldr	r1, .L62
+ 682 0006 0520     		movs	r0, #5
+ 683 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 684              	.LVL38:
+ 385:Src/Wimod/serial_device.c **** }
+ 685              		.loc 1 385 5 view .LVU99
+ 686 000c 0248     		ldr	r0, .L62+4
+ 687 000e FFF7FEFF 		bl	SerialDevice_Printf
+ 688              	.LVL39:
+ 386:Src/Wimod/serial_device.c **** 
+ 689              		.loc 1 386 1 is_stmt 0 view .LVU100
+ 690 0012 08BD     		pop	{r3, pc}
+ 691              	.L63:
+ 692              		.align	2
+ 693              	.L62:
+ 694 0014 00000000 		.word	OTA_ACTIVATE_PAYLOAD
+ 695 0018 00000000 		.word	.LC7
+ 696              		.cfi_endproc
+ 697              	.LFE144:
+ 699              		.section	.rodata.Join.str1.4,"aMS",%progbits,1
+ 700              		.align	2
+ 701              	.LC8:
+ 702 0000 4A6F696E 		.ascii	"Join network request\012\015\000"
+ 702      206E6574 
+ 702      776F726B 
+ 702      20726571 
+ 702      75657374 
+ 703              		.section	.text.Join,"ax",%progbits
+ 704              		.align	1
+ 705              		.syntax unified
+ 706              		.thumb
+ 707              		.thumb_func
+ 708              		.fpu fpv4-sp-d16
+ 710              	Join:
+ 711              	.LFB165:
+ 488:Src/Wimod/serial_device.c **** 
+ 489:Src/Wimod/serial_device.c **** /**
+ 490:Src/Wimod/serial_device.c ****  * @brief  Set OPMODE
+ 491:Src/Wimod/serial_device.c ****  *	Index Description
+ 492:Src/Wimod/serial_device.c ****  *	0 Standard Application Mode / Default Mode
+ 493:Src/Wimod/serial_device.c ****  *	1 Reserved
+ 494:Src/Wimod/serial_device.c ****  *	2 Reserved
+ 495:Src/Wimod/serial_device.c ****  *	3 Customer Mode
+ 496:Src/Wimod/serial_device.c ****  *
+ 497:Src/Wimod/serial_device.c ****  * @param  
+ 498:Src/Wimod/serial_device.c ****  * @retval none
+ 499:Src/Wimod/serial_device.c ****  */
+ 500:Src/Wimod/serial_device.c **** static void SetOPMODE(void)
+ 501:Src/Wimod/serial_device.c **** {
+ 502:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set OPMODE\n\r");
+ 503:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetOPMODE(3U);
+ 504:Src/Wimod/serial_device.c **** }
+ 505:Src/Wimod/serial_device.c **** 
+ 506:Src/Wimod/serial_device.c **** /**
+ARM GAS  /tmp/cctQ98eH.s 			page 24
+
+
+ 507:Src/Wimod/serial_device.c ****  * @brief  Clear OPMODE
+ 508:Src/Wimod/serial_device.c ****  * @param  
+ 509:Src/Wimod/serial_device.c ****  * @retval none
+ 510:Src/Wimod/serial_device.c ****  */
+ 511:Src/Wimod/serial_device.c **** static void ClearOPMODE(void)
+ 512:Src/Wimod/serial_device.c **** {
+ 513:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Clear OPMODE\n\r");
+ 514:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetOPMODE(0U);
+ 515:Src/Wimod/serial_device.c **** }
+ 516:Src/Wimod/serial_device.c **** 
+ 517:Src/Wimod/serial_device.c **** /**
+ 518:Src/Wimod/serial_device.c ****  * @brief  Get OPMODE
+ 519:Src/Wimod/serial_device.c ****  * @param  
+ 520:Src/Wimod/serial_device.c ****  * @retval none
+ 521:Src/Wimod/serial_device.c ****  */
+ 522:Src/Wimod/serial_device.c **** static void GetOPMODE(void)
+ 523:Src/Wimod/serial_device.c **** {
+ 524:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get OPMODE\n\r");
+ 525:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetOPMODE();
+ 526:Src/Wimod/serial_device.c **** }
+ 527:Src/Wimod/serial_device.c **** 
+ 528:Src/Wimod/serial_device.c **** /**
+ 529:Src/Wimod/serial_device.c ****  * @brief  Clear RTC alarm
+ 530:Src/Wimod/serial_device.c ****  * @param  
+ 531:Src/Wimod/serial_device.c ****  * @retval none
+ 532:Src/Wimod/serial_device.c ****  */
+ 533:Src/Wimod/serial_device.c **** static void ClearRTCAlarm(void)
+ 534:Src/Wimod/serial_device.c **** {
+ 535:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Clear RTC alarm\n\r");
+ 536:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_ClearRTCAlarm();
+ 537:Src/Wimod/serial_device.c **** }
+ 538:Src/Wimod/serial_device.c **** 
+ 539:Src/Wimod/serial_device.c **** /**
+ 540:Src/Wimod/serial_device.c ****  * @brief  Get RTC
+ 541:Src/Wimod/serial_device.c ****  * @param  
+ 542:Src/Wimod/serial_device.c ****  * @retval none
+ 543:Src/Wimod/serial_device.c ****  */
+ 544:Src/Wimod/serial_device.c **** static void GetRTC(void)
+ 545:Src/Wimod/serial_device.c **** {
+ 546:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get RTC\n\r");
+ 547:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetRTC();
+ 548:Src/Wimod/serial_device.c **** }
+ 549:Src/Wimod/serial_device.c **** 
+ 550:Src/Wimod/serial_device.c **** /**
+ 551:Src/Wimod/serial_device.c ****  * @brief  Set RTC
+ 552:Src/Wimod/serial_device.c ****  * @param  
+ 553:Src/Wimod/serial_device.c ****  * @retval none
+ 554:Src/Wimod/serial_device.c ****  */
+ 555:Src/Wimod/serial_device.c **** static void SetRTC(void)
+ 556:Src/Wimod/serial_device.c **** {
+ 557:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set RTC\n\r");
+ 558:Src/Wimod/serial_device.c ****     uint32_t time = 0U;
+ 559:Src/Wimod/serial_device.c ****     /* 2018-5-20 [12:30:30] */
+ 560:Src/Wimod/serial_device.c ****     /* Year */
+ 561:Src/Wimod/serial_device.c ****     time |= 18U;
+ 562:Src/Wimod/serial_device.c ****     time <<= 6U;
+ 563:Src/Wimod/serial_device.c ****     /* Days */
+ARM GAS  /tmp/cctQ98eH.s 			page 25
+
+
+ 564:Src/Wimod/serial_device.c ****     time |= 20U;
+ 565:Src/Wimod/serial_device.c ****     time <<= 5U;
+ 566:Src/Wimod/serial_device.c ****     /* Hours */
+ 567:Src/Wimod/serial_device.c ****     time |= 12U;
+ 568:Src/Wimod/serial_device.c ****     time <<= 5U;
+ 569:Src/Wimod/serial_device.c ****     /* Month */
+ 570:Src/Wimod/serial_device.c ****     time |= 5U;
+ 571:Src/Wimod/serial_device.c ****     time <<= 4U;
+ 572:Src/Wimod/serial_device.c ****     /* Minutes */
+ 573:Src/Wimod/serial_device.c ****     time |= 30U;
+ 574:Src/Wimod/serial_device.c ****     time <<= 6U;
+ 575:Src/Wimod/serial_device.c ****     /* Second */
+ 576:Src/Wimod/serial_device.c ****     time |= 30U;
+ 577:Src/Wimod/serial_device.c **** 
+ 578:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetRTC(&time);
+ 579:Src/Wimod/serial_device.c **** }
+ 580:Src/Wimod/serial_device.c **** 
+ 581:Src/Wimod/serial_device.c **** /**
+ 582:Src/Wimod/serial_device.c ****  * @brief  Get RTC Alarm device
+ 583:Src/Wimod/serial_device.c ****  * @param  
+ 584:Src/Wimod/serial_device.c ****  * @retval none
+ 585:Src/Wimod/serial_device.c ****  */
+ 586:Src/Wimod/serial_device.c **** static void GetAlarm(void)
+ 587:Src/Wimod/serial_device.c **** {
+ 588:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get RTC alarm\n\r");
+ 589:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetRTCAlarm();
+ 590:Src/Wimod/serial_device.c **** }
+ 591:Src/Wimod/serial_device.c **** 
+ 592:Src/Wimod/serial_device.c **** /**
+ 593:Src/Wimod/serial_device.c ****  * @brief  Set RTC Alarm device
+ 594:Src/Wimod/serial_device.c ****  * @param  
+ 595:Src/Wimod/serial_device.c ****  * @retval none
+ 596:Src/Wimod/serial_device.c ****  */
+ 597:Src/Wimod/serial_device.c **** static void SetAlarm(void)
+ 598:Src/Wimod/serial_device.c **** {
+ 599:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set RTC alarm\n\r");
+ 600:Src/Wimod/serial_device.c ****     uint8_t payload[4U] = { 0U };
+ 601:Src/Wimod/serial_device.c **** 
+ 602:Src/Wimod/serial_device.c ****     /* 0x00 : single alarm */
+ 603:Src/Wimod/serial_device.c ****     /* 0x01 : daily repeated alarm */
+ 604:Src/Wimod/serial_device.c ****     payload[0U] = 1U;
+ 605:Src/Wimod/serial_device.c ****     payload[1U] = 12U;   /* Hour */
+ 606:Src/Wimod/serial_device.c ****     payload[2U] = 30U;   /* Minute */
+ 607:Src/Wimod/serial_device.c ****     payload[3U] = 30U;   /* Second */
+ 608:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetRTCAlarm(payload);
+ 609:Src/Wimod/serial_device.c **** }
+ 610:Src/Wimod/serial_device.c **** 
+ 611:Src/Wimod/serial_device.c **** /**
+ 612:Src/Wimod/serial_device.c ****  * @brief  Ping device
+ 613:Src/Wimod/serial_device.c ****  * @param  
+ 614:Src/Wimod/serial_device.c ****  * @retval none
+ 615:Src/Wimod/serial_device.c ****  */
+ 616:Src/Wimod/serial_device.c **** static void Ping(void)
+ 617:Src/Wimod/serial_device.c **** {
+ 618:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Ping request\n\r");
+ 619:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SendPing();
+ 620:Src/Wimod/serial_device.c **** }
+ARM GAS  /tmp/cctQ98eH.s 			page 26
+
+
+ 621:Src/Wimod/serial_device.c **** 
+ 622:Src/Wimod/serial_device.c **** /**
+ 623:Src/Wimod/serial_device.c ****  * @brief  Get firmware version
+ 624:Src/Wimod/serial_device.c ****  * @param  
+ 625:Src/Wimod/serial_device.c ****  * @retval none
+ 626:Src/Wimod/serial_device.c ****  */
+ 627:Src/Wimod/serial_device.c **** static void GetFirmwareVersion(void)
+ 628:Src/Wimod/serial_device.c **** {
+ 629:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get firmware version\n\r");
+ 630:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetFirmwareVersion();
+ 631:Src/Wimod/serial_device.c **** }
+ 632:Src/Wimod/serial_device.c **** 
+ 633:Src/Wimod/serial_device.c **** /**
+ 634:Src/Wimod/serial_device.c ****  * @brief  Get device information
+ 635:Src/Wimod/serial_device.c ****  * @param  
+ 636:Src/Wimod/serial_device.c ****  * @retval none
+ 637:Src/Wimod/serial_device.c ****  */
+ 638:Src/Wimod/serial_device.c **** static void GetDeviceInfo(void)
+ 639:Src/Wimod/serial_device.c **** {
+ 640:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get device information\n\r");
+ 641:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetDeviceInfo();
+ 642:Src/Wimod/serial_device.c **** }
+ 643:Src/Wimod/serial_device.c **** 
+ 644:Src/Wimod/serial_device.c **** /**
+ 645:Src/Wimod/serial_device.c ****  * @brief  Get status device
+ 646:Src/Wimod/serial_device.c ****  * @param  
+ 647:Src/Wimod/serial_device.c ****  * @retval none
+ 648:Src/Wimod/serial_device.c ****  */
+ 649:Src/Wimod/serial_device.c **** static void GetDeviceStatus(void)
+ 650:Src/Wimod/serial_device.c **** {
+ 651:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Device status\n\r");
+ 652:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetDeviceStatus();
+ 653:Src/Wimod/serial_device.c **** }
+ 654:Src/Wimod/serial_device.c **** 
+ 655:Src/Wimod/serial_device.c **** /**
+ 656:Src/Wimod/serial_device.c ****  * @brief  Reset device
+ 657:Src/Wimod/serial_device.c ****  * @param  
+ 658:Src/Wimod/serial_device.c ****  * @retval none
+ 659:Src/Wimod/serial_device.c ****  */
+ 660:Src/Wimod/serial_device.c **** static void Reset(void)
+ 661:Src/Wimod/serial_device.c **** {
+ 662:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Reset device\n\r");
+ 663:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Reset();
+ 664:Src/Wimod/serial_device.c **** }
+ 665:Src/Wimod/serial_device.c **** 
+ 666:Src/Wimod/serial_device.c **** /**
+ 667:Src/Wimod/serial_device.c ****  * @brief  Join device
+ 668:Src/Wimod/serial_device.c ****  * @param  
+ 669:Src/Wimod/serial_device.c ****  * @retval none
+ 670:Src/Wimod/serial_device.c ****  */
+ 671:Src/Wimod/serial_device.c **** static void Join(void)
+ 672:Src/Wimod/serial_device.c **** {
+ 712              		.loc 1 672 1 is_stmt 1 view -0
+ 713              		.cfi_startproc
+ 714              		@ args = 0, pretend = 0, frame = 0
+ 715              		@ frame_needed = 0, uses_anonymous_args = 0
+ 716 0000 08B5     		push	{r3, lr}
+ARM GAS  /tmp/cctQ98eH.s 			page 27
+
+
+ 717              	.LCFI25:
+ 718              		.cfi_def_cfa_offset 8
+ 719              		.cfi_offset 3, -8
+ 720              		.cfi_offset 14, -4
+ 673:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Join network request\n\r");
+ 721              		.loc 1 673 5 view .LVU102
+ 722 0002 0348     		ldr	r0, .L66
+ 723 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 724              	.LVL40:
+ 674:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_JoinNetworkRequest();
+ 725              		.loc 1 674 5 view .LVU103
+ 726 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_JoinNetworkRequest
+ 727              	.LVL41:
+ 675:Src/Wimod/serial_device.c **** }
+ 728              		.loc 1 675 1 is_stmt 0 view .LVU104
+ 729 000c 08BD     		pop	{r3, pc}
+ 730              	.L67:
+ 731 000e 00BF     		.align	2
+ 732              	.L66:
+ 733 0010 00000000 		.word	.LC8
+ 734              		.cfi_endproc
+ 735              	.LFE165:
+ 737              		.section	.rodata.SetRadioStack.str1.4,"aMS",%progbits,1
+ 738              		.align	2
+ 739              	.LC9:
+ 740 0000 53657452 		.ascii	"SetRadioStack\012\015\000"
+ 740      6164696F 
+ 740      53746163 
+ 740      6B0A0D00 
+ 741              		.section	.text.SetRadioStack,"ax",%progbits
+ 742              		.align	1
+ 743              		.syntax unified
+ 744              		.thumb
+ 745              		.thumb_func
+ 746              		.fpu fpv4-sp-d16
+ 748              	SetRadioStack:
+ 749              	.LFB149:
+ 443:Src/Wimod/serial_device.c ****     SerialDevice_Printf("SetRadioStack\n\r");
+ 750              		.loc 1 443 1 is_stmt 1 view -0
+ 751              		.cfi_startproc
+ 752              		@ args = 0, pretend = 0, frame = 8
+ 753              		@ frame_needed = 0, uses_anonymous_args = 0
+ 754 0000 00B5     		push	{lr}
+ 755              	.LCFI26:
+ 756              		.cfi_def_cfa_offset 4
+ 757              		.cfi_offset 14, -4
+ 758 0002 83B0     		sub	sp, sp, #12
+ 759              	.LCFI27:
+ 760              		.cfi_def_cfa_offset 16
+ 444:Src/Wimod/serial_device.c **** 
+ 761              		.loc 1 444 5 view .LVU106
+ 762 0004 0F48     		ldr	r0, .L70
+ 763 0006 FFF7FEFF 		bl	SerialDevice_Printf
+ 764              	.LVL42:
+ 446:Src/Wimod/serial_device.c **** 
+ 765              		.loc 1 446 5 view .LVU107
+ 448:Src/Wimod/serial_device.c ****     data[1U] = 0x10U; /* Default TX Power Level (EIRP) */
+ARM GAS  /tmp/cctQ98eH.s 			page 28
+
+
+ 766              		.loc 1 448 5 view .LVU108
+ 448:Src/Wimod/serial_device.c ****     data[1U] = 0x10U; /* Default TX Power Level (EIRP) */
+ 767              		.loc 1 448 14 is_stmt 0 view .LVU109
+ 768 000a 0523     		movs	r3, #5
+ 769 000c 8DF80030 		strb	r3, [sp]
+ 449:Src/Wimod/serial_device.c ****     /* Bit 0: 0 = Adaptive Data Rate disabled 1 = Adaptive Data Rate enabled */
+ 770              		.loc 1 449 5 is_stmt 1 view .LVU110
+ 449:Src/Wimod/serial_device.c ****     /* Bit 0: 0 = Adaptive Data Rate disabled 1 = Adaptive Data Rate enabled */
+ 771              		.loc 1 449 14 is_stmt 0 view .LVU111
+ 772 0010 1023     		movs	r3, #16
+ 773 0012 8DF80130 		strb	r3, [sp, #1]
+ 455:Src/Wimod/serial_device.c ****     data[3U] = 0x00U; /* Power Saving Mode 0x00 : off 0x01 : automatic */
+ 774              		.loc 1 455 5 is_stmt 1 view .LVU112
+ 455:Src/Wimod/serial_device.c ****     data[3U] = 0x00U; /* Power Saving Mode 0x00 : off 0x01 : automatic */
+ 775              		.loc 1 455 14 is_stmt 0 view .LVU113
+ 776 0016 C723     		movs	r3, #199
+ 777 0018 8DF80230 		strb	r3, [sp, #2]
+ 456:Src/Wimod/serial_device.c ****     data[4U] = 0x07U; /* Number of Retransmissions */
+ 778              		.loc 1 456 5 is_stmt 1 view .LVU114
+ 456:Src/Wimod/serial_device.c ****     data[4U] = 0x07U; /* Number of Retransmissions */
+ 779              		.loc 1 456 14 is_stmt 0 view .LVU115
+ 780 001c 0023     		movs	r3, #0
+ 781 001e 8DF80330 		strb	r3, [sp, #3]
+ 457:Src/Wimod/serial_device.c ****     data[5U] = 0x12U; /* Band Index AS923TH */
+ 782              		.loc 1 457 5 is_stmt 1 view .LVU116
+ 457:Src/Wimod/serial_device.c ****     data[5U] = 0x12U; /* Band Index AS923TH */
+ 783              		.loc 1 457 14 is_stmt 0 view .LVU117
+ 784 0022 0722     		movs	r2, #7
+ 785 0024 8DF80420 		strb	r2, [sp, #4]
+ 458:Src/Wimod/serial_device.c ****     data[6U] = 0x0FU; /* Header MAC Cmd Capacity */
+ 786              		.loc 1 458 5 is_stmt 1 view .LVU118
+ 458:Src/Wimod/serial_device.c ****     data[6U] = 0x0FU; /* Header MAC Cmd Capacity */
+ 787              		.loc 1 458 14 is_stmt 0 view .LVU119
+ 788 0028 1223     		movs	r3, #18
+ 789 002a 8DF80530 		strb	r3, [sp, #5]
+ 459:Src/Wimod/serial_device.c **** 
+ 790              		.loc 1 459 5 is_stmt 1 view .LVU120
+ 459:Src/Wimod/serial_device.c **** 
+ 791              		.loc 1 459 14 is_stmt 0 view .LVU121
+ 792 002e 0F23     		movs	r3, #15
+ 793 0030 8DF80630 		strb	r3, [sp, #6]
+ 462:Src/Wimod/serial_device.c **** }
+ 794              		.loc 1 462 5 is_stmt 1 view .LVU122
+ 795 0034 6946     		mov	r1, sp
+ 796 0036 1920     		movs	r0, #25
+ 797 0038 FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 798              	.LVL43:
+ 463:Src/Wimod/serial_device.c **** 
+ 799              		.loc 1 463 1 is_stmt 0 view .LVU123
+ 800 003c 03B0     		add	sp, sp, #12
+ 801              	.LCFI28:
+ 802              		.cfi_def_cfa_offset 4
+ 803              		@ sp needed
+ 804 003e 5DF804FB 		ldr	pc, [sp], #4
+ 805              	.L71:
+ 806 0042 00BF     		.align	2
+ 807              	.L70:
+ARM GAS  /tmp/cctQ98eH.s 			page 29
+
+
+ 808 0044 00000000 		.word	.LC9
+ 809              		.cfi_endproc
+ 810              	.LFE149:
+ 812              		.section	.rodata.GetRadioStack.str1.4,"aMS",%progbits,1
+ 813              		.align	2
+ 814              	.LC10:
+ 815 0000 47657452 		.ascii	"GetRadioStack\012\015\000"
+ 815      6164696F 
+ 815      53746163 
+ 815      6B0A0D00 
+ 816              		.section	.text.GetRadioStack,"ax",%progbits
+ 817              		.align	1
+ 818              		.syntax unified
+ 819              		.thumb
+ 820              		.thumb_func
+ 821              		.fpu fpv4-sp-d16
+ 823              	GetRadioStack:
+ 824              	.LFB148:
+ 432:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetRadioStack\n\r");
+ 825              		.loc 1 432 1 is_stmt 1 view -0
+ 826              		.cfi_startproc
+ 827              		@ args = 0, pretend = 0, frame = 0
+ 828              		@ frame_needed = 0, uses_anonymous_args = 0
+ 829 0000 08B5     		push	{r3, lr}
+ 830              	.LCFI29:
+ 831              		.cfi_def_cfa_offset 8
+ 832              		.cfi_offset 3, -8
+ 833              		.cfi_offset 14, -4
+ 433:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_RSTACK_CONFIG_REQ, NULL, 0U);
+ 834              		.loc 1 433 5 view .LVU125
+ 835 0002 0448     		ldr	r0, .L74
+ 836 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 837              	.LVL44:
+ 434:Src/Wimod/serial_device.c **** }
+ 838              		.loc 1 434 5 view .LVU126
+ 839 0008 0022     		movs	r2, #0
+ 840 000a 1146     		mov	r1, r2
+ 841 000c 1B20     		movs	r0, #27
+ 842 000e FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 843              	.LVL45:
+ 435:Src/Wimod/serial_device.c **** 
+ 844              		.loc 1 435 1 is_stmt 0 view .LVU127
+ 845 0012 08BD     		pop	{r3, pc}
+ 846              	.L75:
+ 847              		.align	2
+ 848              	.L74:
+ 849 0014 00000000 		.word	.LC10
+ 850              		.cfi_endproc
+ 851              	.LFE148:
+ 853              		.section	.rodata.GetSupportBand.str1.4,"aMS",%progbits,1
+ 854              		.align	2
+ 855              	.LC11:
+ 856 0000 47657453 		.ascii	"GetSupportBand\012\015\000"
+ 856      7570706F 
+ 856      72744261 
+ 856      6E640A0D 
+ 856      00
+ARM GAS  /tmp/cctQ98eH.s 			page 30
+
+
+ 857              		.section	.text.GetSupportBand,"ax",%progbits
+ 858              		.align	1
+ 859              		.syntax unified
+ 860              		.thumb
+ 861              		.thumb_func
+ 862              		.fpu fpv4-sp-d16
+ 864              	GetSupportBand:
+ 865              	.LFB147:
+ 421:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetSupportBand\n\r");
+ 866              		.loc 1 421 1 is_stmt 1 view -0
+ 867              		.cfi_startproc
+ 868              		@ args = 0, pretend = 0, frame = 0
+ 869              		@ frame_needed = 0, uses_anonymous_args = 0
+ 870 0000 08B5     		push	{r3, lr}
+ 871              	.LCFI30:
+ 872              		.cfi_def_cfa_offset 8
+ 873              		.cfi_offset 3, -8
+ 874              		.cfi_offset 14, -4
+ 422:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_SUPPORTED_BANDS_REQ, NULL, 0U);
+ 875              		.loc 1 422 5 view .LVU129
+ 876 0002 0448     		ldr	r0, .L78
+ 877 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 878              	.LVL46:
+ 423:Src/Wimod/serial_device.c **** }
+ 879              		.loc 1 423 5 view .LVU130
+ 880 0008 0022     		movs	r2, #0
+ 881 000a 1146     		mov	r1, r2
+ 882 000c 3520     		movs	r0, #53
+ 883 000e FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 884              	.LVL47:
+ 424:Src/Wimod/serial_device.c **** 
+ 885              		.loc 1 424 1 is_stmt 0 view .LVU131
+ 886 0012 08BD     		pop	{r3, pc}
+ 887              	.L79:
+ 888              		.align	2
+ 889              	.L78:
+ 890 0014 00000000 		.word	.LC11
+ 891              		.cfi_endproc
+ 892              	.LFE147:
+ 894              		.section	.rodata.GetOPMODE.str1.4,"aMS",%progbits,1
+ 895              		.align	2
+ 896              	.LC12:
+ 897 0000 47657420 		.ascii	"Get OPMODE\012\015\000"
+ 897      4F504D4F 
+ 897      44450A0D 
+ 897      00
+ 898              		.section	.text.GetOPMODE,"ax",%progbits
+ 899              		.align	1
+ 900              		.syntax unified
+ 901              		.thumb
+ 902              		.thumb_func
+ 903              		.fpu fpv4-sp-d16
+ 905              	GetOPMODE:
+ 906              	.LFB154:
+ 523:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get OPMODE\n\r");
+ 907              		.loc 1 523 1 is_stmt 1 view -0
+ 908              		.cfi_startproc
+ARM GAS  /tmp/cctQ98eH.s 			page 31
+
+
+ 909              		@ args = 0, pretend = 0, frame = 0
+ 910              		@ frame_needed = 0, uses_anonymous_args = 0
+ 911 0000 08B5     		push	{r3, lr}
+ 912              	.LCFI31:
+ 913              		.cfi_def_cfa_offset 8
+ 914              		.cfi_offset 3, -8
+ 915              		.cfi_offset 14, -4
+ 524:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetOPMODE();
+ 916              		.loc 1 524 5 view .LVU133
+ 917 0002 0348     		ldr	r0, .L82
+ 918 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 919              	.LVL48:
+ 525:Src/Wimod/serial_device.c **** }
+ 920              		.loc 1 525 5 view .LVU134
+ 921 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetOPMODE
+ 922              	.LVL49:
+ 526:Src/Wimod/serial_device.c **** 
+ 923              		.loc 1 526 1 is_stmt 0 view .LVU135
+ 924 000c 08BD     		pop	{r3, pc}
+ 925              	.L83:
+ 926 000e 00BF     		.align	2
+ 927              	.L82:
+ 928 0010 00000000 		.word	.LC12
+ 929              		.cfi_endproc
+ 930              	.LFE154:
+ 932              		.section	.rodata.SetOPMODE.str1.4,"aMS",%progbits,1
+ 933              		.align	2
+ 934              	.LC13:
+ 935 0000 53657420 		.ascii	"Set OPMODE\012\015\000"
+ 935      4F504D4F 
+ 935      44450A0D 
+ 935      00
+ 936              		.section	.text.SetOPMODE,"ax",%progbits
+ 937              		.align	1
+ 938              		.syntax unified
+ 939              		.thumb
+ 940              		.thumb_func
+ 941              		.fpu fpv4-sp-d16
+ 943              	SetOPMODE:
+ 944              	.LFB152:
+ 501:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set OPMODE\n\r");
+ 945              		.loc 1 501 1 is_stmt 1 view -0
+ 946              		.cfi_startproc
+ 947              		@ args = 0, pretend = 0, frame = 0
+ 948              		@ frame_needed = 0, uses_anonymous_args = 0
+ 949 0000 08B5     		push	{r3, lr}
+ 950              	.LCFI32:
+ 951              		.cfi_def_cfa_offset 8
+ 952              		.cfi_offset 3, -8
+ 953              		.cfi_offset 14, -4
+ 502:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetOPMODE(3U);
+ 954              		.loc 1 502 5 view .LVU137
+ 955 0002 0348     		ldr	r0, .L86
+ 956 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 957              	.LVL50:
+ 503:Src/Wimod/serial_device.c **** }
+ 958              		.loc 1 503 5 view .LVU138
+ARM GAS  /tmp/cctQ98eH.s 			page 32
+
+
+ 959 0008 0320     		movs	r0, #3
+ 960 000a FFF7FEFF 		bl	WiMOD_LoRaWAN_SetOPMODE
+ 961              	.LVL51:
+ 504:Src/Wimod/serial_device.c **** 
+ 962              		.loc 1 504 1 is_stmt 0 view .LVU139
+ 963 000e 08BD     		pop	{r3, pc}
+ 964              	.L87:
+ 965              		.align	2
+ 966              	.L86:
+ 967 0010 00000000 		.word	.LC13
+ 968              		.cfi_endproc
+ 969              	.LFE152:
+ 971              		.section	.rodata.ClearOPMODE.str1.4,"aMS",%progbits,1
+ 972              		.align	2
+ 973              	.LC14:
+ 974 0000 436C6561 		.ascii	"Clear OPMODE\012\015\000"
+ 974      72204F50 
+ 974      4D4F4445 
+ 974      0A0D00
+ 975              		.section	.text.ClearOPMODE,"ax",%progbits
+ 976              		.align	1
+ 977              		.syntax unified
+ 978              		.thumb
+ 979              		.thumb_func
+ 980              		.fpu fpv4-sp-d16
+ 982              	ClearOPMODE:
+ 983              	.LFB153:
+ 512:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Clear OPMODE\n\r");
+ 984              		.loc 1 512 1 is_stmt 1 view -0
+ 985              		.cfi_startproc
+ 986              		@ args = 0, pretend = 0, frame = 0
+ 987              		@ frame_needed = 0, uses_anonymous_args = 0
+ 988 0000 08B5     		push	{r3, lr}
+ 989              	.LCFI33:
+ 990              		.cfi_def_cfa_offset 8
+ 991              		.cfi_offset 3, -8
+ 992              		.cfi_offset 14, -4
+ 513:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetOPMODE(0U);
+ 993              		.loc 1 513 5 view .LVU141
+ 994 0002 0348     		ldr	r0, .L90
+ 995 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 996              	.LVL52:
+ 514:Src/Wimod/serial_device.c **** }
+ 997              		.loc 1 514 5 view .LVU142
+ 998 0008 0020     		movs	r0, #0
+ 999 000a FFF7FEFF 		bl	WiMOD_LoRaWAN_SetOPMODE
+ 1000              	.LVL53:
+ 515:Src/Wimod/serial_device.c **** 
+ 1001              		.loc 1 515 1 is_stmt 0 view .LVU143
+ 1002 000e 08BD     		pop	{r3, pc}
+ 1003              	.L91:
+ 1004              		.align	2
+ 1005              	.L90:
+ 1006 0010 00000000 		.word	.LC14
+ 1007              		.cfi_endproc
+ 1008              	.LFE153:
+ 1010              		.section	.rodata.GetDevEUI.str1.4,"aMS",%progbits,1
+ARM GAS  /tmp/cctQ98eH.s 			page 33
+
+
+ 1011              		.align	2
+ 1012              	.LC15:
+ 1013 0000 47657444 		.ascii	"GetDevEUI\012\015\000"
+ 1013      65764555 
+ 1013      490A0D00 
+ 1014              		.section	.text.GetDevEUI,"ax",%progbits
+ 1015              		.align	1
+ 1016              		.syntax unified
+ 1017              		.thumb
+ 1018              		.thumb_func
+ 1019              		.fpu fpv4-sp-d16
+ 1021              	GetDevEUI:
+ 1022              	.LFB150:
+ 471:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetDevEUI\n\r");
+ 1023              		.loc 1 471 1 is_stmt 1 view -0
+ 1024              		.cfi_startproc
+ 1025              		@ args = 0, pretend = 0, frame = 0
+ 1026              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1027 0000 08B5     		push	{r3, lr}
+ 1028              	.LCFI34:
+ 1029              		.cfi_def_cfa_offset 8
+ 1030              		.cfi_offset 3, -8
+ 1031              		.cfi_offset 14, -4
+ 472:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Msg_Req(LORAWAN_MSG_GET_DEVICE_EUI_REQ, NULL, 0U);
+ 1032              		.loc 1 472 5 view .LVU145
+ 1033 0002 0448     		ldr	r0, .L94
+ 1034 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1035              	.LVL54:
+ 473:Src/Wimod/serial_device.c **** }
+ 1036              		.loc 1 473 5 view .LVU146
+ 1037 0008 0022     		movs	r2, #0
+ 1038 000a 1146     		mov	r1, r2
+ 1039 000c 2720     		movs	r0, #39
+ 1040 000e FFF7FEFF 		bl	WiMOD_LoRaWAN_Msg_Req
+ 1041              	.LVL55:
+ 474:Src/Wimod/serial_device.c **** 
+ 1042              		.loc 1 474 1 is_stmt 0 view .LVU147
+ 1043 0012 08BD     		pop	{r3, pc}
+ 1044              	.L95:
+ 1045              		.align	2
+ 1046              	.L94:
+ 1047 0014 00000000 		.word	.LC15
+ 1048              		.cfi_endproc
+ 1049              	.LFE150:
+ 1051              		.section	.rodata.ClearRTCAlarm.str1.4,"aMS",%progbits,1
+ 1052              		.align	2
+ 1053              	.LC16:
+ 1054 0000 436C6561 		.ascii	"Clear RTC alarm\012\015\000"
+ 1054      72205254 
+ 1054      4320616C 
+ 1054      61726D0A 
+ 1054      0D00
+ 1055              		.section	.text.ClearRTCAlarm,"ax",%progbits
+ 1056              		.align	1
+ 1057              		.syntax unified
+ 1058              		.thumb
+ 1059              		.thumb_func
+ARM GAS  /tmp/cctQ98eH.s 			page 34
+
+
+ 1060              		.fpu fpv4-sp-d16
+ 1062              	ClearRTCAlarm:
+ 1063              	.LFB155:
+ 534:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Clear RTC alarm\n\r");
+ 1064              		.loc 1 534 1 is_stmt 1 view -0
+ 1065              		.cfi_startproc
+ 1066              		@ args = 0, pretend = 0, frame = 0
+ 1067              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1068 0000 08B5     		push	{r3, lr}
+ 1069              	.LCFI35:
+ 1070              		.cfi_def_cfa_offset 8
+ 1071              		.cfi_offset 3, -8
+ 1072              		.cfi_offset 14, -4
+ 535:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_ClearRTCAlarm();
+ 1073              		.loc 1 535 5 view .LVU149
+ 1074 0002 0348     		ldr	r0, .L98
+ 1075 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1076              	.LVL56:
+ 536:Src/Wimod/serial_device.c **** }
+ 1077              		.loc 1 536 5 view .LVU150
+ 1078 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_ClearRTCAlarm
+ 1079              	.LVL57:
+ 537:Src/Wimod/serial_device.c **** 
+ 1080              		.loc 1 537 1 is_stmt 0 view .LVU151
+ 1081 000c 08BD     		pop	{r3, pc}
+ 1082              	.L99:
+ 1083 000e 00BF     		.align	2
+ 1084              	.L98:
+ 1085 0010 00000000 		.word	.LC16
+ 1086              		.cfi_endproc
+ 1087              	.LFE155:
+ 1089              		.section	.rodata.GetRTC.str1.4,"aMS",%progbits,1
+ 1090              		.align	2
+ 1091              	.LC17:
+ 1092 0000 47657420 		.ascii	"Get RTC\012\015\000"
+ 1092      5254430A 
+ 1092      0D00
+ 1093              		.section	.text.GetRTC,"ax",%progbits
+ 1094              		.align	1
+ 1095              		.syntax unified
+ 1096              		.thumb
+ 1097              		.thumb_func
+ 1098              		.fpu fpv4-sp-d16
+ 1100              	GetRTC:
+ 1101              	.LFB156:
+ 545:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get RTC\n\r");
+ 1102              		.loc 1 545 1 is_stmt 1 view -0
+ 1103              		.cfi_startproc
+ 1104              		@ args = 0, pretend = 0, frame = 0
+ 1105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1106 0000 08B5     		push	{r3, lr}
+ 1107              	.LCFI36:
+ 1108              		.cfi_def_cfa_offset 8
+ 1109              		.cfi_offset 3, -8
+ 1110              		.cfi_offset 14, -4
+ 546:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetRTC();
+ 1111              		.loc 1 546 5 view .LVU153
+ARM GAS  /tmp/cctQ98eH.s 			page 35
+
+
+ 1112 0002 0348     		ldr	r0, .L102
+ 1113 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1114              	.LVL58:
+ 547:Src/Wimod/serial_device.c **** }
+ 1115              		.loc 1 547 5 view .LVU154
+ 1116 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetRTC
+ 1117              	.LVL59:
+ 548:Src/Wimod/serial_device.c **** 
+ 1118              		.loc 1 548 1 is_stmt 0 view .LVU155
+ 1119 000c 08BD     		pop	{r3, pc}
+ 1120              	.L103:
+ 1121 000e 00BF     		.align	2
+ 1122              	.L102:
+ 1123 0010 00000000 		.word	.LC17
+ 1124              		.cfi_endproc
+ 1125              	.LFE156:
+ 1127              		.section	.rodata.SetRTC.str1.4,"aMS",%progbits,1
+ 1128              		.align	2
+ 1129              	.LC18:
+ 1130 0000 53657420 		.ascii	"Set RTC\012\015\000"
+ 1130      5254430A 
+ 1130      0D00
+ 1131              		.section	.text.SetRTC,"ax",%progbits
+ 1132              		.align	1
+ 1133              		.syntax unified
+ 1134              		.thumb
+ 1135              		.thumb_func
+ 1136              		.fpu fpv4-sp-d16
+ 1138              	SetRTC:
+ 1139              	.LFB157:
+ 556:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set RTC\n\r");
+ 1140              		.loc 1 556 1 is_stmt 1 view -0
+ 1141              		.cfi_startproc
+ 1142              		@ args = 0, pretend = 0, frame = 8
+ 1143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1144 0000 00B5     		push	{lr}
+ 1145              	.LCFI37:
+ 1146              		.cfi_def_cfa_offset 4
+ 1147              		.cfi_offset 14, -4
+ 1148 0002 83B0     		sub	sp, sp, #12
+ 1149              	.LCFI38:
+ 1150              		.cfi_def_cfa_offset 16
+ 557:Src/Wimod/serial_device.c ****     uint32_t time = 0U;
+ 1151              		.loc 1 557 5 view .LVU157
+ 1152 0004 0548     		ldr	r0, .L106
+ 1153 0006 FFF7FEFF 		bl	SerialDevice_Printf
+ 1154              	.LVL60:
+ 558:Src/Wimod/serial_device.c ****     /* 2018-5-20 [12:30:30] */
+ 1155              		.loc 1 558 5 view .LVU158
+ 561:Src/Wimod/serial_device.c ****     time <<= 6U;
+ 1156              		.loc 1 561 5 view .LVU159
+ 562:Src/Wimod/serial_device.c ****     /* Days */
+ 1157              		.loc 1 562 5 view .LVU160
+ 564:Src/Wimod/serial_device.c ****     time <<= 5U;
+ 1158              		.loc 1 564 5 view .LVU161
+ 565:Src/Wimod/serial_device.c ****     /* Hours */
+ 1159              		.loc 1 565 5 view .LVU162
+ARM GAS  /tmp/cctQ98eH.s 			page 36
+
+
+ 567:Src/Wimod/serial_device.c ****     time <<= 5U;
+ 1160              		.loc 1 567 5 view .LVU163
+ 568:Src/Wimod/serial_device.c ****     /* Month */
+ 1161              		.loc 1 568 5 view .LVU164
+ 570:Src/Wimod/serial_device.c ****     time <<= 4U;
+ 1162              		.loc 1 570 5 view .LVU165
+ 571:Src/Wimod/serial_device.c ****     /* Minutes */
+ 1163              		.loc 1 571 5 view .LVU166
+ 573:Src/Wimod/serial_device.c ****     time <<= 6U;
+ 1164              		.loc 1 573 5 view .LVU167
+ 574:Src/Wimod/serial_device.c ****     /* Second */
+ 1165              		.loc 1 574 5 view .LVU168
+ 576:Src/Wimod/serial_device.c **** 
+ 1166              		.loc 1 576 5 view .LVU169
+ 576:Src/Wimod/serial_device.c **** 
+ 1167              		.loc 1 576 10 is_stmt 0 view .LVU170
+ 1168 000a 054B     		ldr	r3, .L106+4
+ 1169 000c 0193     		str	r3, [sp, #4]
+ 578:Src/Wimod/serial_device.c **** }
+ 1170              		.loc 1 578 5 is_stmt 1 view .LVU171
+ 1171 000e 01A8     		add	r0, sp, #4
+ 1172 0010 FFF7FEFF 		bl	WiMOD_LoRaWAN_SetRTC
+ 1173              	.LVL61:
+ 579:Src/Wimod/serial_device.c **** 
+ 1174              		.loc 1 579 1 is_stmt 0 view .LVU172
+ 1175 0014 03B0     		add	sp, sp, #12
+ 1176              	.LCFI39:
+ 1177              		.cfi_def_cfa_offset 4
+ 1178              		@ sp needed
+ 1179 0016 5DF804FB 		ldr	pc, [sp], #4
+ 1180              	.L107:
+ 1181 001a 00BF     		.align	2
+ 1182              	.L106:
+ 1183 001c 00000000 		.word	.LC18
+ 1184 0020 9E174649 		.word	1229330334
+ 1185              		.cfi_endproc
+ 1186              	.LFE157:
+ 1188              		.section	.rodata.GetAlarm.str1.4,"aMS",%progbits,1
+ 1189              		.align	2
+ 1190              	.LC19:
+ 1191 0000 47657420 		.ascii	"Get RTC alarm\012\015\000"
+ 1191      52544320 
+ 1191      616C6172 
+ 1191      6D0A0D00 
+ 1192              		.section	.text.GetAlarm,"ax",%progbits
+ 1193              		.align	1
+ 1194              		.syntax unified
+ 1195              		.thumb
+ 1196              		.thumb_func
+ 1197              		.fpu fpv4-sp-d16
+ 1199              	GetAlarm:
+ 1200              	.LFB158:
+ 587:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get RTC alarm\n\r");
+ 1201              		.loc 1 587 1 is_stmt 1 view -0
+ 1202              		.cfi_startproc
+ 1203              		@ args = 0, pretend = 0, frame = 0
+ 1204              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/cctQ98eH.s 			page 37
+
+
+ 1205 0000 08B5     		push	{r3, lr}
+ 1206              	.LCFI40:
+ 1207              		.cfi_def_cfa_offset 8
+ 1208              		.cfi_offset 3, -8
+ 1209              		.cfi_offset 14, -4
+ 588:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetRTCAlarm();
+ 1210              		.loc 1 588 5 view .LVU174
+ 1211 0002 0348     		ldr	r0, .L110
+ 1212 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1213              	.LVL62:
+ 589:Src/Wimod/serial_device.c **** }
+ 1214              		.loc 1 589 5 view .LVU175
+ 1215 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetRTCAlarm
+ 1216              	.LVL63:
+ 590:Src/Wimod/serial_device.c **** 
+ 1217              		.loc 1 590 1 is_stmt 0 view .LVU176
+ 1218 000c 08BD     		pop	{r3, pc}
+ 1219              	.L111:
+ 1220 000e 00BF     		.align	2
+ 1221              	.L110:
+ 1222 0010 00000000 		.word	.LC19
+ 1223              		.cfi_endproc
+ 1224              	.LFE158:
+ 1226              		.section	.rodata.SetAlarm.str1.4,"aMS",%progbits,1
+ 1227              		.align	2
+ 1228              	.LC20:
+ 1229 0000 53657420 		.ascii	"Set RTC alarm\012\015\000"
+ 1229      52544320 
+ 1229      616C6172 
+ 1229      6D0A0D00 
+ 1230              		.section	.text.SetAlarm,"ax",%progbits
+ 1231              		.align	1
+ 1232              		.syntax unified
+ 1233              		.thumb
+ 1234              		.thumb_func
+ 1235              		.fpu fpv4-sp-d16
+ 1237              	SetAlarm:
+ 1238              	.LFB159:
+ 598:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Set RTC alarm\n\r");
+ 1239              		.loc 1 598 1 is_stmt 1 view -0
+ 1240              		.cfi_startproc
+ 1241              		@ args = 0, pretend = 0, frame = 8
+ 1242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1243 0000 00B5     		push	{lr}
+ 1244              	.LCFI41:
+ 1245              		.cfi_def_cfa_offset 4
+ 1246              		.cfi_offset 14, -4
+ 1247 0002 83B0     		sub	sp, sp, #12
+ 1248              	.LCFI42:
+ 1249              		.cfi_def_cfa_offset 16
+ 599:Src/Wimod/serial_device.c ****     uint8_t payload[4U] = { 0U };
+ 1250              		.loc 1 599 5 view .LVU178
+ 1251 0004 0948     		ldr	r0, .L114
+ 1252 0006 FFF7FEFF 		bl	SerialDevice_Printf
+ 1253              	.LVL64:
+ 600:Src/Wimod/serial_device.c **** 
+ 1254              		.loc 1 600 5 view .LVU179
+ARM GAS  /tmp/cctQ98eH.s 			page 38
+
+
+ 604:Src/Wimod/serial_device.c ****     payload[1U] = 12U;   /* Hour */
+ 1255              		.loc 1 604 5 view .LVU180
+ 604:Src/Wimod/serial_device.c ****     payload[1U] = 12U;   /* Hour */
+ 1256              		.loc 1 604 17 is_stmt 0 view .LVU181
+ 1257 000a 0123     		movs	r3, #1
+ 1258 000c 8DF80430 		strb	r3, [sp, #4]
+ 605:Src/Wimod/serial_device.c ****     payload[2U] = 30U;   /* Minute */
+ 1259              		.loc 1 605 5 is_stmt 1 view .LVU182
+ 605:Src/Wimod/serial_device.c ****     payload[2U] = 30U;   /* Minute */
+ 1260              		.loc 1 605 17 is_stmt 0 view .LVU183
+ 1261 0010 0C23     		movs	r3, #12
+ 1262 0012 8DF80530 		strb	r3, [sp, #5]
+ 606:Src/Wimod/serial_device.c ****     payload[3U] = 30U;   /* Second */
+ 1263              		.loc 1 606 5 is_stmt 1 view .LVU184
+ 606:Src/Wimod/serial_device.c ****     payload[3U] = 30U;   /* Second */
+ 1264              		.loc 1 606 17 is_stmt 0 view .LVU185
+ 1265 0016 1E23     		movs	r3, #30
+ 1266 0018 8DF80630 		strb	r3, [sp, #6]
+ 607:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetRTCAlarm(payload);
+ 1267              		.loc 1 607 5 is_stmt 1 view .LVU186
+ 607:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetRTCAlarm(payload);
+ 1268              		.loc 1 607 17 is_stmt 0 view .LVU187
+ 1269 001c 8DF80730 		strb	r3, [sp, #7]
+ 608:Src/Wimod/serial_device.c **** }
+ 1270              		.loc 1 608 5 is_stmt 1 view .LVU188
+ 1271 0020 01A8     		add	r0, sp, #4
+ 1272 0022 FFF7FEFF 		bl	WiMOD_LoRaWAN_SetRTCAlarm
+ 1273              	.LVL65:
+ 609:Src/Wimod/serial_device.c **** 
+ 1274              		.loc 1 609 1 is_stmt 0 view .LVU189
+ 1275 0026 03B0     		add	sp, sp, #12
+ 1276              	.LCFI43:
+ 1277              		.cfi_def_cfa_offset 4
+ 1278              		@ sp needed
+ 1279 0028 5DF804FB 		ldr	pc, [sp], #4
+ 1280              	.L115:
+ 1281              		.align	2
+ 1282              	.L114:
+ 1283 002c 00000000 		.word	.LC20
+ 1284              		.cfi_endproc
+ 1285              	.LFE159:
+ 1287              		.section	.rodata.GetDeviceStatus.str1.4,"aMS",%progbits,1
+ 1288              		.align	2
+ 1289              	.LC21:
+ 1290 0000 44657669 		.ascii	"Device status\012\015\000"
+ 1290      63652073 
+ 1290      74617475 
+ 1290      730A0D00 
+ 1291              		.section	.text.GetDeviceStatus,"ax",%progbits
+ 1292              		.align	1
+ 1293              		.syntax unified
+ 1294              		.thumb
+ 1295              		.thumb_func
+ 1296              		.fpu fpv4-sp-d16
+ 1298              	GetDeviceStatus:
+ 1299              	.LFB163:
+ 650:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Device status\n\r");
+ARM GAS  /tmp/cctQ98eH.s 			page 39
+
+
+ 1300              		.loc 1 650 1 is_stmt 1 view -0
+ 1301              		.cfi_startproc
+ 1302              		@ args = 0, pretend = 0, frame = 0
+ 1303              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1304 0000 08B5     		push	{r3, lr}
+ 1305              	.LCFI44:
+ 1306              		.cfi_def_cfa_offset 8
+ 1307              		.cfi_offset 3, -8
+ 1308              		.cfi_offset 14, -4
+ 651:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetDeviceStatus();
+ 1309              		.loc 1 651 5 view .LVU191
+ 1310 0002 0348     		ldr	r0, .L118
+ 1311 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1312              	.LVL66:
+ 652:Src/Wimod/serial_device.c **** }
+ 1313              		.loc 1 652 5 view .LVU192
+ 1314 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetDeviceStatus
+ 1315              	.LVL67:
+ 653:Src/Wimod/serial_device.c **** 
+ 1316              		.loc 1 653 1 is_stmt 0 view .LVU193
+ 1317 000c 08BD     		pop	{r3, pc}
+ 1318              	.L119:
+ 1319 000e 00BF     		.align	2
+ 1320              	.L118:
+ 1321 0010 00000000 		.word	.LC21
+ 1322              		.cfi_endproc
+ 1323              	.LFE163:
+ 1325              		.section	.rodata.Reset.str1.4,"aMS",%progbits,1
+ 1326              		.align	2
+ 1327              	.LC22:
+ 1328 0000 52657365 		.ascii	"Reset device\012\015\000"
+ 1328      74206465 
+ 1328      76696365 
+ 1328      0A0D00
+ 1329              		.section	.text.Reset,"ax",%progbits
+ 1330              		.align	1
+ 1331              		.syntax unified
+ 1332              		.thumb
+ 1333              		.thumb_func
+ 1334              		.fpu fpv4-sp-d16
+ 1336              	Reset:
+ 1337              	.LFB164:
+ 661:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Reset device\n\r");
+ 1338              		.loc 1 661 1 is_stmt 1 view -0
+ 1339              		.cfi_startproc
+ 1340              		@ args = 0, pretend = 0, frame = 0
+ 1341              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1342 0000 08B5     		push	{r3, lr}
+ 1343              	.LCFI45:
+ 1344              		.cfi_def_cfa_offset 8
+ 1345              		.cfi_offset 3, -8
+ 1346              		.cfi_offset 14, -4
+ 662:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_Reset();
+ 1347              		.loc 1 662 5 view .LVU195
+ 1348 0002 0348     		ldr	r0, .L122
+ 1349 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1350              	.LVL68:
+ARM GAS  /tmp/cctQ98eH.s 			page 40
+
+
+ 663:Src/Wimod/serial_device.c **** }
+ 1351              		.loc 1 663 5 view .LVU196
+ 1352 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_Reset
+ 1353              	.LVL69:
+ 664:Src/Wimod/serial_device.c **** 
+ 1354              		.loc 1 664 1 is_stmt 0 view .LVU197
+ 1355 000c 08BD     		pop	{r3, pc}
+ 1356              	.L123:
+ 1357 000e 00BF     		.align	2
+ 1358              	.L122:
+ 1359 0010 00000000 		.word	.LC22
+ 1360              		.cfi_endproc
+ 1361              	.LFE164:
+ 1363              		.section	.rodata.GetFirmwareVersion.str1.4,"aMS",%progbits,1
+ 1364              		.align	2
+ 1365              	.LC23:
+ 1366 0000 47657420 		.ascii	"Get firmware version\012\015\000"
+ 1366      6669726D 
+ 1366      77617265 
+ 1366      20766572 
+ 1366      73696F6E 
+ 1367              		.section	.text.GetFirmwareVersion,"ax",%progbits
+ 1368              		.align	1
+ 1369              		.syntax unified
+ 1370              		.thumb
+ 1371              		.thumb_func
+ 1372              		.fpu fpv4-sp-d16
+ 1374              	GetFirmwareVersion:
+ 1375              	.LFB161:
+ 628:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get firmware version\n\r");
+ 1376              		.loc 1 628 1 is_stmt 1 view -0
+ 1377              		.cfi_startproc
+ 1378              		@ args = 0, pretend = 0, frame = 0
+ 1379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1380 0000 08B5     		push	{r3, lr}
+ 1381              	.LCFI46:
+ 1382              		.cfi_def_cfa_offset 8
+ 1383              		.cfi_offset 3, -8
+ 1384              		.cfi_offset 14, -4
+ 629:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetFirmwareVersion();
+ 1385              		.loc 1 629 5 view .LVU199
+ 1386 0002 0348     		ldr	r0, .L126
+ 1387 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1388              	.LVL70:
+ 630:Src/Wimod/serial_device.c **** }
+ 1389              		.loc 1 630 5 view .LVU200
+ 1390 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetFirmwareVersion
+ 1391              	.LVL71:
+ 631:Src/Wimod/serial_device.c **** 
+ 1392              		.loc 1 631 1 is_stmt 0 view .LVU201
+ 1393 000c 08BD     		pop	{r3, pc}
+ 1394              	.L127:
+ 1395 000e 00BF     		.align	2
+ 1396              	.L126:
+ 1397 0010 00000000 		.word	.LC23
+ 1398              		.cfi_endproc
+ 1399              	.LFE161:
+ARM GAS  /tmp/cctQ98eH.s 			page 41
+
+
+ 1401              		.section	.rodata.GetDeviceInfo.str1.4,"aMS",%progbits,1
+ 1402              		.align	2
+ 1403              	.LC24:
+ 1404 0000 47657420 		.ascii	"Get device information\012\015\000"
+ 1404      64657669 
+ 1404      63652069 
+ 1404      6E666F72 
+ 1404      6D617469 
+ 1405              		.section	.text.GetDeviceInfo,"ax",%progbits
+ 1406              		.align	1
+ 1407              		.syntax unified
+ 1408              		.thumb
+ 1409              		.thumb_func
+ 1410              		.fpu fpv4-sp-d16
+ 1412              	GetDeviceInfo:
+ 1413              	.LFB162:
+ 639:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Get device information\n\r");
+ 1414              		.loc 1 639 1 is_stmt 1 view -0
+ 1415              		.cfi_startproc
+ 1416              		@ args = 0, pretend = 0, frame = 0
+ 1417              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1418 0000 08B5     		push	{r3, lr}
+ 1419              	.LCFI47:
+ 1420              		.cfi_def_cfa_offset 8
+ 1421              		.cfi_offset 3, -8
+ 1422              		.cfi_offset 14, -4
+ 640:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetDeviceInfo();
+ 1423              		.loc 1 640 5 view .LVU203
+ 1424 0002 0348     		ldr	r0, .L130
+ 1425 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1426              	.LVL72:
+ 641:Src/Wimod/serial_device.c **** }
+ 1427              		.loc 1 641 5 view .LVU204
+ 1428 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetDeviceInfo
+ 1429              	.LVL73:
+ 642:Src/Wimod/serial_device.c **** 
+ 1430              		.loc 1 642 1 is_stmt 0 view .LVU205
+ 1431 000c 08BD     		pop	{r3, pc}
+ 1432              	.L131:
+ 1433 000e 00BF     		.align	2
+ 1434              	.L130:
+ 1435 0010 00000000 		.word	.LC24
+ 1436              		.cfi_endproc
+ 1437              	.LFE162:
+ 1439              		.section	.rodata.Ping.str1.4,"aMS",%progbits,1
+ 1440              		.align	2
+ 1441              	.LC25:
+ 1442 0000 50696E67 		.ascii	"Ping request\012\015\000"
+ 1442      20726571 
+ 1442      75657374 
+ 1442      0A0D00
+ 1443              		.section	.text.Ping,"ax",%progbits
+ 1444              		.align	1
+ 1445              		.syntax unified
+ 1446              		.thumb
+ 1447              		.thumb_func
+ 1448              		.fpu fpv4-sp-d16
+ARM GAS  /tmp/cctQ98eH.s 			page 42
+
+
+ 1450              	Ping:
+ 1451              	.LFB160:
+ 617:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Ping request\n\r");
+ 1452              		.loc 1 617 1 is_stmt 1 view -0
+ 1453              		.cfi_startproc
+ 1454              		@ args = 0, pretend = 0, frame = 0
+ 1455              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1456 0000 08B5     		push	{r3, lr}
+ 1457              	.LCFI48:
+ 1458              		.cfi_def_cfa_offset 8
+ 1459              		.cfi_offset 3, -8
+ 1460              		.cfi_offset 14, -4
+ 618:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SendPing();
+ 1461              		.loc 1 618 5 view .LVU207
+ 1462 0002 0348     		ldr	r0, .L134
+ 1463 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1464              	.LVL74:
+ 619:Src/Wimod/serial_device.c **** }
+ 1465              		.loc 1 619 5 view .LVU208
+ 1466 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_SendPing
+ 1467              	.LVL75:
+ 620:Src/Wimod/serial_device.c **** 
+ 1468              		.loc 1 620 1 is_stmt 0 view .LVU209
+ 1469 000c 08BD     		pop	{r3, pc}
+ 1470              	.L135:
+ 1471 000e 00BF     		.align	2
+ 1472              	.L134:
+ 1473 0010 00000000 		.word	.LC25
+ 1474              		.cfi_endproc
+ 1475              	.LFE160:
+ 1477              		.section	.rodata.SendUData.str1.4,"aMS",%progbits,1
+ 1478              		.align	2
+ 1479              	.LC26:
+ 1480 0000 53656E64 		.ascii	"Send U-Data\012\015\000"
+ 1480      20552D44 
+ 1480      6174610A 
+ 1480      0D00
+ 1481              		.section	.text.SendUData,"ax",%progbits
+ 1482              		.align	1
+ 1483              		.syntax unified
+ 1484              		.thumb
+ 1485              		.thumb_func
+ 1486              		.fpu fpv4-sp-d16
+ 1488              	SendUData:
+ 1489              	.LFB166:
+ 676:Src/Wimod/serial_device.c **** 
+ 677:Src/Wimod/serial_device.c **** /**
+ 678:Src/Wimod/serial_device.c ****  * @brief  Send unconfirmed radio message
+ 679:Src/Wimod/serial_device.c ****  * @param  
+ 680:Src/Wimod/serial_device.c ****  * @retval none
+ 681:Src/Wimod/serial_device.c ****  */
+ 682:Src/Wimod/serial_device.c **** static void SendUData(void)
+ 683:Src/Wimod/serial_device.c **** {
+ 1490              		.loc 1 683 1 is_stmt 1 view -0
+ 1491              		.cfi_startproc
+ 1492              		@ args = 0, pretend = 0, frame = 8
+ 1493              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/cctQ98eH.s 			page 43
+
+
+ 1494 0000 00B5     		push	{lr}
+ 1495              	.LCFI49:
+ 1496              		.cfi_def_cfa_offset 4
+ 1497              		.cfi_offset 14, -4
+ 1498 0002 83B0     		sub	sp, sp, #12
+ 1499              	.LCFI50:
+ 1500              		.cfi_def_cfa_offset 16
+ 684:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Send U-Data\n\r");
+ 1501              		.loc 1 684 5 view .LVU211
+ 1502 0004 0D48     		ldr	r0, .L138
+ 1503 0006 FFF7FEFF 		bl	SerialDevice_Printf
+ 1504              	.LVL76:
+ 685:Src/Wimod/serial_device.c **** 
+ 686:Src/Wimod/serial_device.c ****     /* Port 0x21 (33) */
+ 687:Src/Wimod/serial_device.c ****     uint8_t port = 0x21U;
+ 1505              		.loc 1 687 5 view .LVU212
+ 688:Src/Wimod/serial_device.c **** 
+ 689:Src/Wimod/serial_device.c ****     uint8_t data[6U];
+ 1506              		.loc 1 689 5 view .LVU213
+ 690:Src/Wimod/serial_device.c **** 
+ 691:Src/Wimod/serial_device.c ****     data[0U] = 0x06U;
+ 1507              		.loc 1 691 5 view .LVU214
+ 1508              		.loc 1 691 14 is_stmt 0 view .LVU215
+ 1509 000a 0622     		movs	r2, #6
+ 1510 000c 8DF80020 		strb	r2, [sp]
+ 692:Src/Wimod/serial_device.c ****     data[1U] = 0x71U;
+ 1511              		.loc 1 692 5 is_stmt 1 view .LVU216
+ 1512              		.loc 1 692 14 is_stmt 0 view .LVU217
+ 1513 0010 7123     		movs	r3, #113
+ 1514 0012 8DF80130 		strb	r3, [sp, #1]
+ 693:Src/Wimod/serial_device.c ****     data[2U] = 0x04U;
+ 1515              		.loc 1 693 5 is_stmt 1 view .LVU218
+ 1516              		.loc 1 693 14 is_stmt 0 view .LVU219
+ 1517 0016 0423     		movs	r3, #4
+ 1518 0018 8DF80230 		strb	r3, [sp, #2]
+ 694:Src/Wimod/serial_device.c ****     data[3U] = 0xD2U;
+ 1519              		.loc 1 694 5 is_stmt 1 view .LVU220
+ 1520              		.loc 1 694 14 is_stmt 0 view .LVU221
+ 1521 001c D223     		movs	r3, #210
+ 1522 001e 8DF80330 		strb	r3, [sp, #3]
+ 695:Src/Wimod/serial_device.c ****     data[4U] = 0xFBU;
+ 1523              		.loc 1 695 5 is_stmt 1 view .LVU222
+ 1524              		.loc 1 695 14 is_stmt 0 view .LVU223
+ 1525 0022 FB23     		movs	r3, #251
+ 1526 0024 8DF80430 		strb	r3, [sp, #4]
+ 696:Src/Wimod/serial_device.c ****     data[5U] = 0x2EU;
+ 1527              		.loc 1 696 5 is_stmt 1 view .LVU224
+ 1528              		.loc 1 696 14 is_stmt 0 view .LVU225
+ 1529 0028 2E23     		movs	r3, #46
+ 1530 002a 8DF80530 		strb	r3, [sp, #5]
+ 697:Src/Wimod/serial_device.c **** 
+ 698:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 699:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SendURadioData(port, data, 6U);
+ 1531              		.loc 1 699 5 is_stmt 1 view .LVU226
+ 1532 002e 6946     		mov	r1, sp
+ 1533 0030 2120     		movs	r0, #33
+ 1534 0032 FFF7FEFF 		bl	WiMOD_LoRaWAN_SendURadioData
+ARM GAS  /tmp/cctQ98eH.s 			page 44
+
+
+ 1535              	.LVL77:
+ 700:Src/Wimod/serial_device.c **** }
+ 1536              		.loc 1 700 1 is_stmt 0 view .LVU227
+ 1537 0036 03B0     		add	sp, sp, #12
+ 1538              	.LCFI51:
+ 1539              		.cfi_def_cfa_offset 4
+ 1540              		@ sp needed
+ 1541 0038 5DF804FB 		ldr	pc, [sp], #4
+ 1542              	.L139:
+ 1543              		.align	2
+ 1544              	.L138:
+ 1545 003c 00000000 		.word	.LC26
+ 1546              		.cfi_endproc
+ 1547              	.LFE166:
+ 1549              		.section	.rodata.SendCData.str1.4,"aMS",%progbits,1
+ 1550              		.align	2
+ 1551              	.LC27:
+ 1552 0000 53656E64 		.ascii	"Send C-Data\012\015\000"
+ 1552      20432D44 
+ 1552      6174610A 
+ 1552      0D00
+ 1553              		.section	.text.SendCData,"ax",%progbits
+ 1554              		.align	1
+ 1555              		.syntax unified
+ 1556              		.thumb
+ 1557              		.thumb_func
+ 1558              		.fpu fpv4-sp-d16
+ 1560              	SendCData:
+ 1561              	.LFB167:
+ 701:Src/Wimod/serial_device.c **** 
+ 702:Src/Wimod/serial_device.c **** /**
+ 703:Src/Wimod/serial_device.c ****  * @brief  Send confirmed radio message
+ 704:Src/Wimod/serial_device.c ****  * @param  
+ 705:Src/Wimod/serial_device.c ****  * @retval none
+ 706:Src/Wimod/serial_device.c ****  */
+ 707:Src/Wimod/serial_device.c **** static void SendCData(void)
+ 708:Src/Wimod/serial_device.c **** {
+ 1562              		.loc 1 708 1 is_stmt 1 view -0
+ 1563              		.cfi_startproc
+ 1564              		@ args = 0, pretend = 0, frame = 8
+ 1565              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1566 0000 00B5     		push	{lr}
+ 1567              	.LCFI52:
+ 1568              		.cfi_def_cfa_offset 4
+ 1569              		.cfi_offset 14, -4
+ 1570 0002 83B0     		sub	sp, sp, #12
+ 1571              	.LCFI53:
+ 1572              		.cfi_def_cfa_offset 16
+ 709:Src/Wimod/serial_device.c ****     SerialDevice_Printf("Send C-Data\n\r");
+ 1573              		.loc 1 709 5 view .LVU229
+ 1574 0004 0D48     		ldr	r0, .L142
+ 1575 0006 FFF7FEFF 		bl	SerialDevice_Printf
+ 1576              	.LVL78:
+ 710:Src/Wimod/serial_device.c **** 
+ 711:Src/Wimod/serial_device.c ****     /* Port 0x23 (35) */
+ 712:Src/Wimod/serial_device.c ****     uint8_t port = 0x23U;
+ 1577              		.loc 1 712 5 view .LVU230
+ARM GAS  /tmp/cctQ98eH.s 			page 45
+
+
+ 713:Src/Wimod/serial_device.c **** 
+ 714:Src/Wimod/serial_device.c ****     uint8_t data[6U];
+ 1578              		.loc 1 714 5 view .LVU231
+ 715:Src/Wimod/serial_device.c **** 
+ 716:Src/Wimod/serial_device.c ****     data[0U] = 0x67U;
+ 1579              		.loc 1 716 5 view .LVU232
+ 1580              		.loc 1 716 14 is_stmt 0 view .LVU233
+ 1581 000a 6723     		movs	r3, #103
+ 1582 000c 8DF80030 		strb	r3, [sp]
+ 717:Src/Wimod/serial_device.c ****     data[1U] = 0x01U;
+ 1583              		.loc 1 717 5 is_stmt 1 view .LVU234
+ 1584              		.loc 1 717 14 is_stmt 0 view .LVU235
+ 1585 0010 0122     		movs	r2, #1
+ 1586 0012 8DF80120 		strb	r2, [sp, #1]
+ 718:Src/Wimod/serial_device.c ****     data[2U] = 0x10U;
+ 1587              		.loc 1 718 5 is_stmt 1 view .LVU236
+ 1588              		.loc 1 718 14 is_stmt 0 view .LVU237
+ 1589 0016 1022     		movs	r2, #16
+ 1590 0018 8DF80220 		strb	r2, [sp, #2]
+ 719:Src/Wimod/serial_device.c ****     data[3U] = 0x67U;
+ 1591              		.loc 1 719 5 is_stmt 1 view .LVU238
+ 1592              		.loc 1 719 14 is_stmt 0 view .LVU239
+ 1593 001c 8DF80330 		strb	r3, [sp, #3]
+ 720:Src/Wimod/serial_device.c ****     data[4U] = 0x00U;
+ 1594              		.loc 1 720 5 is_stmt 1 view .LVU240
+ 1595              		.loc 1 720 14 is_stmt 0 view .LVU241
+ 1596 0020 0023     		movs	r3, #0
+ 1597 0022 8DF80430 		strb	r3, [sp, #4]
+ 721:Src/Wimod/serial_device.c ****     data[5U] = 0xFFU;
+ 1598              		.loc 1 721 5 is_stmt 1 view .LVU242
+ 1599              		.loc 1 721 14 is_stmt 0 view .LVU243
+ 1600 0026 FF23     		movs	r3, #255
+ 1601 0028 8DF80530 		strb	r3, [sp, #5]
+ 722:Src/Wimod/serial_device.c **** 
+ 723:Src/Wimod/serial_device.c ****     /* Send unconfirmed radio message */
+ 724:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SendCRadioData(port, data, 6U);
+ 1602              		.loc 1 724 5 is_stmt 1 view .LVU244
+ 1603 002c 0622     		movs	r2, #6
+ 1604 002e 6946     		mov	r1, sp
+ 1605 0030 2320     		movs	r0, #35
+ 1606 0032 FFF7FEFF 		bl	WiMOD_LoRaWAN_SendCRadioData
+ 1607              	.LVL79:
+ 725:Src/Wimod/serial_device.c **** }
+ 1608              		.loc 1 725 1 is_stmt 0 view .LVU245
+ 1609 0036 03B0     		add	sp, sp, #12
+ 1610              	.LCFI54:
+ 1611              		.cfi_def_cfa_offset 4
+ 1612              		@ sp needed
+ 1613 0038 5DF804FB 		ldr	pc, [sp], #4
+ 1614              	.L143:
+ 1615              		.align	2
+ 1616              	.L142:
+ 1617 003c 00000000 		.word	.LC27
+ 1618              		.cfi_endproc
+ 1619              	.LFE167:
+ 1621              		.section	.rodata.FactoryReset.str1.4,"aMS",%progbits,1
+ 1622              		.align	2
+ARM GAS  /tmp/cctQ98eH.s 			page 46
+
+
+ 1623              	.LC28:
+ 1624 0000 46616374 		.ascii	"FactoryReset\012\015\000"
+ 1624      6F727952 
+ 1624      65736574 
+ 1624      0A0D00
+ 1625              		.section	.text.FactoryReset,"ax",%progbits
+ 1626              		.align	1
+ 1627              		.syntax unified
+ 1628              		.thumb
+ 1629              		.thumb_func
+ 1630              		.fpu fpv4-sp-d16
+ 1632              	FactoryReset:
+ 1633              	.LFB168:
+ 726:Src/Wimod/serial_device.c **** 
+ 727:Src/Wimod/serial_device.c **** /**
+ 728:Src/Wimod/serial_device.c ****  * @brief  Factory reset
+ 729:Src/Wimod/serial_device.c ****  * @param  
+ 730:Src/Wimod/serial_device.c ****  * @retval none
+ 731:Src/Wimod/serial_device.c ****  */
+ 732:Src/Wimod/serial_device.c **** static void FactoryReset(void)
+ 733:Src/Wimod/serial_device.c **** {
+ 1634              		.loc 1 733 1 is_stmt 1 view -0
+ 1635              		.cfi_startproc
+ 1636              		@ args = 0, pretend = 0, frame = 0
+ 1637              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1638 0000 08B5     		push	{r3, lr}
+ 1639              	.LCFI55:
+ 1640              		.cfi_def_cfa_offset 8
+ 1641              		.cfi_offset 3, -8
+ 1642              		.cfi_offset 14, -4
+ 734:Src/Wimod/serial_device.c ****     SerialDevice_Printf("FactoryReset\n\r");
+ 1643              		.loc 1 734 5 view .LVU247
+ 1644 0002 0348     		ldr	r0, .L146
+ 1645 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1646              	.LVL80:
+ 735:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_FactoryReset();
+ 1647              		.loc 1 735 5 view .LVU248
+ 1648 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_FactoryReset
+ 1649              	.LVL81:
+ 736:Src/Wimod/serial_device.c **** }
+ 1650              		.loc 1 736 1 is_stmt 0 view .LVU249
+ 1651 000c 08BD     		pop	{r3, pc}
+ 1652              	.L147:
+ 1653 000e 00BF     		.align	2
+ 1654              	.L146:
+ 1655 0010 00000000 		.word	.LC28
+ 1656              		.cfi_endproc
+ 1657              	.LFE168:
+ 1659              		.section	.rodata.GetLinkADR.str1.4,"aMS",%progbits,1
+ 1660              		.align	2
+ 1661              	.LC29:
+ 1662 0000 4765744C 		.ascii	"GetLinkADR\012\015\000"
+ 1662      696E6B41 
+ 1662      44520A0D 
+ 1662      00
+ 1663              		.section	.text.GetLinkADR,"ax",%progbits
+ 1664              		.align	1
+ARM GAS  /tmp/cctQ98eH.s 			page 47
+
+
+ 1665              		.syntax unified
+ 1666              		.thumb
+ 1667              		.thumb_func
+ 1668              		.fpu fpv4-sp-d16
+ 1670              	GetLinkADR:
+ 1671              	.LFB169:
+ 737:Src/Wimod/serial_device.c **** 
+ 738:Src/Wimod/serial_device.c **** /**
+ 739:Src/Wimod/serial_device.c ****  * @brief  Get link ADR
+ 740:Src/Wimod/serial_device.c ****  * @param  
+ 741:Src/Wimod/serial_device.c ****  * @retval none
+ 742:Src/Wimod/serial_device.c ****  */
+ 743:Src/Wimod/serial_device.c **** static void GetLinkADR(void)
+ 744:Src/Wimod/serial_device.c **** {
+ 1672              		.loc 1 744 1 is_stmt 1 view -0
+ 1673              		.cfi_startproc
+ 1674              		@ args = 0, pretend = 0, frame = 0
+ 1675              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1676 0000 08B5     		push	{r3, lr}
+ 1677              	.LCFI56:
+ 1678              		.cfi_def_cfa_offset 8
+ 1679              		.cfi_offset 3, -8
+ 1680              		.cfi_offset 14, -4
+ 745:Src/Wimod/serial_device.c ****     SerialDevice_Printf("GetLinkADR\n\r");
+ 1681              		.loc 1 745 5 view .LVU251
+ 1682 0002 0348     		ldr	r0, .L150
+ 1683 0004 FFF7FEFF 		bl	SerialDevice_Printf
+ 1684              	.LVL82:
+ 746:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_GetLinkADR();
+ 1685              		.loc 1 746 5 view .LVU252
+ 1686 0008 FFF7FEFF 		bl	WiMOD_LoRaWAN_GetLinkADR
+ 1687              	.LVL83:
+ 747:Src/Wimod/serial_device.c **** }
+ 1688              		.loc 1 747 1 is_stmt 0 view .LVU253
+ 1689 000c 08BD     		pop	{r3, pc}
+ 1690              	.L151:
+ 1691 000e 00BF     		.align	2
+ 1692              	.L150:
+ 1693 0010 00000000 		.word	.LC29
+ 1694              		.cfi_endproc
+ 1695              	.LFE169:
+ 1697              		.section	.rodata.SetLinkADR.str1.4,"aMS",%progbits,1
+ 1698              		.align	2
+ 1699              	.LC30:
+ 1700 0000 5365744C 		.ascii	"SetLinkADR\012\015\000"
+ 1700      696E6B41 
+ 1700      44520A0D 
+ 1700      00
+ 1701              		.section	.text.SetLinkADR,"ax",%progbits
+ 1702              		.align	1
+ 1703              		.syntax unified
+ 1704              		.thumb
+ 1705              		.thumb_func
+ 1706              		.fpu fpv4-sp-d16
+ 1708              	SetLinkADR:
+ 1709              	.LFB170:
+ 748:Src/Wimod/serial_device.c **** 
+ARM GAS  /tmp/cctQ98eH.s 			page 48
+
+
+ 749:Src/Wimod/serial_device.c **** /**
+ 750:Src/Wimod/serial_device.c ****  * @brief  Set link ADR
+ 751:Src/Wimod/serial_device.c ****  * @param  
+ 752:Src/Wimod/serial_device.c ****  * @retval none
+ 753:Src/Wimod/serial_device.c ****  */
+ 754:Src/Wimod/serial_device.c **** static void SetLinkADR(void)
+ 755:Src/Wimod/serial_device.c **** {
+ 1710              		.loc 1 755 1 is_stmt 1 view -0
+ 1711              		.cfi_startproc
+ 1712              		@ args = 0, pretend = 0, frame = 8
+ 1713              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1714 0000 00B5     		push	{lr}
+ 1715              	.LCFI57:
+ 1716              		.cfi_def_cfa_offset 4
+ 1717              		.cfi_offset 14, -4
+ 1718 0002 83B0     		sub	sp, sp, #12
+ 1719              	.LCFI58:
+ 1720              		.cfi_def_cfa_offset 16
+ 756:Src/Wimod/serial_device.c ****     uint8_t payload = 0U;
+ 1721              		.loc 1 756 5 view .LVU255
+ 1722              		.loc 1 756 13 is_stmt 0 view .LVU256
+ 1723 0004 0023     		movs	r3, #0
+ 1724 0006 8DF80730 		strb	r3, [sp, #7]
+ 757:Src/Wimod/serial_device.c **** 
+ 758:Src/Wimod/serial_device.c ****     SerialDevice_Printf("SetLinkADR\n\r");
+ 1725              		.loc 1 758 5 is_stmt 1 view .LVU257
+ 1726 000a 0548     		ldr	r0, .L154
+ 1727 000c FFF7FEFF 		bl	SerialDevice_Printf
+ 1728              	.LVL84:
+ 759:Src/Wimod/serial_device.c ****     /* 
+ 760:Src/Wimod/serial_device.c ****      * LinkADRReq Option:
+ 761:Src/Wimod/serial_device.c ****      * 0: LoRaWAN v1.0.2 
+ 762:Src/Wimod/serial_device.c ****      * 1: Semtech proposal 
+ 763:Src/Wimod/serial_device.c ****      * 2: KPN/Actility proposal 
+ 764:Src/Wimod/serial_device.c ****      */
+ 765:Src/Wimod/serial_device.c ****     WiMOD_LoRaWAN_SetLinkADR(&payload);
+ 1729              		.loc 1 765 5 view .LVU258
+ 1730 0010 0DF10700 		add	r0, sp, #7
+ 1731 0014 FFF7FEFF 		bl	WiMOD_LoRaWAN_SetLinkADR
+ 1732              	.LVL85:
+ 766:Src/Wimod/serial_device.c **** }
+ 1733              		.loc 1 766 1 is_stmt 0 view .LVU259
+ 1734 0018 03B0     		add	sp, sp, #12
+ 1735              	.LCFI59:
+ 1736              		.cfi_def_cfa_offset 4
+ 1737              		@ sp needed
+ 1738 001a 5DF804FB 		ldr	pc, [sp], #4
+ 1739              	.L155:
+ 1740 001e 00BF     		.align	2
+ 1741              	.L154:
+ 1742 0020 00000000 		.word	.LC30
+ 1743              		.cfi_endproc
+ 1744              	.LFE170:
+ 1746              		.section	.rodata.SerialDevice_CheckAppCmd.str1.4,"aMS",%progbits,1
+ 1747              		.align	2
+ 1748              	.LC31:
+ 1749 0000 0D00     		.ascii	"\015\000"
+ARM GAS  /tmp/cctQ98eH.s 			page 49
+
+
+ 1750              		.section	.text.SerialDevice_CheckAppCmd,"ax",%progbits
+ 1751              		.align	1
+ 1752              		.global	SerialDevice_CheckAppCmd
+ 1753              		.syntax unified
+ 1754              		.thumb
+ 1755              		.thumb_func
+ 1756              		.fpu fpv4-sp-d16
+ 1758              	SerialDevice_CheckAppCmd:
+ 1759              	.LFB139:
+ 179:Src/Wimod/serial_device.c ****     /* Checks the UART2 is in idle state */
+ 1760              		.loc 1 179 1 is_stmt 1 view -0
+ 1761              		.cfi_startproc
+ 1762              		@ args = 0, pretend = 0, frame = 0
+ 1763              		@ frame_needed = 0, uses_anonymous_args = 0
+ 181:Src/Wimod/serial_device.c ****     {
+ 1764              		.loc 1 181 5 view .LVU261
+ 181:Src/Wimod/serial_device.c ****     {
+ 1765              		.loc 1 181 15 is_stmt 0 view .LVU262
+ 1766 0000 584B     		ldr	r3, .L198
+ 1767 0002 93F83930 		ldrb	r3, [r3, #57]	@ zero_extendqisi2
+ 1768 0006 DBB2     		uxtb	r3, r3
+ 181:Src/Wimod/serial_device.c ****     {
+ 1769              		.loc 1 181 8 view .LVU263
+ 1770 0008 202B     		cmp	r3, #32
+ 1771 000a 00D0     		beq	.L197
+ 1772 000c 7047     		bx	lr
+ 1773              	.L197:
+ 179:Src/Wimod/serial_device.c ****     /* Checks the UART2 is in idle state */
+ 1774              		.loc 1 179 1 view .LVU264
+ 1775 000e 10B5     		push	{r4, lr}
+ 1776              	.LCFI60:
+ 1777              		.cfi_def_cfa_offset 8
+ 1778              		.cfi_offset 4, -8
+ 1779              		.cfi_offset 14, -4
+ 185:Src/Wimod/serial_device.c ****         {
+ 1780              		.loc 1 185 9 is_stmt 1 view .LVU265
+ 185:Src/Wimod/serial_device.c ****         {
+ 1781              		.loc 1 185 13 is_stmt 0 view .LVU266
+ 1782 0010 0D21     		movs	r1, #13
+ 1783 0012 5548     		ldr	r0, .L198+4
+ 1784 0014 FFF7FEFF 		bl	strchr
+ 1785              	.LVL86:
+ 185:Src/Wimod/serial_device.c ****         {
+ 1786              		.loc 1 185 12 view .LVU267
+ 1787 0018 0028     		cmp	r0, #0
+ 1788 001a 3FD0     		beq	.L158
+ 188:Src/Wimod/serial_device.c **** 
+ 1789              		.loc 1 188 13 is_stmt 1 view .LVU268
+ 1790 001c 524C     		ldr	r4, .L198+4
+ 1791 001e 5349     		ldr	r1, .L198+8
+ 1792 0020 2046     		mov	r0, r4
+ 1793 0022 FFF7FEFF 		bl	strtok
+ 1794              	.LVL87:
+ 191:Src/Wimod/serial_device.c ****             {
+ 1795              		.loc 1 191 13 view .LVU269
+ 191:Src/Wimod/serial_device.c ****             {
+ 1796              		.loc 1 191 36 is_stmt 0 view .LVU270
+ARM GAS  /tmp/cctQ98eH.s 			page 50
+
+
+ 1797 0026 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 1798 0028 203B     		subs	r3, r3, #32
+ 1799 002a 552B     		cmp	r3, #85
+ 1800 002c 2ED8     		bhi	.L159
+ 1801 002e DFE803F0 		tbb	[pc, r3]
+ 1802              	.L161:
+ 1803 0032 95       		.byte	(.L192-.L161)/2
+ 1804 0033 2D       		.byte	(.L159-.L161)/2
+ 1805 0034 2D       		.byte	(.L159-.L161)/2
+ 1806 0035 2D       		.byte	(.L159-.L161)/2
+ 1807 0036 2D       		.byte	(.L159-.L161)/2
+ 1808 0037 2D       		.byte	(.L159-.L161)/2
+ 1809 0038 2D       		.byte	(.L159-.L161)/2
+ 1810 0039 2D       		.byte	(.L159-.L161)/2
+ 1811 003a 2D       		.byte	(.L159-.L161)/2
+ 1812 003b 2D       		.byte	(.L159-.L161)/2
+ 1813 003c 6E       		.byte	(.L191-.L161)/2
+ 1814 003d 74       		.byte	(.L190-.L161)/2
+ 1815 003e 2D       		.byte	(.L159-.L161)/2
+ 1816 003f 68       		.byte	(.L189-.L161)/2
+ 1817 0040 2D       		.byte	(.L159-.L161)/2
+ 1818 0041 2D       		.byte	(.L159-.L161)/2
+ 1819 0042 2D       		.byte	(.L159-.L161)/2
+ 1820 0043 2D       		.byte	(.L159-.L161)/2
+ 1821 0044 2D       		.byte	(.L159-.L161)/2
+ 1822 0045 2D       		.byte	(.L159-.L161)/2
+ 1823 0046 2D       		.byte	(.L159-.L161)/2
+ 1824 0047 2D       		.byte	(.L159-.L161)/2
+ 1825 0048 2D       		.byte	(.L159-.L161)/2
+ 1826 0049 2D       		.byte	(.L159-.L161)/2
+ 1827 004a 2D       		.byte	(.L159-.L161)/2
+ 1828 004b 2D       		.byte	(.L159-.L161)/2
+ 1829 004c 2D       		.byte	(.L159-.L161)/2
+ 1830 004d 2D       		.byte	(.L159-.L161)/2
+ 1831 004e 2D       		.byte	(.L159-.L161)/2
+ 1832 004f 2D       		.byte	(.L159-.L161)/2
+ 1833 0050 2D       		.byte	(.L159-.L161)/2
+ 1834 0051 2D       		.byte	(.L159-.L161)/2
+ 1835 0052 2D       		.byte	(.L159-.L161)/2
+ 1836 0053 41       		.byte	(.L188-.L161)/2
+ 1837 0054 2D       		.byte	(.L159-.L161)/2
+ 1838 0055 3E       		.byte	(.L187-.L161)/2
+ 1839 0056 47       		.byte	(.L186-.L161)/2
+ 1840 0057 62       		.byte	(.L185-.L161)/2
+ 1841 0058 2D       		.byte	(.L159-.L161)/2
+ 1842 0059 56       		.byte	(.L184-.L161)/2
+ 1843 005a 2D       		.byte	(.L159-.L161)/2
+ 1844 005b 2D       		.byte	(.L159-.L161)/2
+ 1845 005c 2D       		.byte	(.L159-.L161)/2
+ 1846 005d 53       		.byte	(.L183-.L161)/2
+ 1847 005e 2D       		.byte	(.L159-.L161)/2
+ 1848 005f 2D       		.byte	(.L159-.L161)/2
+ 1849 0060 2B       		.byte	(.L182-.L161)/2
+ 1850 0061 3B       		.byte	(.L181-.L161)/2
+ 1851 0062 2D       		.byte	(.L159-.L161)/2
+ 1852 0063 8F       		.byte	(.L180-.L161)/2
+ 1853 0064 44       		.byte	(.L179-.L161)/2
+ARM GAS  /tmp/cctQ98eH.s 			page 51
+
+
+ 1854 0065 50       		.byte	(.L178-.L161)/2
+ 1855 0066 4A       		.byte	(.L177-.L161)/2
+ 1856 0067 2D       		.byte	(.L159-.L161)/2
+ 1857 0068 2D       		.byte	(.L159-.L161)/2
+ 1858 0069 92       		.byte	(.L176-.L161)/2
+ 1859 006a 2D       		.byte	(.L159-.L161)/2
+ 1860 006b 2D       		.byte	(.L159-.L161)/2
+ 1861 006c 8C       		.byte	(.L175-.L161)/2
+ 1862 006d 2D       		.byte	(.L159-.L161)/2
+ 1863 006e 2D       		.byte	(.L159-.L161)/2
+ 1864 006f 2D       		.byte	(.L159-.L161)/2
+ 1865 0070 2D       		.byte	(.L159-.L161)/2
+ 1866 0071 2D       		.byte	(.L159-.L161)/2
+ 1867 0072 2D       		.byte	(.L159-.L161)/2
+ 1868 0073 71       		.byte	(.L174-.L161)/2
+ 1869 0074 2D       		.byte	(.L159-.L161)/2
+ 1870 0075 89       		.byte	(.L173-.L161)/2
+ 1871 0076 2D       		.byte	(.L159-.L161)/2
+ 1872 0077 65       		.byte	(.L172-.L161)/2
+ 1873 0078 7D       		.byte	(.L171-.L161)/2
+ 1874 0079 2D       		.byte	(.L159-.L161)/2
+ 1875 007a 2D       		.byte	(.L159-.L161)/2
+ 1876 007b 80       		.byte	(.L170-.L161)/2
+ 1877 007c 4D       		.byte	(.L169-.L161)/2
+ 1878 007d 2D       		.byte	(.L159-.L161)/2
+ 1879 007e 2D       		.byte	(.L159-.L161)/2
+ 1880 007f 5C       		.byte	(.L168-.L161)/2
+ 1881 0080 5F       		.byte	(.L167-.L161)/2
+ 1882 0081 59       		.byte	(.L166-.L161)/2
+ 1883 0082 83       		.byte	(.L165-.L161)/2
+ 1884 0083 2D       		.byte	(.L159-.L161)/2
+ 1885 0084 7A       		.byte	(.L164-.L161)/2
+ 1886 0085 77       		.byte	(.L163-.L161)/2
+ 1887 0086 6B       		.byte	(.L162-.L161)/2
+ 1888 0087 86       		.byte	(.L160-.L161)/2
+ 1889              		.p2align 1
+ 1890              	.L182:
+ 198:Src/Wimod/serial_device.c ****                 break;
+ 1891              		.loc 1 198 17 is_stmt 1 view .LVU271
+ 1892 0088 FFF7FEFF 		bl	GetNwkStatus
+ 1893              	.LVL88:
+ 199:Src/Wimod/serial_device.c ****             case 'O':
+ 1894              		.loc 1 199 17 view .LVU272
+ 1895              	.L159:
+ 315:Src/Wimod/serial_device.c ****             memset(&UsartTextString, 0x00U, sizeof(UsartTextString));
+ 1896              		.loc 1 315 13 view .LVU273
+ 1897 008c 3548     		ldr	r0, .L198
+ 1898 008e FFF7FEFF 		bl	HAL_UART_Abort
+ 1899              	.LVL89:
+ 316:Src/Wimod/serial_device.c ****         }
+ 1900              		.loc 1 316 13 view .LVU274
+ 1901 0092 4022     		movs	r2, #64
+ 1902 0094 0021     		movs	r1, #0
+ 1903 0096 3448     		ldr	r0, .L198+4
+ 1904 0098 FFF7FEFF 		bl	memset
+ 1905              	.LVL90:
+ 1906              	.L158:
+ARM GAS  /tmp/cctQ98eH.s 			page 52
+
+
+ 320:Src/Wimod/serial_device.c ****     }
+ 1907              		.loc 1 320 9 view .LVU275
+ 1908 009c 4022     		movs	r2, #64
+ 1909 009e 3249     		ldr	r1, .L198+4
+ 1910 00a0 3048     		ldr	r0, .L198
+ 1911 00a2 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 1912              	.LVL91:
+ 322:Src/Wimod/serial_device.c **** 
+ 1913              		.loc 1 322 1 is_stmt 0 view .LVU276
+ 1914 00a6 10BD     		pop	{r4, pc}
+ 1915              	.L181:
+ 201:Src/Wimod/serial_device.c ****                 break;
+ 1916              		.loc 1 201 17 is_stmt 1 view .LVU277
+ 1917 00a8 FFF7FEFF 		bl	SetCustomCFG
+ 1918              	.LVL92:
+ 202:Src/Wimod/serial_device.c ****             case 'C':
+ 1919              		.loc 1 202 17 view .LVU278
+ 1920 00ac EEE7     		b	.L159
+ 1921              	.L187:
+ 204:Src/Wimod/serial_device.c ****                 break;
+ 1922              		.loc 1 204 17 view .LVU279
+ 1923 00ae FFF7FEFF 		bl	GetCustomCFG
+ 1924              	.LVL93:
+ 205:Src/Wimod/serial_device.c ****             case 'A':
+ 1925              		.loc 1 205 17 view .LVU280
+ 1926 00b2 EBE7     		b	.L159
+ 1927              	.L188:
+ 207:Src/Wimod/serial_device.c ****                 break;
+ 1928              		.loc 1 207 17 view .LVU281
+ 1929 00b4 FFF7FEFF 		bl	ActivateABP
+ 1930              	.LVL94:
+ 208:Src/Wimod/serial_device.c ****             case 'R':
+ 1931              		.loc 1 208 17 view .LVU282
+ 1932 00b8 E8E7     		b	.L159
+ 1933              	.L179:
+ 210:Src/Wimod/serial_device.c ****                 break;
+ 1934              		.loc 1 210 17 view .LVU283
+ 1935 00ba FFF7FEFF 		bl	Reactivate
+ 1936              	.LVL95:
+ 211:Src/Wimod/serial_device.c ****             case 'D':
+ 1937              		.loc 1 211 17 view .LVU284
+ 1938 00be E5E7     		b	.L159
+ 1939              	.L186:
+ 213:Src/Wimod/serial_device.c ****                 break;
+ 1940              		.loc 1 213 17 view .LVU285
+ 1941 00c0 FFF7FEFF 		bl	Deactivate
+ 1942              	.LVL96:
+ 214:Src/Wimod/serial_device.c ****             case 'T':
+ 1943              		.loc 1 214 17 view .LVU286
+ 1944 00c4 E2E7     		b	.L159
+ 1945              	.L177:
+ 216:Src/Wimod/serial_device.c ****                 break;
+ 1946              		.loc 1 216 17 view .LVU287
+ 1947 00c6 FFF7FEFF 		bl	ActivateOTA
+ 1948              	.LVL97:
+ 217:Src/Wimod/serial_device.c ****             case 'j':
+ 1949              		.loc 1 217 17 view .LVU288
+ARM GAS  /tmp/cctQ98eH.s 			page 53
+
+
+ 1950 00ca DFE7     		b	.L159
+ 1951              	.L169:
+ 220:Src/Wimod/serial_device.c ****                 break;
+ 1952              		.loc 1 220 17 view .LVU289
+ 1953 00cc FFF7FEFF 		bl	Join
+ 1954              	.LVL98:
+ 221:Src/Wimod/serial_device.c ****             case 'S':
+ 1955              		.loc 1 221 17 view .LVU290
+ 1956 00d0 DCE7     		b	.L159
+ 1957              	.L178:
+ 223:Src/Wimod/serial_device.c ****                 break;
+ 1958              		.loc 1 223 17 view .LVU291
+ 1959 00d2 FFF7FEFF 		bl	SetRadioStack
+ 1960              	.LVL99:
+ 224:Src/Wimod/serial_device.c ****             case 'K':
+ 1961              		.loc 1 224 17 view .LVU292
+ 1962 00d6 D9E7     		b	.L159
+ 1963              	.L183:
+ 226:Src/Wimod/serial_device.c ****                 break;
+ 1964              		.loc 1 226 17 view .LVU293
+ 1965 00d8 FFF7FEFF 		bl	GetRadioStack
+ 1966              	.LVL100:
+ 227:Src/Wimod/serial_device.c ****             case 'G':
+ 1967              		.loc 1 227 17 view .LVU294
+ 1968 00dc D6E7     		b	.L159
+ 1969              	.L184:
+ 229:Src/Wimod/serial_device.c ****                 break;
+ 1970              		.loc 1 229 17 view .LVU295
+ 1971 00de FFF7FEFF 		bl	GetSupportBand
+ 1972              	.LVL101:
+ 230:Src/Wimod/serial_device.c ****             case 'o':
+ 1973              		.loc 1 230 17 view .LVU296
+ 1974 00e2 D3E7     		b	.L159
+ 1975              	.L166:
+ 233:Src/Wimod/serial_device.c ****                 break;
+ 1976              		.loc 1 233 17 view .LVU297
+ 1977 00e4 FFF7FEFF 		bl	GetOPMODE
+ 1978              	.LVL102:
+ 234:Src/Wimod/serial_device.c ****             case 'm':
+ 1979              		.loc 1 234 17 view .LVU298
+ 1980 00e8 D0E7     		b	.L159
+ 1981              	.L168:
+ 237:Src/Wimod/serial_device.c ****                 break;
+ 1982              		.loc 1 237 17 view .LVU299
+ 1983 00ea FFF7FEFF 		bl	SetOPMODE
+ 1984              	.LVL103:
+ 238:Src/Wimod/serial_device.c ****             case 'n':
+ 1985              		.loc 1 238 17 view .LVU300
+ 1986 00ee CDE7     		b	.L159
+ 1987              	.L167:
+ 241:Src/Wimod/serial_device.c ****                 break;
+ 1988              		.loc 1 241 17 view .LVU301
+ 1989 00f0 FFF7FEFF 		bl	ClearOPMODE
+ 1990              	.LVL104:
+ 242:Src/Wimod/serial_device.c ****             case 'E':
+ 1991              		.loc 1 242 17 view .LVU302
+ 1992 00f4 CAE7     		b	.L159
+ARM GAS  /tmp/cctQ98eH.s 			page 54
+
+
+ 1993              	.L185:
+ 244:Src/Wimod/serial_device.c ****                 break;
+ 1994              		.loc 1 244 17 view .LVU303
+ 1995 00f6 FFF7FEFF 		bl	GetDevEUI
+ 1996              	.LVL105:
+ 245:Src/Wimod/serial_device.c ****             case 'e':
+ 1997              		.loc 1 245 17 view .LVU304
+ 1998 00fa C7E7     		b	.L159
+ 1999              	.L172:
+ 248:Src/Wimod/serial_device.c ****                 break;
+ 2000              		.loc 1 248 17 view .LVU305
+ 2001 00fc FFF7FEFF 		bl	SetDevEUI
+ 2002              	.LVL106:
+ 249:Src/Wimod/serial_device.c ****             case '-':
+ 2003              		.loc 1 249 17 view .LVU306
+ 2004 0100 C4E7     		b	.L159
+ 2005              	.L189:
+ 252:Src/Wimod/serial_device.c ****                 break;
+ 2006              		.loc 1 252 17 view .LVU307
+ 2007 0102 FFF7FEFF 		bl	ClearRTCAlarm
+ 2008              	.LVL107:
+ 253:Src/Wimod/serial_device.c ****             case 't':
+ 2009              		.loc 1 253 17 view .LVU308
+ 2010 0106 C1E7     		b	.L159
+ 2011              	.L162:
+ 256:Src/Wimod/serial_device.c ****                 break;
+ 2012              		.loc 1 256 17 view .LVU309
+ 2013 0108 FFF7FEFF 		bl	GetRTC
+ 2014              	.LVL108:
+ 257:Src/Wimod/serial_device.c ****             case '*':
+ 2015              		.loc 1 257 17 view .LVU310
+ 2016 010c BEE7     		b	.L159
+ 2017              	.L191:
+ 260:Src/Wimod/serial_device.c ****                 break;
+ 2018              		.loc 1 260 17 view .LVU311
+ 2019 010e FFF7FEFF 		bl	SetRTC
+ 2020              	.LVL109:
+ 261:Src/Wimod/serial_device.c ****             case 'a':
+ 2021              		.loc 1 261 17 view .LVU312
+ 2022 0112 BBE7     		b	.L159
+ 2023              	.L174:
+ 264:Src/Wimod/serial_device.c ****                 break;
+ 2024              		.loc 1 264 17 view .LVU313
+ 2025 0114 FFF7FEFF 		bl	GetAlarm
+ 2026              	.LVL110:
+ 265:Src/Wimod/serial_device.c ****             case '+':
+ 2027              		.loc 1 265 17 view .LVU314
+ 2028 0118 B8E7     		b	.L159
+ 2029              	.L190:
+ 268:Src/Wimod/serial_device.c ****                 break;
+ 2030              		.loc 1 268 17 view .LVU315
+ 2031 011a FFF7FEFF 		bl	SetAlarm
+ 2032              	.LVL111:
+ 269:Src/Wimod/serial_device.c ****             case 's':
+ 2033              		.loc 1 269 17 view .LVU316
+ 2034 011e B5E7     		b	.L159
+ 2035              	.L163:
+ARM GAS  /tmp/cctQ98eH.s 			page 55
+
+
+ 272:Src/Wimod/serial_device.c ****                 break;
+ 2036              		.loc 1 272 17 view .LVU317
+ 2037 0120 FFF7FEFF 		bl	GetDeviceStatus
+ 2038              	.LVL112:
+ 273:Src/Wimod/serial_device.c ****             case 'r':
+ 2039              		.loc 1 273 17 view .LVU318
+ 2040 0124 B2E7     		b	.L159
+ 2041              	.L164:
+ 276:Src/Wimod/serial_device.c ****                 break;
+ 2042              		.loc 1 276 17 view .LVU319
+ 2043 0126 FFF7FEFF 		bl	Reset
+ 2044              	.LVL113:
+ 277:Src/Wimod/serial_device.c ****             case 'f':
+ 2045              		.loc 1 277 17 view .LVU320
+ 2046 012a AFE7     		b	.L159
+ 2047              	.L171:
+ 280:Src/Wimod/serial_device.c ****                 break;
+ 2048              		.loc 1 280 17 view .LVU321
+ 2049 012c FFF7FEFF 		bl	GetFirmwareVersion
+ 2050              	.LVL114:
+ 281:Src/Wimod/serial_device.c ****             case 'i':
+ 2051              		.loc 1 281 17 view .LVU322
+ 2052 0130 ACE7     		b	.L159
+ 2053              	.L170:
+ 284:Src/Wimod/serial_device.c ****                 break;
+ 2054              		.loc 1 284 17 view .LVU323
+ 2055 0132 FFF7FEFF 		bl	GetDeviceInfo
+ 2056              	.LVL115:
+ 285:Src/Wimod/serial_device.c ****             case 'p':
+ 2057              		.loc 1 285 17 view .LVU324
+ 2058 0136 A9E7     		b	.L159
+ 2059              	.L165:
+ 288:Src/Wimod/serial_device.c ****                 break;
+ 2060              		.loc 1 288 17 view .LVU325
+ 2061 0138 FFF7FEFF 		bl	Ping
+ 2062              	.LVL116:
+ 289:Src/Wimod/serial_device.c ****             case 'u':
+ 2063              		.loc 1 289 17 view .LVU326
+ 2064 013c A6E7     		b	.L159
+ 2065              	.L160:
+ 292:Src/Wimod/serial_device.c ****                 break;
+ 2066              		.loc 1 292 17 view .LVU327
+ 2067 013e FFF7FEFF 		bl	SendUData
+ 2068              	.LVL117:
+ 293:Src/Wimod/serial_device.c ****             case 'c':
+ 2069              		.loc 1 293 17 view .LVU328
+ 2070 0142 A3E7     		b	.L159
+ 2071              	.L173:
+ 296:Src/Wimod/serial_device.c ****                 break;
+ 2072              		.loc 1 296 17 view .LVU329
+ 2073 0144 FFF7FEFF 		bl	SendCData
+ 2074              	.LVL118:
+ 297:Src/Wimod/serial_device.c ****             case 'Z':
+ 2075              		.loc 1 297 17 view .LVU330
+ 2076 0148 A0E7     		b	.L159
+ 2077              	.L175:
+ 300:Src/Wimod/serial_device.c ****                 break;
+ARM GAS  /tmp/cctQ98eH.s 			page 56
+
+
+ 2078              		.loc 1 300 17 view .LVU331
+ 2079 014a FFF7FEFF 		bl	FactoryReset
+ 2080              	.LVL119:
+ 301:Src/Wimod/serial_device.c ****             case 'Q':
+ 2081              		.loc 1 301 17 view .LVU332
+ 2082 014e 9DE7     		b	.L159
+ 2083              	.L180:
+ 304:Src/Wimod/serial_device.c ****                 break;
+ 2084              		.loc 1 304 17 view .LVU333
+ 2085 0150 FFF7FEFF 		bl	GetLinkADR
+ 2086              	.LVL120:
+ 305:Src/Wimod/serial_device.c ****             case 'W':
+ 2087              		.loc 1 305 17 view .LVU334
+ 2088 0154 9AE7     		b	.L159
+ 2089              	.L176:
+ 308:Src/Wimod/serial_device.c ****                 break;
+ 2090              		.loc 1 308 17 view .LVU335
+ 2091 0156 FFF7FEFF 		bl	SetLinkADR
+ 2092              	.LVL121:
+ 309:Src/Wimod/serial_device.c ****             case ' ':
+ 2093              		.loc 1 309 17 view .LVU336
+ 2094 015a 97E7     		b	.L159
+ 2095              	.L192:
+ 311:Src/Wimod/serial_device.c ****                 break;
+ 2096              		.loc 1 311 17 view .LVU337
+ 2097 015c FFF7FEFF 		bl	USART_ShowMenu
+ 2098              	.LVL122:
+ 312:Src/Wimod/serial_device.c ****             }
+ 2099              		.loc 1 312 17 view .LVU338
+ 2100 0160 94E7     		b	.L159
+ 2101              	.L199:
+ 2102 0162 00BF     		.align	2
+ 2103              	.L198:
+ 2104 0164 00000000 		.word	huart2
+ 2105 0168 00000000 		.word	UsartTextString
+ 2106 016c 00000000 		.word	.LC31
+ 2107              		.cfi_endproc
+ 2108              	.LFE139:
+ 2110              		.comm	UsartTextString,64,4
+ 2111              		.comm	huart3,64,4
+ 2112              		.comm	huart2,64,4
+ 2113              		.text
+ 2114              	.Letext0:
+ 2115              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 2116              		.file 3 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stdarg.h"
+ 2117              		.file 4 "/usr/include/newlib/stdio.h"
+ 2118              		.file 5 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h"
+ 2119              		.file 6 "/usr/include/newlib/sys/_types.h"
+ 2120              		.file 7 "/usr/include/newlib/sys/reent.h"
+ 2121              		.file 8 "/usr/include/newlib/sys/lock.h"
+ 2122              		.file 9 "/usr/include/newlib/sys/_stdint.h"
+ 2123              		.file 10 "/usr/include/newlib/ctype.h"
+ 2124              		.file 11 "Drivers/CMSIS/Include/core_cm4.h"
+ 2125              		.file 12 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h"
+ 2126              		.file 13 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 2127              		.file 14 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 2128              		.file 15 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ARM GAS  /tmp/cctQ98eH.s 			page 57
+
+
+ 2129              		.file 16 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 2130              		.file 17 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 2131              		.file 18 "Inc/STM32F4xx_Inc/stm32f4xx_board_conf.h"
+ 2132              		.file 19 "Inc/Wimod_Inc/serial_device.h"
+ 2133              		.file 20 "Inc/Wimod_Inc/wimod_lorawan_api.h"
+ 2134              		.file 21 "/usr/include/newlib/string.h"
+ 2135              		.file 22 "Inc/STM32F4xx_Inc/usart.h"
+ 2136              		.file 23 "<built-in>"
+ARM GAS  /tmp/cctQ98eH.s 			page 58
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 serial_device.c
+     /tmp/cctQ98eH.s:18     .rodata.SetDevEUI.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:22     .text.SetDevEUI:0000000000000000 $t
+     /tmp/cctQ98eH.s:29     .text.SetDevEUI:0000000000000000 SetDevEUI
+     /tmp/cctQ98eH.s:64     .text.SetDevEUI:0000000000000020 $d
+     /tmp/cctQ98eH.s:69     .text.SerialDevice_Close:0000000000000000 $t
+     /tmp/cctQ98eH.s:76     .text.SerialDevice_Close:0000000000000000 SerialDevice_Close
+     /tmp/cctQ98eH.s:98     .text.SerialDevice_Close:000000000000000c $d
+                            *COM*:0000000000000040 huart3
+     /tmp/cctQ98eH.s:103    .text.SerialDevice_Open:0000000000000000 $t
+     /tmp/cctQ98eH.s:110    .text.SerialDevice_Open:0000000000000000 SerialDevice_Open
+     /tmp/cctQ98eH.s:165    .text.SerialDevice_SendData:0000000000000000 $t
+     /tmp/cctQ98eH.s:172    .text.SerialDevice_SendData:0000000000000000 SerialDevice_SendData
+     /tmp/cctQ98eH.s:211    .text.SerialDevice_SendData:000000000000001c $d
+     /tmp/cctQ98eH.s:216    .text.SerialDevice_SendByte:0000000000000000 $t
+     /tmp/cctQ98eH.s:223    .text.SerialDevice_SendByte:0000000000000000 SerialDevice_SendByte
+     /tmp/cctQ98eH.s:271    .text.SerialDevice_SendByte:0000000000000028 $d
+     /tmp/cctQ98eH.s:276    .text.SerialDevice_ReadData:0000000000000000 $t
+     /tmp/cctQ98eH.s:283    .text.SerialDevice_ReadData:0000000000000000 SerialDevice_ReadData
+     /tmp/cctQ98eH.s:322    .text.SerialDevice_ReadData:000000000000001c $d
+     /tmp/cctQ98eH.s:327    .text.SerialDevice_Printf:0000000000000000 $t
+     /tmp/cctQ98eH.s:334    .text.SerialDevice_Printf:0000000000000000 SerialDevice_Printf
+     /tmp/cctQ98eH.s:414    .text.SerialDevice_Printf:000000000000003c $d
+                            *COM*:0000000000000040 huart2
+     /tmp/cctQ98eH.s:419    .rodata.GetNwkStatus.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:423    .text.GetNwkStatus:0000000000000000 $t
+     /tmp/cctQ98eH.s:429    .text.GetNwkStatus:0000000000000000 GetNwkStatus
+     /tmp/cctQ98eH.s:452    .text.GetNwkStatus:0000000000000010 $d
+     /tmp/cctQ98eH.s:457    .rodata.SetCustomCFG.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:461    .text.SetCustomCFG:0000000000000000 $t
+     /tmp/cctQ98eH.s:467    .text.SetCustomCFG:0000000000000000 SetCustomCFG
+     /tmp/cctQ98eH.s:491    .text.SetCustomCFG:0000000000000010 $d
+     /tmp/cctQ98eH.s:496    .rodata.GetCustomCFG.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:500    .text.GetCustomCFG:0000000000000000 $t
+     /tmp/cctQ98eH.s:506    .text.GetCustomCFG:0000000000000000 GetCustomCFG
+     /tmp/cctQ98eH.s:529    .text.GetCustomCFG:0000000000000010 $d
+     /tmp/cctQ98eH.s:534    .rodata.ActivateABP.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:538    .text.ActivateABP:0000000000000000 $t
+     /tmp/cctQ98eH.s:544    .text.ActivateABP:0000000000000000 ActivateABP
+     /tmp/cctQ98eH.s:570    .text.ActivateABP:0000000000000014 $d
+     /tmp/cctQ98eH.s:576    .rodata.Reactivate.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:580    .text.Reactivate:0000000000000000 $t
+     /tmp/cctQ98eH.s:586    .text.Reactivate:0000000000000000 Reactivate
+     /tmp/cctQ98eH.s:612    .text.Reactivate:0000000000000014 $d
+     /tmp/cctQ98eH.s:617    .rodata.Deactivate.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:621    .text.Deactivate:0000000000000000 $t
+     /tmp/cctQ98eH.s:627    .text.Deactivate:0000000000000000 Deactivate
+     /tmp/cctQ98eH.s:653    .text.Deactivate:0000000000000014 $d
+     /tmp/cctQ98eH.s:658    .rodata.ActivateOTA.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:662    .text.ActivateOTA:0000000000000000 $t
+     /tmp/cctQ98eH.s:668    .text.ActivateOTA:0000000000000000 ActivateOTA
+     /tmp/cctQ98eH.s:694    .text.ActivateOTA:0000000000000014 $d
+     /tmp/cctQ98eH.s:700    .rodata.Join.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:704    .text.Join:0000000000000000 $t
+     /tmp/cctQ98eH.s:710    .text.Join:0000000000000000 Join
+     /tmp/cctQ98eH.s:733    .text.Join:0000000000000010 $d
+ARM GAS  /tmp/cctQ98eH.s 			page 59
+
+
+     /tmp/cctQ98eH.s:738    .rodata.SetRadioStack.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:742    .text.SetRadioStack:0000000000000000 $t
+     /tmp/cctQ98eH.s:748    .text.SetRadioStack:0000000000000000 SetRadioStack
+     /tmp/cctQ98eH.s:808    .text.SetRadioStack:0000000000000044 $d
+     /tmp/cctQ98eH.s:813    .rodata.GetRadioStack.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:817    .text.GetRadioStack:0000000000000000 $t
+     /tmp/cctQ98eH.s:823    .text.GetRadioStack:0000000000000000 GetRadioStack
+     /tmp/cctQ98eH.s:849    .text.GetRadioStack:0000000000000014 $d
+     /tmp/cctQ98eH.s:854    .rodata.GetSupportBand.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:858    .text.GetSupportBand:0000000000000000 $t
+     /tmp/cctQ98eH.s:864    .text.GetSupportBand:0000000000000000 GetSupportBand
+     /tmp/cctQ98eH.s:890    .text.GetSupportBand:0000000000000014 $d
+     /tmp/cctQ98eH.s:895    .rodata.GetOPMODE.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:899    .text.GetOPMODE:0000000000000000 $t
+     /tmp/cctQ98eH.s:905    .text.GetOPMODE:0000000000000000 GetOPMODE
+     /tmp/cctQ98eH.s:928    .text.GetOPMODE:0000000000000010 $d
+     /tmp/cctQ98eH.s:933    .rodata.SetOPMODE.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:937    .text.SetOPMODE:0000000000000000 $t
+     /tmp/cctQ98eH.s:943    .text.SetOPMODE:0000000000000000 SetOPMODE
+     /tmp/cctQ98eH.s:967    .text.SetOPMODE:0000000000000010 $d
+     /tmp/cctQ98eH.s:972    .rodata.ClearOPMODE.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:976    .text.ClearOPMODE:0000000000000000 $t
+     /tmp/cctQ98eH.s:982    .text.ClearOPMODE:0000000000000000 ClearOPMODE
+     /tmp/cctQ98eH.s:1006   .text.ClearOPMODE:0000000000000010 $d
+     /tmp/cctQ98eH.s:1011   .rodata.GetDevEUI.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1015   .text.GetDevEUI:0000000000000000 $t
+     /tmp/cctQ98eH.s:1021   .text.GetDevEUI:0000000000000000 GetDevEUI
+     /tmp/cctQ98eH.s:1047   .text.GetDevEUI:0000000000000014 $d
+     /tmp/cctQ98eH.s:1052   .rodata.ClearRTCAlarm.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1056   .text.ClearRTCAlarm:0000000000000000 $t
+     /tmp/cctQ98eH.s:1062   .text.ClearRTCAlarm:0000000000000000 ClearRTCAlarm
+     /tmp/cctQ98eH.s:1085   .text.ClearRTCAlarm:0000000000000010 $d
+     /tmp/cctQ98eH.s:1090   .rodata.GetRTC.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1094   .text.GetRTC:0000000000000000 $t
+     /tmp/cctQ98eH.s:1100   .text.GetRTC:0000000000000000 GetRTC
+     /tmp/cctQ98eH.s:1123   .text.GetRTC:0000000000000010 $d
+     /tmp/cctQ98eH.s:1128   .rodata.SetRTC.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1132   .text.SetRTC:0000000000000000 $t
+     /tmp/cctQ98eH.s:1138   .text.SetRTC:0000000000000000 SetRTC
+     /tmp/cctQ98eH.s:1183   .text.SetRTC:000000000000001c $d
+     /tmp/cctQ98eH.s:1189   .rodata.GetAlarm.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1193   .text.GetAlarm:0000000000000000 $t
+     /tmp/cctQ98eH.s:1199   .text.GetAlarm:0000000000000000 GetAlarm
+     /tmp/cctQ98eH.s:1222   .text.GetAlarm:0000000000000010 $d
+     /tmp/cctQ98eH.s:1227   .rodata.SetAlarm.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1231   .text.SetAlarm:0000000000000000 $t
+     /tmp/cctQ98eH.s:1237   .text.SetAlarm:0000000000000000 SetAlarm
+     /tmp/cctQ98eH.s:1283   .text.SetAlarm:000000000000002c $d
+     /tmp/cctQ98eH.s:1288   .rodata.GetDeviceStatus.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1292   .text.GetDeviceStatus:0000000000000000 $t
+     /tmp/cctQ98eH.s:1298   .text.GetDeviceStatus:0000000000000000 GetDeviceStatus
+     /tmp/cctQ98eH.s:1321   .text.GetDeviceStatus:0000000000000010 $d
+     /tmp/cctQ98eH.s:1326   .rodata.Reset.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1330   .text.Reset:0000000000000000 $t
+     /tmp/cctQ98eH.s:1336   .text.Reset:0000000000000000 Reset
+     /tmp/cctQ98eH.s:1359   .text.Reset:0000000000000010 $d
+     /tmp/cctQ98eH.s:1364   .rodata.GetFirmwareVersion.str1.4:0000000000000000 $d
+ARM GAS  /tmp/cctQ98eH.s 			page 60
+
+
+     /tmp/cctQ98eH.s:1368   .text.GetFirmwareVersion:0000000000000000 $t
+     /tmp/cctQ98eH.s:1374   .text.GetFirmwareVersion:0000000000000000 GetFirmwareVersion
+     /tmp/cctQ98eH.s:1397   .text.GetFirmwareVersion:0000000000000010 $d
+     /tmp/cctQ98eH.s:1402   .rodata.GetDeviceInfo.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1406   .text.GetDeviceInfo:0000000000000000 $t
+     /tmp/cctQ98eH.s:1412   .text.GetDeviceInfo:0000000000000000 GetDeviceInfo
+     /tmp/cctQ98eH.s:1435   .text.GetDeviceInfo:0000000000000010 $d
+     /tmp/cctQ98eH.s:1440   .rodata.Ping.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1444   .text.Ping:0000000000000000 $t
+     /tmp/cctQ98eH.s:1450   .text.Ping:0000000000000000 Ping
+     /tmp/cctQ98eH.s:1473   .text.Ping:0000000000000010 $d
+     /tmp/cctQ98eH.s:1478   .rodata.SendUData.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1482   .text.SendUData:0000000000000000 $t
+     /tmp/cctQ98eH.s:1488   .text.SendUData:0000000000000000 SendUData
+     /tmp/cctQ98eH.s:1545   .text.SendUData:000000000000003c $d
+     /tmp/cctQ98eH.s:1550   .rodata.SendCData.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1554   .text.SendCData:0000000000000000 $t
+     /tmp/cctQ98eH.s:1560   .text.SendCData:0000000000000000 SendCData
+     /tmp/cctQ98eH.s:1617   .text.SendCData:000000000000003c $d
+     /tmp/cctQ98eH.s:1622   .rodata.FactoryReset.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1626   .text.FactoryReset:0000000000000000 $t
+     /tmp/cctQ98eH.s:1632   .text.FactoryReset:0000000000000000 FactoryReset
+     /tmp/cctQ98eH.s:1655   .text.FactoryReset:0000000000000010 $d
+     /tmp/cctQ98eH.s:1660   .rodata.GetLinkADR.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1664   .text.GetLinkADR:0000000000000000 $t
+     /tmp/cctQ98eH.s:1670   .text.GetLinkADR:0000000000000000 GetLinkADR
+     /tmp/cctQ98eH.s:1693   .text.GetLinkADR:0000000000000010 $d
+     /tmp/cctQ98eH.s:1698   .rodata.SetLinkADR.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1702   .text.SetLinkADR:0000000000000000 $t
+     /tmp/cctQ98eH.s:1708   .text.SetLinkADR:0000000000000000 SetLinkADR
+     /tmp/cctQ98eH.s:1742   .text.SetLinkADR:0000000000000020 $d
+     /tmp/cctQ98eH.s:1747   .rodata.SerialDevice_CheckAppCmd.str1.4:0000000000000000 $d
+     /tmp/cctQ98eH.s:1751   .text.SerialDevice_CheckAppCmd:0000000000000000 $t
+     /tmp/cctQ98eH.s:1758   .text.SerialDevice_CheckAppCmd:0000000000000000 SerialDevice_CheckAppCmd
+     /tmp/cctQ98eH.s:1803   .text.SerialDevice_CheckAppCmd:0000000000000032 $d
+     /tmp/cctQ98eH.s:1889   .text.SerialDevice_CheckAppCmd:0000000000000088 $t
+     /tmp/cctQ98eH.s:2104   .text.SerialDevice_CheckAppCmd:0000000000000164 $d
+                            *COM*:0000000000000040 UsartTextString
+
+UNDEFINED SYMBOLS
+WiMOD_LoRaWAN_Msg_Req
+HAL_UART_DeInit
+HAL_UART_Init
+HAL_UART_Transmit
+HAL_UART_Receive
+vsnprintf
+strlen
+WiMOD_LoRaWAN_GetNkwStatus
+WiMOD_LoRaWAN_SetCustomConfig
+WiMOD_LoRaWAN_GetCustomConfig
+ABP_ACTIVATE_PAYLOAD
+OTA_ACTIVATE_PAYLOAD
+WiMOD_LoRaWAN_JoinNetworkRequest
+WiMOD_LoRaWAN_GetOPMODE
+WiMOD_LoRaWAN_SetOPMODE
+WiMOD_LoRaWAN_ClearRTCAlarm
+WiMOD_LoRaWAN_GetRTC
+ARM GAS  /tmp/cctQ98eH.s 			page 61
+
+
+WiMOD_LoRaWAN_SetRTC
+WiMOD_LoRaWAN_GetRTCAlarm
+WiMOD_LoRaWAN_SetRTCAlarm
+WiMOD_LoRaWAN_GetDeviceStatus
+WiMOD_LoRaWAN_Reset
+WiMOD_LoRaWAN_GetFirmwareVersion
+WiMOD_LoRaWAN_GetDeviceInfo
+WiMOD_LoRaWAN_SendPing
+WiMOD_LoRaWAN_SendURadioData
+WiMOD_LoRaWAN_SendCRadioData
+WiMOD_LoRaWAN_FactoryReset
+WiMOD_LoRaWAN_GetLinkADR
+WiMOD_LoRaWAN_SetLinkADR
+strchr
+strtok
+HAL_UART_Abort
+memset
+HAL_UART_Receive_IT
+USART_ShowMenu

@@ -1,0 +1,7 @@
+fifo.c:25:17:FifoNext	0	static
+fifo.c:30:6:FifoInit	0	static
+fifo.c:38:6:FifoPush	16	static
+fifo.c:44:9:FifoPop	16	static
+fifo.c:52:6:FifoFlush	0	static
+fifo.c:58:6:IsFifoEmpty	0	static
+fifo.c:63:6:IsFifoFull	8	static

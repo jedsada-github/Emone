@@ -1,0 +1,13 @@
+systime.c:293:13:CalendarDiv86400	8	static
+systime.c:319:17:CalendarDiv61	0	static
+systime.c:256:17:CalendarGetMonth	8	static
+systime.c:341:13:CalendarDiv60	4	static
+systime.c:77:11:SysTimeAdd	8	static
+systime.c:91:11:SysTimeSub	8	static
+systime.c:105:6:SysTimeSet	40	static
+systime.c:119:11:SysTimeGet	40	static
+systime.c:137:11:SysTimeGetMcuTime	24	static
+systime.c:146:10:SysTimeToMs	48	static
+systime.c:160:11:SysTimeFromMs	40	static
+systime.c:173:10:SysTimeMkTime	24	static
+systime.c:204:6:SysTimeLocalTime	56	static

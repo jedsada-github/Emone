@@ -1,0 +1,2 @@
+lr1110-se-hal.c:31:6:LR1110SeHalGetUniqueId	8	static
+lr1110-se-hal.c:36:10:LR1110SeHalGetRandomNumber	8	static

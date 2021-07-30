@@ -1,0 +1,551 @@
+ARM GAS  /tmp/cca7E3Z5.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"crc16.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.CRC16_Calc,"ax",%progbits
+  18              		.align	1
+  19              		.global	CRC16_Calc
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	CRC16_Calc:
+  27              	.LVL0:
+  28              	.LFB0:
+  29              		.file 1 "Src/Wimod/crc16.c"
+   1:Src/Wimod/crc16.c **** /**
+   2:Src/Wimod/crc16.c ****  ******************************************************************************
+   3:Src/Wimod/crc16.c ****  * @file           : crc16.c
+   4:Src/Wimod/crc16.c ****  * @abstract       : crc16 calculation
+   5:Src/Wimod/crc16.c ****  * @disclaimer     : This example code is provided by IMST GmbH on an "ASIS"
+   6:Src/Wimod/crc16.c ****  *                   basis without any warranties.
+   7:Src/Wimod/crc16.c ****  * @version        : 0.2
+   8:Src/Wimod/crc16.c ****  * @date           : 18.05.2016
+   9:Src/Wimod/crc16.c ****  ******************************************************************************
+  10:Src/Wimod/crc16.c ****  * @attention
+  11:Src/Wimod/crc16.c ****  *
+  12:Src/Wimod/crc16.c ****  ******************************************************************************
+  13:Src/Wimod/crc16.c ****  */
+  14:Src/Wimod/crc16.c **** 
+  15:Src/Wimod/crc16.c **** /* Includes ------------------------------------------------------------------*/
+  16:Src/Wimod/crc16.c **** #include "crc16.h"
+  17:Src/Wimod/crc16.c **** 
+  18:Src/Wimod/crc16.c **** /* Private define ------------------------------------------------------------*/
+  19:Src/Wimod/crc16.c **** /* Use fast table algorithm */
+  20:Src/Wimod/crc16.c **** #define CRC16_TABLE   (1U)
+  21:Src/Wimod/crc16.c **** 
+  22:Src/Wimod/crc16.c **** /* Private variables ---------------------------------------------------------*/
+  23:Src/Wimod/crc16.c **** /* Lookup Table for fast CRC16 calculation */
+  24:Src/Wimod/crc16.c **** const uint16_t CRC16_Table[] = {
+  25:Src/Wimod/crc16.c ****     0x0000U, 0x1189U, 0x2312U, 0x329BU, 0x4624U, 0x57ADU, 0x6536U, 0x74BFU, 0x8C48U,
+  26:Src/Wimod/crc16.c ****     0x9DC1U, 0xAF5AU, 0xBED3U, 0xCA6CU, 0xDBE5U, 0xE97EU, 0xF8F7U, 0x1081U, 0x0108U,
+  27:Src/Wimod/crc16.c ****     0x3393U, 0x221AU, 0x56A5U, 0x472CU, 0x75B7U, 0x643EU, 0x9CC9U, 0x8D40U, 0xBFDBU,
+  28:Src/Wimod/crc16.c ****     0xAE52U, 0xDAEDU, 0xCB64U, 0xF9FFU, 0xE876U, 0x2102U, 0x308BU, 0x0210U, 0x1399U,
+  29:Src/Wimod/crc16.c ****     0x6726U, 0x76AFU, 0x4434U, 0x55BDU, 0xAD4AU, 0xBCC3U, 0x8E58U, 0x9FD1U, 0xEB6EU,
+ARM GAS  /tmp/cca7E3Z5.s 			page 2
+
+
+  30:Src/Wimod/crc16.c ****     0xFAE7U, 0xC87CU, 0xD9F5U, 0x3183U, 0x200AU, 0x1291U, 0x0318U, 0x77A7U, 0x662EU,
+  31:Src/Wimod/crc16.c ****     0x54B5U, 0x453CU, 0xBDCBU, 0xAC42U, 0x9ED9U, 0x8F50U, 0xFBEFU, 0xEA66U, 0xD8FDU,
+  32:Src/Wimod/crc16.c ****     0xC974U, 0x4204U, 0x538DU, 0x6116U, 0x709FU, 0x0420U, 0x15A9U, 0x2732U, 0x36BBU,
+  33:Src/Wimod/crc16.c ****     0xCE4CU, 0xDFC5U, 0xED5EU, 0xFCD7U, 0x8868U, 0x99E1U, 0xAB7AU, 0xBAF3U, 0x5285U,
+  34:Src/Wimod/crc16.c ****     0x430CU, 0x7197U, 0x601EU, 0x14A1U, 0x0528U, 0x37B3U, 0x263AU, 0xDECDU, 0xCF44U,
+  35:Src/Wimod/crc16.c ****     0xFDDFU, 0xEC56U, 0x98E9U, 0x8960U, 0xBBFBU, 0xAA72U, 0x6306U, 0x728FU, 0x4014U,
+  36:Src/Wimod/crc16.c ****     0x519DU, 0x2522U, 0x34ABU, 0x0630U, 0x17B9U, 0xEF4EU, 0xFEC7U, 0xCC5CU, 0xDDD5U,
+  37:Src/Wimod/crc16.c ****     0xA96AU, 0xB8E3U, 0x8A78U, 0x9BF1U, 0x7387U, 0x620EU, 0x5095U, 0x411CU, 0x35A3U,
+  38:Src/Wimod/crc16.c ****     0x242AU, 0x16B1U, 0x0738U, 0xFFCFU, 0xEE46U, 0xDCDDU, 0xCD54U, 0xB9EBU, 0xA862U,
+  39:Src/Wimod/crc16.c ****     0x9AF9U, 0x8B70U, 0x8408U, 0x9581U, 0xA71AU, 0xB693U, 0xC22CU, 0xD3A5U, 0xE13EU,
+  40:Src/Wimod/crc16.c ****     0xF0B7U, 0x0840U, 0x19C9U, 0x2B52U, 0x3ADBU, 0x4E64U, 0x5FEDU, 0x6D76U, 0x7CFFU,
+  41:Src/Wimod/crc16.c ****     0x9489U, 0x8500U, 0xB79BU, 0xA612U, 0xD2ADU, 0xC324U, 0xF1BFU, 0xE036U, 0x18C1U,
+  42:Src/Wimod/crc16.c ****     0x0948U, 0x3BD3U, 0x2A5AU, 0x5EE5U, 0x4F6CU, 0x7DF7U, 0x6C7EU, 0xA50AU, 0xB483U,
+  43:Src/Wimod/crc16.c ****     0x8618U, 0x9791U, 0xE32EU, 0xF2A7U, 0xC03CU, 0xD1B5U, 0x2942U, 0x38CBU, 0x0A50U,
+  44:Src/Wimod/crc16.c ****     0x1BD9U, 0x6F66U, 0x7EEFU, 0x4C74U, 0x5DFDU, 0xB58BU, 0xA402U, 0x9699U, 0x8710U,
+  45:Src/Wimod/crc16.c ****     0xF3AFU, 0xE226U, 0xD0BDU, 0xC134U, 0x39C3U, 0x284AU, 0x1AD1U, 0x0B58U, 0x7FE7U,
+  46:Src/Wimod/crc16.c ****     0x6E6EU, 0x5CF5U, 0x4D7CU, 0xC60CU, 0xD785U, 0xE51EU, 0xF497U, 0x8028U, 0x91A1U,
+  47:Src/Wimod/crc16.c ****     0xA33AU, 0xB2B3U, 0x4A44U, 0x5BCDU, 0x6956U, 0x78DFU, 0x0C60U, 0x1DE9U, 0x2F72U,
+  48:Src/Wimod/crc16.c ****     0x3EFBU, 0xD68DU, 0xC704U, 0xF59FU, 0xE416U, 0x90A9U, 0x8120U, 0xB3BBU, 0xA232U,
+  49:Src/Wimod/crc16.c ****     0x5AC5U, 0x4B4CU, 0x79D7U, 0x685EU, 0x1CE1U, 0x0D68U, 0x3FF3U, 0x2E7AU, 0xE70EU,
+  50:Src/Wimod/crc16.c ****     0xF687U, 0xC41CU, 0xD595U, 0xA12AU, 0xB0A3U, 0x8238U, 0x93B1U, 0x6B46U, 0x7ACFU,
+  51:Src/Wimod/crc16.c ****     0x4854U, 0x59DDU, 0x2D62U, 0x3CEBU, 0x0E70U, 0x1FF9U, 0xF78FU, 0xE606U, 0xD49DU,
+  52:Src/Wimod/crc16.c ****     0xC514U, 0xB1ABU, 0xA022U, 0x92B9U, 0x8330U, 0x7BC7U, 0x6A4EU, 0x58D5U, 0x495CU,
+  53:Src/Wimod/crc16.c ****     0x3DE3U, 0x2C6AU, 0x1EF1U, 0x0F78U,
+  54:Src/Wimod/crc16.c **** };
+  55:Src/Wimod/crc16.c **** 
+  56:Src/Wimod/crc16.c **** #ifdef CRC16_TABLE
+  57:Src/Wimod/crc16.c **** /**
+  58:Src/Wimod/crc16.c ****  * @brief  Calculate the CRC16 value
+  59:Src/Wimod/crc16.c ****  *         This function calculates the one's complement of the standard
+  60:Src/Wimod/crc16.c ****  *         16-BIT CRC CCITT polynomial G(x) = 1 + x^5 + x^12 + x^16
+  61:Src/Wimod/crc16.c ****  *
+  62:Src/Wimod/crc16.c ****  * @retval uint16_t 
+  63:Src/Wimod/crc16.c ****  */
+  64:Src/Wimod/crc16.c **** uint16_t CRC16_Calc(uint8_t *data, uint16_t length, uint16_t initVal)
+  65:Src/Wimod/crc16.c **** {
+  30              		.loc 1 65 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  35              		.loc 1 65 1 is_stmt 0 view .LVU1
+  36 0000 10B4     		push	{r4}
+  37              	.LCFI0:
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 4, -4
+  40 0002 0346     		mov	r3, r0
+  41 0004 1046     		mov	r0, r2
+  42              	.LVL1:
+  66:Src/Wimod/crc16.c ****     /* Initial crc variable */
+  67:Src/Wimod/crc16.c ****     uint16_t crc = initVal;
+  43              		.loc 1 67 5 is_stmt 1 view .LVU2
+  68:Src/Wimod/crc16.c **** 
+  69:Src/Wimod/crc16.c ****     /* Iterate over all bytes */
+  70:Src/Wimod/crc16.c ****     while (length--)
+  44              		.loc 1 70 5 view .LVU3
+  45              	.L2:
+ARM GAS  /tmp/cca7E3Z5.s 			page 3
+
+
+  46              		.loc 1 70 11 view .LVU4
+  47              		.loc 1 70 18 is_stmt 0 view .LVU5
+  48 0006 4C1E     		subs	r4, r1, #1
+  49 0008 A4B2     		uxth	r4, r4
+  50              	.LVL2:
+  51              		.loc 1 70 11 view .LVU6
+  52 000a 51B1     		cbz	r1, .L5
+  71:Src/Wimod/crc16.c ****     {
+  72:Src/Wimod/crc16.c ****         /* Calculate new crc value */
+  73:Src/Wimod/crc16.c ****         crc = (crc >> 0x08U) ^ CRC16_Table[(crc ^ *data++) & 0x00FFU];
+  53              		.loc 1 73 9 is_stmt 1 view .LVU7
+  54              	.LVL3:
+  55              		.loc 1 73 51 is_stmt 0 view .LVU8
+  56 000c 13F8011B 		ldrb	r1, [r3], #1	@ zero_extendqisi2
+  57              	.LVL4:
+  58              		.loc 1 73 49 view .LVU9
+  59 0010 4140     		eors	r1, r1, r0
+  60              		.loc 1 73 60 view .LVU10
+  61 0012 C9B2     		uxtb	r1, r1
+  62              		.loc 1 73 43 view .LVU11
+  63 0014 044A     		ldr	r2, .L6
+  64 0016 32F81120 		ldrh	r2, [r2, r1, lsl #1]
+  65              		.loc 1 73 13 view .LVU12
+  66 001a 82EA1020 		eor	r0, r2, r0, lsr #8
+  67              	.LVL5:
+  70:Src/Wimod/crc16.c ****     {
+  68              		.loc 1 70 18 view .LVU13
+  69 001e 2146     		mov	r1, r4
+  70 0020 F1E7     		b	.L2
+  71              	.L5:
+  74:Src/Wimod/crc16.c ****     }
+  75:Src/Wimod/crc16.c **** 
+  76:Src/Wimod/crc16.c ****     /* Return result */
+  77:Src/Wimod/crc16.c ****     return crc;
+  78:Src/Wimod/crc16.c **** }
+  72              		.loc 1 78 1 view .LVU14
+  73 0022 5DF8044B 		ldr	r4, [sp], #4
+  74              	.LCFI1:
+  75              		.cfi_restore 4
+  76              		.cfi_def_cfa_offset 0
+  77              	.LVL6:
+  78              		.loc 1 78 1 view .LVU15
+  79 0026 7047     		bx	lr
+  80              	.L7:
+  81              		.align	2
+  82              	.L6:
+  83 0028 00000000 		.word	.LANCHOR0
+  84              		.cfi_endproc
+  85              	.LFE0:
+  87              		.section	.text.CRC16_Check,"ax",%progbits
+  88              		.align	1
+  89              		.global	CRC16_Check
+  90              		.syntax unified
+  91              		.thumb
+  92              		.thumb_func
+  93              		.fpu fpv4-sp-d16
+  95              	CRC16_Check:
+ARM GAS  /tmp/cca7E3Z5.s 			page 4
+
+
+  96              	.LVL7:
+  97              	.LFB1:
+  79:Src/Wimod/crc16.c **** #else
+  80:Src/Wimod/crc16.c **** uint16_t CRC16_Calc (uint8_t *data, uint16_t length, uint16_t initVal)
+  81:Src/Wimod/crc16.c **** {
+  82:Src/Wimod/crc16.c ****     /* Initial crc variable */
+  83:Src/Wimod/crc16.c ****     uint16_t crc = initVal;
+  84:Src/Wimod/crc16.c **** 
+  85:Src/Wimod/crc16.c ****     /* Iterate over all bytes */
+  86:Src/Wimod/crc16.c ****     while (length--)
+  87:Src/Wimod/crc16.c ****     {
+  88:Src/Wimod/crc16.c ****         int32_t bits = 0x08U;
+  89:Src/Wimod/crc16.c ****         uint8_t byte = *data++;
+  90:Src/Wimod/crc16.c **** 
+  91:Src/Wimod/crc16.c ****         /* Iterate over all bits per byte */
+  92:Src/Wimod/crc16.c ****         while (bits--)
+  93:Src/Wimod/crc16.c ****         {
+  94:Src/Wimod/crc16.c ****             if ((byte & 0x01U) ^ (crc & 0x01U))
+  95:Src/Wimod/crc16.c ****             {
+  96:Src/Wimod/crc16.c ****                 crc = (crc >> 0x01U) ^ CRC16_POLYNOM;
+  97:Src/Wimod/crc16.c ****             }
+  98:Src/Wimod/crc16.c ****             else
+  99:Src/Wimod/crc16.c ****             {
+ 100:Src/Wimod/crc16.c ****                 crc >>= 0x01U;
+ 101:Src/Wimod/crc16.c ****             }
+ 102:Src/Wimod/crc16.c **** 
+ 103:Src/Wimod/crc16.c ****             byte >>= 0x01U;
+ 104:Src/Wimod/crc16.c ****         }
+ 105:Src/Wimod/crc16.c ****     }
+ 106:Src/Wimod/crc16.c **** 
+ 107:Src/Wimod/crc16.c ****     /* return result */
+ 108:Src/Wimod/crc16.c ****     return crc;
+ 109:Src/Wimod/crc16.c **** }
+ 110:Src/Wimod/crc16.c **** #endif
+ 111:Src/Wimod/crc16.c **** 
+ 112:Src/Wimod/crc16.c **** /**
+ 113:Src/Wimod/crc16.c ****  * @brief  Calculate and test the CRC16 value
+ 114:Src/Wimod/crc16.c ****  *         This function checks a data block with attached CRC16
+ 115:Src/Wimod/crc16.c ****  *
+ 116:Src/Wimod/crc16.c ****  * @retval uint8_t 
+ 117:Src/Wimod/crc16.c ****  */
+ 118:Src/Wimod/crc16.c **** uint8_t CRC16_Check(uint8_t *data, uint16_t length, uint16_t initVal)
+ 119:Src/Wimod/crc16.c **** {
+  98              		.loc 1 119 1 is_stmt 1 view -0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		.loc 1 119 1 is_stmt 0 view .LVU17
+ 103 0000 08B5     		push	{r3, lr}
+ 104              	.LCFI2:
+ 105              		.cfi_def_cfa_offset 8
+ 106              		.cfi_offset 3, -8
+ 107              		.cfi_offset 14, -4
+ 120:Src/Wimod/crc16.c ****     /* Calculate ones complement of CRC16 */
+ 121:Src/Wimod/crc16.c ****     uint16_t crc = ~CRC16_Calc (data, length, initVal);
+ 108              		.loc 1 121 5 is_stmt 1 view .LVU18
+ 109              		.loc 1 121 21 is_stmt 0 view .LVU19
+ARM GAS  /tmp/cca7E3Z5.s 			page 5
+
+
+ 110 0002 FFF7FEFF 		bl	CRC16_Calc
+ 111              	.LVL8:
+ 122:Src/Wimod/crc16.c **** 
+ 123:Src/Wimod/crc16.c ****     /* CRC ok ? */
+ 124:Src/Wimod/crc16.c ****     return (uint8_t)(crc == CRC16_GOOD_VALUE);
+ 112              		.loc 1 124 5 is_stmt 1 view .LVU20
+ 125:Src/Wimod/crc16.c **** }
+ 113              		.loc 1 125 1 is_stmt 0 view .LVU21
+ 114 0006 4FF2B803 		movw	r3, #61624
+ 115 000a 9842     		cmp	r0, r3
+ 116 000c 14BF     		ite	ne
+ 117 000e 0020     		movne	r0, #0
+ 118              	.LVL9:
+ 119              		.loc 1 125 1 view .LVU22
+ 120 0010 0120     		moveq	r0, #1
+ 121 0012 08BD     		pop	{r3, pc}
+ 122              		.cfi_endproc
+ 123              	.LFE1:
+ 125              		.global	CRC16_Table
+ 126              		.section	.rodata.CRC16_Table,"a"
+ 127              		.align	2
+ 128              		.set	.LANCHOR0,. + 0
+ 131              	CRC16_Table:
+ 132 0000 0000     		.short	0
+ 133 0002 8911     		.short	4489
+ 134 0004 1223     		.short	8978
+ 135 0006 9B32     		.short	12955
+ 136 0008 2446     		.short	17956
+ 137 000a AD57     		.short	22445
+ 138 000c 3665     		.short	25910
+ 139 000e BF74     		.short	29887
+ 140 0010 488C     		.short	-29624
+ 141 0012 C19D     		.short	-25151
+ 142 0014 5AAF     		.short	-20646
+ 143 0016 D3BE     		.short	-16685
+ 144 0018 6CCA     		.short	-13716
+ 145 001a E5DB     		.short	-9243
+ 146 001c 7EE9     		.short	-5762
+ 147 001e F7F8     		.short	-1801
+ 148 0020 8110     		.short	4225
+ 149 0022 0801     		.short	264
+ 150 0024 9333     		.short	13203
+ 151 0026 1A22     		.short	8730
+ 152 0028 A556     		.short	22181
+ 153 002a 2C47     		.short	18220
+ 154 002c B775     		.short	30135
+ 155 002e 3E64     		.short	25662
+ 156 0030 C99C     		.short	-25399
+ 157 0032 408D     		.short	-29376
+ 158 0034 DBBF     		.short	-16421
+ 159 0036 52AE     		.short	-20910
+ 160 0038 EDDA     		.short	-9491
+ 161 003a 64CB     		.short	-13468
+ 162 003c FFF9     		.short	-1537
+ 163 003e 76E8     		.short	-6026
+ 164 0040 0221     		.short	8450
+ 165 0042 8B30     		.short	12427
+ARM GAS  /tmp/cca7E3Z5.s 			page 6
+
+
+ 166 0044 1002     		.short	528
+ 167 0046 9913     		.short	5017
+ 168 0048 2667     		.short	26406
+ 169 004a AF76     		.short	30383
+ 170 004c 3444     		.short	17460
+ 171 004e BD55     		.short	21949
+ 172 0050 4AAD     		.short	-21174
+ 173 0052 C3BC     		.short	-17213
+ 174 0054 588E     		.short	-29096
+ 175 0056 D19F     		.short	-24623
+ 176 0058 6EEB     		.short	-5266
+ 177 005a E7FA     		.short	-1305
+ 178 005c 7CC8     		.short	-14212
+ 179 005e F5D9     		.short	-9739
+ 180 0060 8331     		.short	12675
+ 181 0062 0A20     		.short	8202
+ 182 0064 9112     		.short	4753
+ 183 0066 1803     		.short	792
+ 184 0068 A777     		.short	30631
+ 185 006a 2E66     		.short	26158
+ 186 006c B554     		.short	21685
+ 187 006e 3C45     		.short	17724
+ 188 0070 CBBD     		.short	-16949
+ 189 0072 42AC     		.short	-21438
+ 190 0074 D99E     		.short	-24871
+ 191 0076 508F     		.short	-28848
+ 192 0078 EFFB     		.short	-1041
+ 193 007a 66EA     		.short	-5530
+ 194 007c FDD8     		.short	-9987
+ 195 007e 74C9     		.short	-13964
+ 196 0080 0442     		.short	16900
+ 197 0082 8D53     		.short	21389
+ 198 0084 1661     		.short	24854
+ 199 0086 9F70     		.short	28831
+ 200 0088 2004     		.short	1056
+ 201 008a A915     		.short	5545
+ 202 008c 3227     		.short	10034
+ 203 008e BB36     		.short	14011
+ 204 0090 4CCE     		.short	-12724
+ 205 0092 C5DF     		.short	-8251
+ 206 0094 5EED     		.short	-4770
+ 207 0096 D7FC     		.short	-809
+ 208 0098 6888     		.short	-30616
+ 209 009a E199     		.short	-26143
+ 210 009c 7AAB     		.short	-21638
+ 211 009e F3BA     		.short	-17677
+ 212 00a0 8552     		.short	21125
+ 213 00a2 0C43     		.short	17164
+ 214 00a4 9771     		.short	29079
+ 215 00a6 1E60     		.short	24606
+ 216 00a8 A114     		.short	5281
+ 217 00aa 2805     		.short	1320
+ 218 00ac B337     		.short	14259
+ 219 00ae 3A26     		.short	9786
+ 220 00b0 CDDE     		.short	-8499
+ 221 00b2 44CF     		.short	-12476
+ 222 00b4 DFFD     		.short	-545
+ARM GAS  /tmp/cca7E3Z5.s 			page 7
+
+
+ 223 00b6 56EC     		.short	-5034
+ 224 00b8 E998     		.short	-26391
+ 225 00ba 6089     		.short	-30368
+ 226 00bc FBBB     		.short	-17413
+ 227 00be 72AA     		.short	-21902
+ 228 00c0 0663     		.short	25350
+ 229 00c2 8F72     		.short	29327
+ 230 00c4 1440     		.short	16404
+ 231 00c6 9D51     		.short	20893
+ 232 00c8 2225     		.short	9506
+ 233 00ca AB34     		.short	13483
+ 234 00cc 3006     		.short	1584
+ 235 00ce B917     		.short	6073
+ 236 00d0 4EEF     		.short	-4274
+ 237 00d2 C7FE     		.short	-313
+ 238 00d4 5CCC     		.short	-13220
+ 239 00d6 D5DD     		.short	-8747
+ 240 00d8 6AA9     		.short	-22166
+ 241 00da E3B8     		.short	-18205
+ 242 00dc 788A     		.short	-30088
+ 243 00de F19B     		.short	-25615
+ 244 00e0 8773     		.short	29575
+ 245 00e2 0E62     		.short	25102
+ 246 00e4 9550     		.short	20629
+ 247 00e6 1C41     		.short	16668
+ 248 00e8 A335     		.short	13731
+ 249 00ea 2A24     		.short	9258
+ 250 00ec B116     		.short	5809
+ 251 00ee 3807     		.short	1848
+ 252 00f0 CFFF     		.short	-49
+ 253 00f2 46EE     		.short	-4538
+ 254 00f4 DDDC     		.short	-8995
+ 255 00f6 54CD     		.short	-12972
+ 256 00f8 EBB9     		.short	-17941
+ 257 00fa 62A8     		.short	-22430
+ 258 00fc F99A     		.short	-25863
+ 259 00fe 708B     		.short	-29840
+ 260 0100 0884     		.short	-31736
+ 261 0102 8195     		.short	-27263
+ 262 0104 1AA7     		.short	-22758
+ 263 0106 93B6     		.short	-18797
+ 264 0108 2CC2     		.short	-15828
+ 265 010a A5D3     		.short	-11355
+ 266 010c 3EE1     		.short	-7874
+ 267 010e B7F0     		.short	-3913
+ 268 0110 4008     		.short	2112
+ 269 0112 C919     		.short	6601
+ 270 0114 522B     		.short	11090
+ 271 0116 DB3A     		.short	15067
+ 272 0118 644E     		.short	20068
+ 273 011a ED5F     		.short	24557
+ 274 011c 766D     		.short	28022
+ 275 011e FF7C     		.short	31999
+ 276 0120 8994     		.short	-27511
+ 277 0122 0085     		.short	-31488
+ 278 0124 9BB7     		.short	-18533
+ 279 0126 12A6     		.short	-23022
+ARM GAS  /tmp/cca7E3Z5.s 			page 8
+
+
+ 280 0128 ADD2     		.short	-11603
+ 281 012a 24C3     		.short	-15580
+ 282 012c BFF1     		.short	-3649
+ 283 012e 36E0     		.short	-8138
+ 284 0130 C118     		.short	6337
+ 285 0132 4809     		.short	2376
+ 286 0134 D33B     		.short	15315
+ 287 0136 5A2A     		.short	10842
+ 288 0138 E55E     		.short	24293
+ 289 013a 6C4F     		.short	20332
+ 290 013c F77D     		.short	32247
+ 291 013e 7E6C     		.short	27774
+ 292 0140 0AA5     		.short	-23286
+ 293 0142 83B4     		.short	-19325
+ 294 0144 1886     		.short	-31208
+ 295 0146 9197     		.short	-26735
+ 296 0148 2EE3     		.short	-7378
+ 297 014a A7F2     		.short	-3417
+ 298 014c 3CC0     		.short	-16324
+ 299 014e B5D1     		.short	-11851
+ 300 0150 4229     		.short	10562
+ 301 0152 CB38     		.short	14539
+ 302 0154 500A     		.short	2640
+ 303 0156 D91B     		.short	7129
+ 304 0158 666F     		.short	28518
+ 305 015a EF7E     		.short	32495
+ 306 015c 744C     		.short	19572
+ 307 015e FD5D     		.short	24061
+ 308 0160 8BB5     		.short	-19061
+ 309 0162 02A4     		.short	-23550
+ 310 0164 9996     		.short	-26983
+ 311 0166 1087     		.short	-30960
+ 312 0168 AFF3     		.short	-3153
+ 313 016a 26E2     		.short	-7642
+ 314 016c BDD0     		.short	-12099
+ 315 016e 34C1     		.short	-16076
+ 316 0170 C339     		.short	14787
+ 317 0172 4A28     		.short	10314
+ 318 0174 D11A     		.short	6865
+ 319 0176 580B     		.short	2904
+ 320 0178 E77F     		.short	32743
+ 321 017a 6E6E     		.short	28270
+ 322 017c F55C     		.short	23797
+ 323 017e 7C4D     		.short	19836
+ 324 0180 0CC6     		.short	-14836
+ 325 0182 85D7     		.short	-10363
+ 326 0184 1EE5     		.short	-6882
+ 327 0186 97F4     		.short	-2921
+ 328 0188 2880     		.short	-32728
+ 329 018a A191     		.short	-28255
+ 330 018c 3AA3     		.short	-23750
+ 331 018e B3B2     		.short	-19789
+ 332 0190 444A     		.short	19012
+ 333 0192 CD5B     		.short	23501
+ 334 0194 5669     		.short	26966
+ 335 0196 DF78     		.short	30943
+ 336 0198 600C     		.short	3168
+ARM GAS  /tmp/cca7E3Z5.s 			page 9
+
+
+ 337 019a E91D     		.short	7657
+ 338 019c 722F     		.short	12146
+ 339 019e FB3E     		.short	16123
+ 340 01a0 8DD6     		.short	-10611
+ 341 01a2 04C7     		.short	-14588
+ 342 01a4 9FF5     		.short	-2657
+ 343 01a6 16E4     		.short	-7146
+ 344 01a8 A990     		.short	-28503
+ 345 01aa 2081     		.short	-32480
+ 346 01ac BBB3     		.short	-19525
+ 347 01ae 32A2     		.short	-24014
+ 348 01b0 C55A     		.short	23237
+ 349 01b2 4C4B     		.short	19276
+ 350 01b4 D779     		.short	31191
+ 351 01b6 5E68     		.short	26718
+ 352 01b8 E11C     		.short	7393
+ 353 01ba 680D     		.short	3432
+ 354 01bc F33F     		.short	16371
+ 355 01be 7A2E     		.short	11898
+ 356 01c0 0EE7     		.short	-6386
+ 357 01c2 87F6     		.short	-2425
+ 358 01c4 1CC4     		.short	-15332
+ 359 01c6 95D5     		.short	-10859
+ 360 01c8 2AA1     		.short	-24278
+ 361 01ca A3B0     		.short	-20317
+ 362 01cc 3882     		.short	-32200
+ 363 01ce B193     		.short	-27727
+ 364 01d0 466B     		.short	27462
+ 365 01d2 CF7A     		.short	31439
+ 366 01d4 5448     		.short	18516
+ 367 01d6 DD59     		.short	23005
+ 368 01d8 622D     		.short	11618
+ 369 01da EB3C     		.short	15595
+ 370 01dc 700E     		.short	3696
+ 371 01de F91F     		.short	8185
+ 372 01e0 8FF7     		.short	-2161
+ 373 01e2 06E6     		.short	-6650
+ 374 01e4 9DD4     		.short	-11107
+ 375 01e6 14C5     		.short	-15084
+ 376 01e8 ABB1     		.short	-20053
+ 377 01ea 22A0     		.short	-24542
+ 378 01ec B992     		.short	-27975
+ 379 01ee 3083     		.short	-31952
+ 380 01f0 C77B     		.short	31687
+ 381 01f2 4E6A     		.short	27214
+ 382 01f4 D558     		.short	22741
+ 383 01f6 5C49     		.short	18780
+ 384 01f8 E33D     		.short	15843
+ 385 01fa 6A2C     		.short	11370
+ 386 01fc F11E     		.short	7921
+ 387 01fe 780F     		.short	3960
+ 388              		.text
+ 389              	.Letext0:
+ 390              		.file 2 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stdint.h"
+ARM GAS  /tmp/cca7E3Z5.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 crc16.c
+     /tmp/cca7E3Z5.s:18     .text.CRC16_Calc:0000000000000000 $t
+     /tmp/cca7E3Z5.s:26     .text.CRC16_Calc:0000000000000000 CRC16_Calc
+     /tmp/cca7E3Z5.s:83     .text.CRC16_Calc:0000000000000028 $d
+     /tmp/cca7E3Z5.s:88     .text.CRC16_Check:0000000000000000 $t
+     /tmp/cca7E3Z5.s:95     .text.CRC16_Check:0000000000000000 CRC16_Check
+     /tmp/cca7E3Z5.s:131    .rodata.CRC16_Table:0000000000000000 CRC16_Table
+     /tmp/cca7E3Z5.s:127    .rodata.CRC16_Table:0000000000000000 $d
+
+NO UNDEFINED SYMBOLS

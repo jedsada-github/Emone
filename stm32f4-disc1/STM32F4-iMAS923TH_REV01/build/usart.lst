@@ -1,0 +1,2134 @@
+ARM GAS  /tmp/ccBkAaDO.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"usart.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_USART2_UART_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_USART2_UART_Init
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	MX_USART2_UART_Init:
+  27              	.LFB133:
+  28              		.file 1 "Src/STM32F4xx/usart.c"
+   1:Src/STM32F4xx/usart.c **** /**
+   2:Src/STM32F4xx/usart.c ****  ******************************************************************************
+   3:Src/STM32F4xx/usart.c ****  * File Name          : USART.c
+   4:Src/STM32F4xx/usart.c ****  * Description        : This file provides code for the configuration
+   5:Src/STM32F4xx/usart.c ****  *                      of the USART instances.
+   6:Src/STM32F4xx/usart.c ****  ******************************************************************************
+   7:Src/STM32F4xx/usart.c ****  * This notice applies to any and all portions of this file
+   8:Src/STM32F4xx/usart.c ****  * that are not between comment pairs USER CODE BEGIN and
+   9:Src/STM32F4xx/usart.c ****  * USER CODE END. Other portions of this file, whether 
+  10:Src/STM32F4xx/usart.c ****  * inserted by the user or by software development tools
+  11:Src/STM32F4xx/usart.c ****  * are owned by their respective copyright owners.
+  12:Src/STM32F4xx/usart.c ****  *
+  13:Src/STM32F4xx/usart.c ****  * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/STM32F4xx/usart.c ****  * All rights reserved.
+  15:Src/STM32F4xx/usart.c ****  *
+  16:Src/STM32F4xx/usart.c ****  * Redistribution and use in source and binary forms, with or without 
+  17:Src/STM32F4xx/usart.c ****  * modification, are permitted, provided that the following conditions are met:
+  18:Src/STM32F4xx/usart.c ****  *
+  19:Src/STM32F4xx/usart.c ****  * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/STM32F4xx/usart.c ****  *    this list of conditions and the following disclaimer.
+  21:Src/STM32F4xx/usart.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/STM32F4xx/usart.c ****  *    this list of conditions and the following disclaimer in the documentation
+  23:Src/STM32F4xx/usart.c ****  *    and/or other materials provided with the distribution.
+  24:Src/STM32F4xx/usart.c ****  * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/STM32F4xx/usart.c ****  *    contributors to this software may be used to endorse or promote products 
+  26:Src/STM32F4xx/usart.c ****  *    derived from this software without specific written permission.
+  27:Src/STM32F4xx/usart.c ****  * 4. This software, including modifications and/or derivative works of this 
+  28:Src/STM32F4xx/usart.c ****  *    software, must execute solely and exclusively on microcontroller or
+  29:Src/STM32F4xx/usart.c ****  *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/STM32F4xx/usart.c ****  * 5. Redistribution and use of this software other than as permitted under 
+ARM GAS  /tmp/ccBkAaDO.s 			page 2
+
+
+  31:Src/STM32F4xx/usart.c ****  *    this license is void and will automatically terminate your rights under 
+  32:Src/STM32F4xx/usart.c ****  *    this license. 
+  33:Src/STM32F4xx/usart.c ****  *
+  34:Src/STM32F4xx/usart.c ****  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/STM32F4xx/usart.c ****  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/STM32F4xx/usart.c ****  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/STM32F4xx/usart.c ****  * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/STM32F4xx/usart.c ****  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/STM32F4xx/usart.c ****  * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/STM32F4xx/usart.c ****  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/STM32F4xx/usart.c ****  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/STM32F4xx/usart.c ****  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/STM32F4xx/usart.c ****  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/STM32F4xx/usart.c ****  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/STM32F4xx/usart.c ****  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/STM32F4xx/usart.c ****  *
+  47:Src/STM32F4xx/usart.c ****  ******************************************************************************
+  48:Src/STM32F4xx/usart.c ****  */
+  49:Src/STM32F4xx/usart.c **** 
+  50:Src/STM32F4xx/usart.c **** /* Includes ------------------------------------------------------------------*/
+  51:Src/STM32F4xx/usart.c **** #include "usart.h"
+  52:Src/STM32F4xx/usart.c **** 
+  53:Src/STM32F4xx/usart.c **** /**
+  54:Src/STM32F4xx/usart.c ****   * @brief USART2 Initialization Function
+  55:Src/STM32F4xx/usart.c ****   * @param None
+  56:Src/STM32F4xx/usart.c ****   * @retval None
+  57:Src/STM32F4xx/usart.c ****   */
+  58:Src/STM32F4xx/usart.c **** void MX_USART2_UART_Init(void)
+  59:Src/STM32F4xx/usart.c **** {
+  29              		.loc 1 59 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  60:Src/STM32F4xx/usart.c ****   huart2.Instance          = USART2;
+  38              		.loc 1 60 3 view .LVU1
+  39              		.loc 1 60 28 is_stmt 0 view .LVU2
+  40 0002 0A48     		ldr	r0, .L5
+  41 0004 0A4B     		ldr	r3, .L5+4
+  42 0006 0360     		str	r3, [r0]
+  61:Src/STM32F4xx/usart.c ****   huart2.Init.BaudRate     = USART2_Baudrate_115200;
+  43              		.loc 1 61 3 is_stmt 1 view .LVU3
+  44              		.loc 1 61 28 is_stmt 0 view .LVU4
+  45 0008 4FF4E133 		mov	r3, #115200
+  46 000c 4360     		str	r3, [r0, #4]
+  62:Src/STM32F4xx/usart.c ****   huart2.Init.WordLength   = UART_WORDLENGTH_8B;
+  47              		.loc 1 62 3 is_stmt 1 view .LVU5
+  48              		.loc 1 62 28 is_stmt 0 view .LVU6
+  49 000e 0023     		movs	r3, #0
+  50 0010 8360     		str	r3, [r0, #8]
+  63:Src/STM32F4xx/usart.c ****   huart2.Init.StopBits     = UART_STOPBITS_1;
+  51              		.loc 1 63 3 is_stmt 1 view .LVU7
+  52              		.loc 1 63 28 is_stmt 0 view .LVU8
+ARM GAS  /tmp/ccBkAaDO.s 			page 3
+
+
+  53 0012 C360     		str	r3, [r0, #12]
+  64:Src/STM32F4xx/usart.c ****   huart2.Init.Parity       = UART_PARITY_NONE;
+  54              		.loc 1 64 3 is_stmt 1 view .LVU9
+  55              		.loc 1 64 28 is_stmt 0 view .LVU10
+  56 0014 0361     		str	r3, [r0, #16]
+  65:Src/STM32F4xx/usart.c ****   huart2.Init.Mode         = UART_MODE_TX_RX;
+  57              		.loc 1 65 3 is_stmt 1 view .LVU11
+  58              		.loc 1 65 28 is_stmt 0 view .LVU12
+  59 0016 0C22     		movs	r2, #12
+  60 0018 4261     		str	r2, [r0, #20]
+  66:Src/STM32F4xx/usart.c ****   huart2.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+  61              		.loc 1 66 3 is_stmt 1 view .LVU13
+  62              		.loc 1 66 28 is_stmt 0 view .LVU14
+  63 001a 8361     		str	r3, [r0, #24]
+  67:Src/STM32F4xx/usart.c ****   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  64              		.loc 1 67 3 is_stmt 1 view .LVU15
+  65              		.loc 1 67 28 is_stmt 0 view .LVU16
+  66 001c C361     		str	r3, [r0, #28]
+  68:Src/STM32F4xx/usart.c **** 
+  69:Src/STM32F4xx/usart.c ****   if (HAL_UART_Init(&huart2) != HAL_OK)
+  67              		.loc 1 69 3 is_stmt 1 view .LVU17
+  68              		.loc 1 69 7 is_stmt 0 view .LVU18
+  69 001e FFF7FEFF 		bl	HAL_UART_Init
+  70              	.LVL0:
+  71              		.loc 1 69 6 view .LVU19
+  72 0022 00B9     		cbnz	r0, .L4
+  73              	.L1:
+  70:Src/STM32F4xx/usart.c ****   {
+  71:Src/STM32F4xx/usart.c ****     Error_Handler();
+  72:Src/STM32F4xx/usart.c ****   }
+  73:Src/STM32F4xx/usart.c **** }
+  74              		.loc 1 73 1 view .LVU20
+  75 0024 08BD     		pop	{r3, pc}
+  76              	.L4:
+  71:Src/STM32F4xx/usart.c ****   }
+  77              		.loc 1 71 5 is_stmt 1 view .LVU21
+  78 0026 FFF7FEFF 		bl	Error_Handler
+  79              	.LVL1:
+  80              		.loc 1 73 1 is_stmt 0 view .LVU22
+  81 002a FBE7     		b	.L1
+  82              	.L6:
+  83              		.align	2
+  84              	.L5:
+  85 002c 00000000 		.word	huart2
+  86 0030 00440040 		.word	1073759232
+  87              		.cfi_endproc
+  88              	.LFE133:
+  90              		.section	.text.MX_USART3_UART_Init,"ax",%progbits
+  91              		.align	1
+  92              		.global	MX_USART3_UART_Init
+  93              		.syntax unified
+  94              		.thumb
+  95              		.thumb_func
+  96              		.fpu fpv4-sp-d16
+  98              	MX_USART3_UART_Init:
+  99              	.LFB134:
+  74:Src/STM32F4xx/usart.c **** 
+ARM GAS  /tmp/ccBkAaDO.s 			page 4
+
+
+  75:Src/STM32F4xx/usart.c **** /**
+  76:Src/STM32F4xx/usart.c ****  * @brief USART3 Initialization Function
+  77:Src/STM32F4xx/usart.c ****  * @param None
+  78:Src/STM32F4xx/usart.c ****  * @retval None
+  79:Src/STM32F4xx/usart.c ****  */
+  80:Src/STM32F4xx/usart.c **** void MX_USART3_UART_Init(void)
+  81:Src/STM32F4xx/usart.c **** {
+ 100              		.loc 1 81 1 is_stmt 1 view -0
+ 101              		.cfi_startproc
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104 0000 08B5     		push	{r3, lr}
+ 105              	.LCFI1:
+ 106              		.cfi_def_cfa_offset 8
+ 107              		.cfi_offset 3, -8
+ 108              		.cfi_offset 14, -4
+  82:Src/STM32F4xx/usart.c ****     huart3.Instance          = USART3;
+ 109              		.loc 1 82 5 view .LVU24
+ 110              		.loc 1 82 30 is_stmt 0 view .LVU25
+ 111 0002 0A48     		ldr	r0, .L11
+ 112 0004 0A4B     		ldr	r3, .L11+4
+ 113 0006 0360     		str	r3, [r0]
+  83:Src/STM32F4xx/usart.c ****     huart3.Init.BaudRate     = USART3_Baudrate_115200;
+ 114              		.loc 1 83 5 is_stmt 1 view .LVU26
+ 115              		.loc 1 83 30 is_stmt 0 view .LVU27
+ 116 0008 4FF4E133 		mov	r3, #115200
+ 117 000c 4360     		str	r3, [r0, #4]
+  84:Src/STM32F4xx/usart.c ****     huart3.Init.WordLength   = UART_WORDLENGTH_8B;
+ 118              		.loc 1 84 5 is_stmt 1 view .LVU28
+ 119              		.loc 1 84 30 is_stmt 0 view .LVU29
+ 120 000e 0023     		movs	r3, #0
+ 121 0010 8360     		str	r3, [r0, #8]
+  85:Src/STM32F4xx/usart.c ****     huart3.Init.StopBits     = UART_STOPBITS_1;
+ 122              		.loc 1 85 5 is_stmt 1 view .LVU30
+ 123              		.loc 1 85 30 is_stmt 0 view .LVU31
+ 124 0012 C360     		str	r3, [r0, #12]
+  86:Src/STM32F4xx/usart.c ****     huart3.Init.Parity       = UART_PARITY_NONE;
+ 125              		.loc 1 86 5 is_stmt 1 view .LVU32
+ 126              		.loc 1 86 30 is_stmt 0 view .LVU33
+ 127 0014 0361     		str	r3, [r0, #16]
+  87:Src/STM32F4xx/usart.c ****     huart3.Init.Mode         = UART_MODE_TX_RX;
+ 128              		.loc 1 87 5 is_stmt 1 view .LVU34
+ 129              		.loc 1 87 30 is_stmt 0 view .LVU35
+ 130 0016 0C22     		movs	r2, #12
+ 131 0018 4261     		str	r2, [r0, #20]
+  88:Src/STM32F4xx/usart.c ****     huart3.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+ 132              		.loc 1 88 5 is_stmt 1 view .LVU36
+ 133              		.loc 1 88 30 is_stmt 0 view .LVU37
+ 134 001a 8361     		str	r3, [r0, #24]
+  89:Src/STM32F4xx/usart.c ****     huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+ 135              		.loc 1 89 5 is_stmt 1 view .LVU38
+ 136              		.loc 1 89 30 is_stmt 0 view .LVU39
+ 137 001c C361     		str	r3, [r0, #28]
+  90:Src/STM32F4xx/usart.c **** 
+  91:Src/STM32F4xx/usart.c ****     if (HAL_UART_Init(&huart3) != HAL_OK)
+ 138              		.loc 1 91 5 is_stmt 1 view .LVU40
+ 139              		.loc 1 91 9 is_stmt 0 view .LVU41
+ARM GAS  /tmp/ccBkAaDO.s 			page 5
+
+
+ 140 001e FFF7FEFF 		bl	HAL_UART_Init
+ 141              	.LVL2:
+ 142              		.loc 1 91 8 view .LVU42
+ 143 0022 00B9     		cbnz	r0, .L10
+ 144              	.L7:
+  92:Src/STM32F4xx/usart.c ****     {
+  93:Src/STM32F4xx/usart.c ****         Error_Handler();
+  94:Src/STM32F4xx/usart.c ****     }
+  95:Src/STM32F4xx/usart.c **** }
+ 145              		.loc 1 95 1 view .LVU43
+ 146 0024 08BD     		pop	{r3, pc}
+ 147              	.L10:
+  93:Src/STM32F4xx/usart.c ****     }
+ 148              		.loc 1 93 9 is_stmt 1 view .LVU44
+ 149 0026 FFF7FEFF 		bl	Error_Handler
+ 150              	.LVL3:
+ 151              		.loc 1 95 1 is_stmt 0 view .LVU45
+ 152 002a FBE7     		b	.L7
+ 153              	.L12:
+ 154              		.align	2
+ 155              	.L11:
+ 156 002c 00000000 		.word	huart3
+ 157 0030 00480040 		.word	1073760256
+ 158              		.cfi_endproc
+ 159              	.LFE134:
+ 161              		.section	.text.UART_Printf,"ax",%progbits
+ 162              		.align	1
+ 163              		.global	UART_Printf
+ 164              		.syntax unified
+ 165              		.thumb
+ 166              		.thumb_func
+ 167              		.fpu fpv4-sp-d16
+ 169              	UART_Printf:
+ 170              	.LVL4:
+ 171              	.LFB135:
+  96:Src/STM32F4xx/usart.c **** 
+  97:Src/STM32F4xx/usart.c **** /**
+  98:Src/STM32F4xx/usart.c ****  * @brief UART_Printf Function
+  99:Src/STM32F4xx/usart.c ****  * @param None
+ 100:Src/STM32F4xx/usart.c ****  * @retval None
+ 101:Src/STM32F4xx/usart.c ****  */
+ 102:Src/STM32F4xx/usart.c **** void UART_Printf(const char* fmt, ...)
+ 103:Src/STM32F4xx/usart.c **** {
+ 172              		.loc 1 103 1 is_stmt 1 view -0
+ 173              		.cfi_startproc
+ 174              		@ args = 4, pretend = 16, frame = 264
+ 175              		@ frame_needed = 0, uses_anonymous_args = 1
+ 176              		.loc 1 103 1 is_stmt 0 view .LVU47
+ 177 0000 0FB4     		push	{r0, r1, r2, r3}
+ 178              	.LCFI2:
+ 179              		.cfi_def_cfa_offset 16
+ 180              		.cfi_offset 0, -16
+ 181              		.cfi_offset 1, -12
+ 182              		.cfi_offset 2, -8
+ 183              		.cfi_offset 3, -4
+ 184 0002 00B5     		push	{lr}
+ 185              	.LCFI3:
+ARM GAS  /tmp/ccBkAaDO.s 			page 6
+
+
+ 186              		.cfi_def_cfa_offset 20
+ 187              		.cfi_offset 14, -20
+ 188 0004 C3B0     		sub	sp, sp, #268
+ 189              	.LCFI4:
+ 190              		.cfi_def_cfa_offset 288
+ 191 0006 44AB     		add	r3, sp, #272
+ 192 0008 53F8042B 		ldr	r2, [r3], #4
+ 104:Src/STM32F4xx/usart.c ****     char buff[USART2_TX_BUFF_MAX];
+ 193              		.loc 1 104 5 is_stmt 1 view .LVU48
+ 105:Src/STM32F4xx/usart.c ****     va_list args;
+ 194              		.loc 1 105 5 view .LVU49
+ 106:Src/STM32F4xx/usart.c ****     va_start(args, fmt);
+ 195              		.loc 1 106 5 view .LVU50
+ 196 000c 0193     		str	r3, [sp, #4]
+ 107:Src/STM32F4xx/usart.c ****     vsnprintf(buff, sizeof(buff), fmt, args);
+ 197              		.loc 1 107 5 view .LVU51
+ 198 000e 4FF48071 		mov	r1, #256
+ 199 0012 02A8     		add	r0, sp, #8
+ 200 0014 FFF7FEFF 		bl	vsnprintf
+ 201              	.LVL5:
+ 108:Src/STM32F4xx/usart.c ****     HAL_UART_Transmit(&huart2, (uint8_t*)buff, strlen(buff), HAL_MAX_DELAY);
+ 202              		.loc 1 108 5 view .LVU52
+ 203              		.loc 1 108 48 is_stmt 0 view .LVU53
+ 204 0018 02A8     		add	r0, sp, #8
+ 205 001a FFF7FEFF 		bl	strlen
+ 206              	.LVL6:
+ 207              		.loc 1 108 5 view .LVU54
+ 208 001e 4FF0FF33 		mov	r3, #-1
+ 209 0022 82B2     		uxth	r2, r0
+ 210 0024 02A9     		add	r1, sp, #8
+ 211 0026 0448     		ldr	r0, .L15
+ 212 0028 FFF7FEFF 		bl	HAL_UART_Transmit
+ 213              	.LVL7:
+ 109:Src/STM32F4xx/usart.c ****     va_end(args);
+ 214              		.loc 1 109 5 is_stmt 1 view .LVU55
+ 110:Src/STM32F4xx/usart.c **** }
+ 215              		.loc 1 110 1 is_stmt 0 view .LVU56
+ 216 002c 43B0     		add	sp, sp, #268
+ 217              	.LCFI5:
+ 218              		.cfi_def_cfa_offset 20
+ 219              		@ sp needed
+ 220 002e 5DF804EB 		ldr	lr, [sp], #4
+ 221              	.LCFI6:
+ 222              		.cfi_restore 14
+ 223              		.cfi_def_cfa_offset 16
+ 224 0032 04B0     		add	sp, sp, #16
+ 225              	.LCFI7:
+ 226              		.cfi_restore 3
+ 227              		.cfi_restore 2
+ 228              		.cfi_restore 1
+ 229              		.cfi_restore 0
+ 230              		.cfi_def_cfa_offset 0
+ 231 0034 7047     		bx	lr
+ 232              	.L16:
+ 233 0036 00BF     		.align	2
+ 234              	.L15:
+ 235 0038 00000000 		.word	huart2
+ARM GAS  /tmp/ccBkAaDO.s 			page 7
+
+
+ 236              		.cfi_endproc
+ 237              	.LFE135:
+ 239              		.section	.rodata.USART_TxWelcomeMessage.str1.4,"aMS",%progbits,1
+ 240              		.align	2
+ 241              	.LC0:
+ 242 0000 0A0D00   		.ascii	"\012\015\000"
+ 243 0003 00       		.align	2
+ 244              	.LC1:
+ 245 0004 204C6F52 		.ascii	" LoRaWAN-iMAS923TH (iM980A) Demo\012\015\000"
+ 245      6157414E 
+ 245      2D694D41 
+ 245      53393233 
+ 245      54482028 
+ 246 0027 00       		.align	2
+ 247              	.LC2:
+ 248 0028 202D2D2D 		.ascii	" -------------------------------------------\012\015"
+ 248      2D2D2D2D 
+ 248      2D2D2D2D 
+ 248      2D2D2D2D 
+ 248      2D2D2D2D 
+ 249 0056 00       		.ascii	"\000"
+ 250 0057 00       		.align	2
+ 251              	.LC3:
+ 252 0058 20694D41 		.ascii	" iMAS923TH Expansion Board for STM32F4-DISC1\012\015"
+ 252      53393233 
+ 252      54482045 
+ 252      7870616E 
+ 252      73696F6E 
+ 253 0086 0A0D00   		.ascii	"\012\015\000"
+ 254 0089 000000   		.align	2
+ 255              	.LC4:
+ 256 008c 20436F70 		.ascii	" Copyright 2018 @ EmOne; The MIT License (MIT)\012\015"
+ 256      79726967 
+ 256      68742032 
+ 256      30313820 
+ 256      4020456D 
+ 257 00bc 0A0D00   		.ascii	"\012\015\000"
+ 258 00bf 00       		.align	2
+ 259              	.LC5:
+ 260 00c0 2057656C 		.ascii	" Welcome to eMOD HCL example (WiMOD compatible)!!!\012"
+ 260      636F6D65 
+ 260      20746F20 
+ 260      654D4F44 
+ 260      2048434C 
+ 261 00f3 0D00     		.ascii	"\015\000"
+ 262              		.section	.text.USART_TxWelcomeMessage,"ax",%progbits
+ 263              		.align	1
+ 264              		.global	USART_TxWelcomeMessage
+ 265              		.syntax unified
+ 266              		.thumb
+ 267              		.thumb_func
+ 268              		.fpu fpv4-sp-d16
+ 270              	USART_TxWelcomeMessage:
+ 271              	.LFB137:
+ 111:Src/STM32F4xx/usart.c **** 
+ 112:Src/STM32F4xx/usart.c **** /**
+ 113:Src/STM32F4xx/usart.c ****  * @brief  show main menu
+ARM GAS  /tmp/ccBkAaDO.s 			page 8
+
+
+ 114:Src/STM32F4xx/usart.c ****  * @param  
+ 115:Src/STM32F4xx/usart.c ****  * @retval none
+ 116:Src/STM32F4xx/usart.c ****  */
+ 117:Src/STM32F4xx/usart.c **** void USART_ShowMenu(void)
+ 118:Src/STM32F4xx/usart.c **** {
+ 119:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "\n\r");
+ 120:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "------------------------------\n\r");
+ 121:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[SPACE] : show this menu\n\r");
+ 122:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[o]     : get OPMODE\n\r");
+ 123:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[m]     : set OPMODE\n\r");
+ 124:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[n]     : clear OPMODE\n\r");
+ 125:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[E]     : get DEV EUI\n\r");
+ 126:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[e]     : set DEV EUI (0x70B3D58FF101787C)\n\r");
+ 127:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[A]     : activate ABP\n\r");
+ 128:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[R]     : reactivate\n\r");
+ 129:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[D]     : deactivate\n\r");
+ 130:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[T]     : activate OTA\n\r");
+ 131:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[j]     : join network request\n\r");
+ 132:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[N]     : get network status\n\r");
+ 133:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[K]     : get Radio Stack Configuration\n\r");
+ 134:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[S]     : set Radio Stack Configuration\n\r");
+ 135:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[Q]     : get link ADR\n\r");
+ 136:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[W]     : set link ADR\n\r");
+ 137:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[G]     : get support band\n\r");
+ 138:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[C]     : get custom configuration\n\r");
+ 139:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[O]     : set custom configuration\n\r");
+ 140:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[t]     : get RTC\n\r");
+ 141:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[*]     : set RTC\n\r");
+ 142:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[a]     : get RTC alarm\n\r");
+ 143:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[+]     : set RTC alarm\n\r");
+ 144:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[-]     : clear RTC alarm\n\r");
+ 145:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[r]     : reset device\n\r");
+ 146:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[p]     : ping device\n\r");
+ 147:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[f]     : get firmware version\n\r");
+ 148:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[i]     : get device information\n\r");
+ 149:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[s]     : get device status\n\r");
+ 150:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[u]     : send unconfirmed radio message port 21 data 067104D2FB2E\n\r
+ 151:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[c]     : send confirmed radio message port 23 data 6701106700FF\n\r")
+ 152:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[Z]     : factory reset\n\r\n\r");
+ 153:Src/STM32F4xx/usart.c ****     /* printf("[e|x]   : exit program\n\r"); */
+ 154:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "-> enter command: ");
+ 155:Src/STM32F4xx/usart.c **** }
+ 156:Src/STM32F4xx/usart.c **** 
+ 157:Src/STM32F4xx/usart.c **** /**
+ 158:Src/STM32F4xx/usart.c ****  * @brief  Transmit the initial message to the PC which is connected to the
+ 159:Src/STM32F4xx/usart.c ****  *         STM32 board via UART.
+ 160:Src/STM32F4xx/usart.c ****  * @param  
+ 161:Src/STM32F4xx/usart.c ****  * @retval none
+ 162:Src/STM32F4xx/usart.c ****  */
+ 163:Src/STM32F4xx/usart.c **** void USART_TxWelcomeMessage(void)
+ 164:Src/STM32F4xx/usart.c **** {
+ 272              		.loc 1 164 1 is_stmt 1 view -0
+ 273              		.cfi_startproc
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 0, uses_anonymous_args = 0
+ 276 0000 08B5     		push	{r3, lr}
+ 277              	.LCFI8:
+ARM GAS  /tmp/ccBkAaDO.s 			page 9
+
+
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 3, -8
+ 280              		.cfi_offset 14, -4
+ 165:Src/STM32F4xx/usart.c ****     /* Send information to PC via USART */
+ 166:Src/STM32F4xx/usart.c ****     UART_Printf("\n\r");
+ 281              		.loc 1 166 5 view .LVU58
+ 282 0002 0948     		ldr	r0, .L19
+ 283 0004 FFF7FEFF 		bl	UART_Printf
+ 284              	.LVL8:
+ 167:Src/STM32F4xx/usart.c ****     UART_Printf(" LoRaWAN-iMAS923TH (iM980A) Demo\n\r");
+ 285              		.loc 1 167 5 view .LVU59
+ 286 0008 0848     		ldr	r0, .L19+4
+ 287 000a FFF7FEFF 		bl	UART_Printf
+ 288              	.LVL9:
+ 168:Src/STM32F4xx/usart.c ****     UART_Printf(" -------------------------------------------\n\r");
+ 289              		.loc 1 168 5 view .LVU60
+ 290 000e 0848     		ldr	r0, .L19+8
+ 291 0010 FFF7FEFF 		bl	UART_Printf
+ 292              	.LVL10:
+ 169:Src/STM32F4xx/usart.c ****     UART_Printf(" iMAS923TH Expansion Board for STM32F4-DISC1\n\r\n\r");
+ 293              		.loc 1 169 5 view .LVU61
+ 294 0014 0748     		ldr	r0, .L19+12
+ 295 0016 FFF7FEFF 		bl	UART_Printf
+ 296              	.LVL11:
+ 170:Src/STM32F4xx/usart.c ****     UART_Printf(" Copyright 2018 @ EmOne; The MIT License (MIT)\n\r\n\r");
+ 297              		.loc 1 170 5 view .LVU62
+ 298 001a 0748     		ldr	r0, .L19+16
+ 299 001c FFF7FEFF 		bl	UART_Printf
+ 300              	.LVL12:
+ 171:Src/STM32F4xx/usart.c ****     UART_Printf(" Welcome to eMOD HCL example (WiMOD compatible)!!!\n\r");
+ 301              		.loc 1 171 5 view .LVU63
+ 302 0020 0648     		ldr	r0, .L19+20
+ 303 0022 FFF7FEFF 		bl	UART_Printf
+ 304              	.LVL13:
+ 172:Src/STM32F4xx/usart.c **** }
+ 305              		.loc 1 172 1 is_stmt 0 view .LVU64
+ 306 0026 08BD     		pop	{r3, pc}
+ 307              	.L20:
+ 308              		.align	2
+ 309              	.L19:
+ 310 0028 00000000 		.word	.LC0
+ 311 002c 04000000 		.word	.LC1
+ 312 0030 28000000 		.word	.LC2
+ 313 0034 58000000 		.word	.LC3
+ 314 0038 8C000000 		.word	.LC4
+ 315 003c C0000000 		.word	.LC5
+ 316              		.cfi_endproc
+ 317              	.LFE137:
+ 319              		.section	.text.USART_Transmit_Data,"ax",%progbits
+ 320              		.align	1
+ 321              		.global	USART_Transmit_Data
+ 322              		.syntax unified
+ 323              		.thumb
+ 324              		.thumb_func
+ 325              		.fpu fpv4-sp-d16
+ 327              	USART_Transmit_Data:
+ 328              	.LVL14:
+ARM GAS  /tmp/ccBkAaDO.s 			page 10
+
+
+ 329              	.LFB138:
+ 173:Src/STM32F4xx/usart.c **** 
+ 174:Src/STM32F4xx/usart.c **** /**
+ 175:Src/STM32F4xx/usart.c ****  * @brief  Send string data via UART
+ 176:Src/STM32F4xx/usart.c ****  * @param  
+ 177:Src/STM32F4xx/usart.c ****  * @retval none
+ 178:Src/STM32F4xx/usart.c ****  */
+ 179:Src/STM32F4xx/usart.c **** void USART_Transmit_Data(UART_HandleTypeDef *huart, uint8_t *TextString)
+ 180:Src/STM32F4xx/usart.c **** {
+ 330              		.loc 1 180 1 is_stmt 1 view -0
+ 331              		.cfi_startproc
+ 332              		@ args = 0, pretend = 0, frame = 0
+ 333              		@ frame_needed = 0, uses_anonymous_args = 0
+ 334              		.loc 1 180 1 is_stmt 0 view .LVU66
+ 335 0000 10B5     		push	{r4, lr}
+ 336              	.LCFI9:
+ 337              		.cfi_def_cfa_offset 8
+ 338              		.cfi_offset 4, -8
+ 339              		.cfi_offset 14, -4
+ 181:Src/STM32F4xx/usart.c ****     uint8_t TextStringLength = 0U;
+ 340              		.loc 1 181 5 is_stmt 1 view .LVU67
+ 341              	.LVL15:
+ 182:Src/STM32F4xx/usart.c **** 
+ 183:Src/STM32F4xx/usart.c ****     /* Calculate the length of the text string to be sent */
+ 184:Src/STM32F4xx/usart.c ****     while (TextString[TextStringLength++] != '\0');
+ 342              		.loc 1 184 5 view .LVU68
+ 181:Src/STM32F4xx/usart.c ****     uint8_t TextStringLength = 0U;
+ 343              		.loc 1 181 13 is_stmt 0 view .LVU69
+ 344 0002 0023     		movs	r3, #0
+ 345              	.LVL16:
+ 346              	.L22:
+ 347              		.loc 1 184 51 is_stmt 1 discriminator 1 view .LVU70
+ 348              		.loc 1 184 11 discriminator 1 view .LVU71
+ 349 0004 1A46     		mov	r2, r3
+ 350              		.loc 1 184 39 is_stmt 0 discriminator 1 view .LVU72
+ 351 0006 0133     		adds	r3, r3, #1
+ 352              	.LVL17:
+ 353              		.loc 1 184 39 discriminator 1 view .LVU73
+ 354 0008 DBB2     		uxtb	r3, r3
+ 355              	.LVL18:
+ 356              		.loc 1 184 22 discriminator 1 view .LVU74
+ 357 000a 8C5C     		ldrb	r4, [r1, r2]	@ zero_extendqisi2
+ 358              		.loc 1 184 11 discriminator 1 view .LVU75
+ 359 000c 002C     		cmp	r4, #0
+ 360 000e F9D1     		bne	.L22
+ 185:Src/STM32F4xx/usart.c ****     TextStringLength--;
+ 361              		.loc 1 185 5 is_stmt 1 view .LVU76
+ 362              	.LVL19:
+ 186:Src/STM32F4xx/usart.c **** 
+ 187:Src/STM32F4xx/usart.c ****     /* Use the HAL function to send the text string via USART */
+ 188:Src/STM32F4xx/usart.c ****     HAL_UART_Transmit(huart, TextString, TextStringLength, HAL_MAX_DELAY);
+ 363              		.loc 1 188 5 view .LVU77
+ 364 0010 4FF0FF33 		mov	r3, #-1
+ 365 0014 FFF7FEFF 		bl	HAL_UART_Transmit
+ 366              	.LVL20:
+ 189:Src/STM32F4xx/usart.c **** }
+ 367              		.loc 1 189 1 is_stmt 0 view .LVU78
+ARM GAS  /tmp/ccBkAaDO.s 			page 11
+
+
+ 368 0018 10BD     		pop	{r4, pc}
+ 369              		.cfi_endproc
+ 370              	.LFE138:
+ 372              		.section	.text.USART_Transmit,"ax",%progbits
+ 373              		.align	1
+ 374              		.global	USART_Transmit
+ 375              		.syntax unified
+ 376              		.thumb
+ 377              		.thumb_func
+ 378              		.fpu fpv4-sp-d16
+ 380              	USART_Transmit:
+ 381              	.LVL21:
+ 382              	.LFB139:
+ 190:Src/STM32F4xx/usart.c **** 
+ 191:Src/STM32F4xx/usart.c **** /**
+ 192:Src/STM32F4xx/usart.c ****  * @brief  Send a text string via USART.
+ 193:Src/STM32F4xx/usart.c ****  * @param  huart       pointer to a UART_HandleTypeDef structure that contains
+ 194:Src/STM32F4xx/usart.c ****  *                     the configuration information for the specified UART module.
+ 195:Src/STM32F4xx/usart.c ****  * @param  TextString  The text string to be sent.
+ 196:Src/STM32F4xx/usart.c ****  * @note It use the HAL_UART_Transmit function.
+ 197:Src/STM32F4xx/usart.c ****  *
+ 198:Src/STM32F4xx/usart.c ****  * @retval none
+ 199:Src/STM32F4xx/usart.c ****  */
+ 200:Src/STM32F4xx/usart.c **** void USART_Transmit(UART_HandleTypeDef *huart, const char *data)
+ 201:Src/STM32F4xx/usart.c **** { 
+ 383              		.loc 1 201 1 is_stmt 1 view -0
+ 384              		.cfi_startproc
+ 385              		@ args = 0, pretend = 0, frame = 0
+ 386              		@ frame_needed = 0, uses_anonymous_args = 0
+ 387              		.loc 1 201 1 is_stmt 0 view .LVU80
+ 388 0000 08B5     		push	{r3, lr}
+ 389              	.LCFI10:
+ 390              		.cfi_def_cfa_offset 8
+ 391              		.cfi_offset 3, -8
+ 392              		.cfi_offset 14, -4
+ 202:Src/STM32F4xx/usart.c ****     USART_Transmit_Data(huart, (uint8_t *)data); 
+ 393              		.loc 1 202 5 is_stmt 1 view .LVU81
+ 394 0002 FFF7FEFF 		bl	USART_Transmit_Data
+ 395              	.LVL22:
+ 203:Src/STM32F4xx/usart.c **** }
+ 396              		.loc 1 203 1 is_stmt 0 view .LVU82
+ 397 0006 08BD     		pop	{r3, pc}
+ 398              		.cfi_endproc
+ 399              	.LFE139:
+ 401              		.section	.rodata.USART_ShowMenu.str1.4,"aMS",%progbits,1
+ 402              		.align	2
+ 403              	.LC6:
+ 404 0000 2D2D2D2D 		.ascii	"------------------------------\012\015\000"
+ 404      2D2D2D2D 
+ 404      2D2D2D2D 
+ 404      2D2D2D2D 
+ 404      2D2D2D2D 
+ 405 0021 000000   		.align	2
+ 406              	.LC7:
+ 407 0024 5B535041 		.ascii	"[SPACE] : show this menu\012\015\000"
+ 407      43455D20 
+ 407      3A207368 
+ARM GAS  /tmp/ccBkAaDO.s 			page 12
+
+
+ 407      6F772074 
+ 407      68697320 
+ 408 003f 00       		.align	2
+ 409              	.LC8:
+ 410 0040 5B6F5D20 		.ascii	"[o]     : get OPMODE\012\015\000"
+ 410      20202020 
+ 410      3A206765 
+ 410      74204F50 
+ 410      4D4F4445 
+ 411 0057 00       		.align	2
+ 412              	.LC9:
+ 413 0058 5B6D5D20 		.ascii	"[m]     : set OPMODE\012\015\000"
+ 413      20202020 
+ 413      3A207365 
+ 413      74204F50 
+ 413      4D4F4445 
+ 414 006f 00       		.align	2
+ 415              	.LC10:
+ 416 0070 5B6E5D20 		.ascii	"[n]     : clear OPMODE\012\015\000"
+ 416      20202020 
+ 416      3A20636C 
+ 416      65617220 
+ 416      4F504D4F 
+ 417 0089 000000   		.align	2
+ 418              	.LC11:
+ 419 008c 5B455D20 		.ascii	"[E]     : get DEV EUI\012\015\000"
+ 419      20202020 
+ 419      3A206765 
+ 419      74204445 
+ 419      56204555 
+ 420              		.align	2
+ 421              	.LC12:
+ 422 00a4 5B655D20 		.ascii	"[e]     : set DEV EUI (0x70B3D58FF101787C)\012\015\000"
+ 422      20202020 
+ 422      3A207365 
+ 422      74204445 
+ 422      56204555 
+ 423 00d1 000000   		.align	2
+ 424              	.LC13:
+ 425 00d4 5B415D20 		.ascii	"[A]     : activate ABP\012\015\000"
+ 425      20202020 
+ 425      3A206163 
+ 425      74697661 
+ 425      74652041 
+ 426 00ed 000000   		.align	2
+ 427              	.LC14:
+ 428 00f0 5B525D20 		.ascii	"[R]     : reactivate\012\015\000"
+ 428      20202020 
+ 428      3A207265 
+ 428      61637469 
+ 428      76617465 
+ 429 0107 00       		.align	2
+ 430              	.LC15:
+ 431 0108 5B445D20 		.ascii	"[D]     : deactivate\012\015\000"
+ 431      20202020 
+ 431      3A206465 
+ 431      61637469 
+ARM GAS  /tmp/ccBkAaDO.s 			page 13
+
+
+ 431      76617465 
+ 432 011f 00       		.align	2
+ 433              	.LC16:
+ 434 0120 5B545D20 		.ascii	"[T]     : activate OTA\012\015\000"
+ 434      20202020 
+ 434      3A206163 
+ 434      74697661 
+ 434      7465204F 
+ 435 0139 000000   		.align	2
+ 436              	.LC17:
+ 437 013c 5B6A5D20 		.ascii	"[j]     : join network request\012\015\000"
+ 437      20202020 
+ 437      3A206A6F 
+ 437      696E206E 
+ 437      6574776F 
+ 438 015d 000000   		.align	2
+ 439              	.LC18:
+ 440 0160 5B4E5D20 		.ascii	"[N]     : get network status\012\015\000"
+ 440      20202020 
+ 440      3A206765 
+ 440      74206E65 
+ 440      74776F72 
+ 441 017f 00       		.align	2
+ 442              	.LC19:
+ 443 0180 5B4B5D20 		.ascii	"[K]     : get Radio Stack Configuration\012\015\000"
+ 443      20202020 
+ 443      3A206765 
+ 443      74205261 
+ 443      64696F20 
+ 444 01aa 0000     		.align	2
+ 445              	.LC20:
+ 446 01ac 5B535D20 		.ascii	"[S]     : set Radio Stack Configuration\012\015\000"
+ 446      20202020 
+ 446      3A207365 
+ 446      74205261 
+ 446      64696F20 
+ 447 01d6 0000     		.align	2
+ 448              	.LC21:
+ 449 01d8 5B515D20 		.ascii	"[Q]     : get link ADR\012\015\000"
+ 449      20202020 
+ 449      3A206765 
+ 449      74206C69 
+ 449      6E6B2041 
+ 450 01f1 000000   		.align	2
+ 451              	.LC22:
+ 452 01f4 5B575D20 		.ascii	"[W]     : set link ADR\012\015\000"
+ 452      20202020 
+ 452      3A207365 
+ 452      74206C69 
+ 452      6E6B2041 
+ 453 020d 000000   		.align	2
+ 454              	.LC23:
+ 455 0210 5B475D20 		.ascii	"[G]     : get support band\012\015\000"
+ 455      20202020 
+ 455      3A206765 
+ 455      74207375 
+ 455      70706F72 
+ARM GAS  /tmp/ccBkAaDO.s 			page 14
+
+
+ 456 022d 000000   		.align	2
+ 457              	.LC24:
+ 458 0230 5B435D20 		.ascii	"[C]     : get custom configuration\012\015\000"
+ 458      20202020 
+ 458      3A206765 
+ 458      74206375 
+ 458      73746F6D 
+ 459 0255 000000   		.align	2
+ 460              	.LC25:
+ 461 0258 5B4F5D20 		.ascii	"[O]     : set custom configuration\012\015\000"
+ 461      20202020 
+ 461      3A207365 
+ 461      74206375 
+ 461      73746F6D 
+ 462 027d 000000   		.align	2
+ 463              	.LC26:
+ 464 0280 5B745D20 		.ascii	"[t]     : get RTC\012\015\000"
+ 464      20202020 
+ 464      3A206765 
+ 464      74205254 
+ 464      430A0D00 
+ 465              		.align	2
+ 466              	.LC27:
+ 467 0294 5B2A5D20 		.ascii	"[*]     : set RTC\012\015\000"
+ 467      20202020 
+ 467      3A207365 
+ 467      74205254 
+ 467      430A0D00 
+ 468              		.align	2
+ 469              	.LC28:
+ 470 02a8 5B615D20 		.ascii	"[a]     : get RTC alarm\012\015\000"
+ 470      20202020 
+ 470      3A206765 
+ 470      74205254 
+ 470      4320616C 
+ 471 02c2 0000     		.align	2
+ 472              	.LC29:
+ 473 02c4 5B2B5D20 		.ascii	"[+]     : set RTC alarm\012\015\000"
+ 473      20202020 
+ 473      3A207365 
+ 473      74205254 
+ 473      4320616C 
+ 474 02de 0000     		.align	2
+ 475              	.LC30:
+ 476 02e0 5B2D5D20 		.ascii	"[-]     : clear RTC alarm\012\015\000"
+ 476      20202020 
+ 476      3A20636C 
+ 476      65617220 
+ 476      52544320 
+ 477              		.align	2
+ 478              	.LC31:
+ 479 02fc 5B725D20 		.ascii	"[r]     : reset device\012\015\000"
+ 479      20202020 
+ 479      3A207265 
+ 479      73657420 
+ 479      64657669 
+ 480 0315 000000   		.align	2
+ARM GAS  /tmp/ccBkAaDO.s 			page 15
+
+
+ 481              	.LC32:
+ 482 0318 5B705D20 		.ascii	"[p]     : ping device\012\015\000"
+ 482      20202020 
+ 482      3A207069 
+ 482      6E672064 
+ 482      65766963 
+ 483              		.align	2
+ 484              	.LC33:
+ 485 0330 5B665D20 		.ascii	"[f]     : get firmware version\012\015\000"
+ 485      20202020 
+ 485      3A206765 
+ 485      74206669 
+ 485      726D7761 
+ 486 0351 000000   		.align	2
+ 487              	.LC34:
+ 488 0354 5B695D20 		.ascii	"[i]     : get device information\012\015\000"
+ 488      20202020 
+ 488      3A206765 
+ 488      74206465 
+ 488      76696365 
+ 489 0377 00       		.align	2
+ 490              	.LC35:
+ 491 0378 5B735D20 		.ascii	"[s]     : get device status\012\015\000"
+ 491      20202020 
+ 491      3A206765 
+ 491      74206465 
+ 491      76696365 
+ 492 0396 0000     		.align	2
+ 493              	.LC36:
+ 494 0398 5B755D20 		.ascii	"[u]     : send unconfirmed radio message port 21 da"
+ 494      20202020 
+ 494      3A207365 
+ 494      6E642075 
+ 494      6E636F6E 
+ 495 03cb 74612030 		.ascii	"ta 067104D2FB2E\012\015\000"
+ 495      36373130 
+ 495      34443246 
+ 495      4232450A 
+ 495      0D00
+ 496 03dd 000000   		.align	2
+ 497              	.LC37:
+ 498 03e0 5B635D20 		.ascii	"[c]     : send confirmed radio message port 23 data"
+ 498      20202020 
+ 498      3A207365 
+ 498      6E642063 
+ 498      6F6E6669 
+ 499 0413 20363730 		.ascii	" 6701106700FF\012\015\000"
+ 499      31313036 
+ 499      37303046 
+ 499      460A0D00 
+ 500 0423 00       		.align	2
+ 501              	.LC38:
+ 502 0424 5B5A5D20 		.ascii	"[Z]     : factory reset\012\015\012\015\000"
+ 502      20202020 
+ 502      3A206661 
+ 502      63746F72 
+ 502      79207265 
+ARM GAS  /tmp/ccBkAaDO.s 			page 16
+
+
+ 503              		.align	2
+ 504              	.LC39:
+ 505 0440 2D3E2065 		.ascii	"-> enter command: \000"
+ 505      6E746572 
+ 505      20636F6D 
+ 505      6D616E64 
+ 505      3A2000
+ 506              		.section	.text.USART_ShowMenu,"ax",%progbits
+ 507              		.align	1
+ 508              		.global	USART_ShowMenu
+ 509              		.syntax unified
+ 510              		.thumb
+ 511              		.thumb_func
+ 512              		.fpu fpv4-sp-d16
+ 514              	USART_ShowMenu:
+ 515              	.LFB136:
+ 118:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "\n\r");
+ 516              		.loc 1 118 1 is_stmt 1 view -0
+ 517              		.cfi_startproc
+ 518              		@ args = 0, pretend = 0, frame = 0
+ 519              		@ frame_needed = 0, uses_anonymous_args = 0
+ 520 0000 10B5     		push	{r4, lr}
+ 521              	.LCFI11:
+ 522              		.cfi_def_cfa_offset 8
+ 523              		.cfi_offset 4, -8
+ 524              		.cfi_offset 14, -4
+ 119:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "------------------------------\n\r");
+ 525              		.loc 1 119 5 view .LVU84
+ 526 0002 474C     		ldr	r4, .L28
+ 527 0004 4749     		ldr	r1, .L28+4
+ 528 0006 2046     		mov	r0, r4
+ 529 0008 FFF7FEFF 		bl	USART_Transmit
+ 530              	.LVL23:
+ 120:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[SPACE] : show this menu\n\r");
+ 531              		.loc 1 120 5 view .LVU85
+ 532 000c 4649     		ldr	r1, .L28+8
+ 533 000e 2046     		mov	r0, r4
+ 534 0010 FFF7FEFF 		bl	USART_Transmit
+ 535              	.LVL24:
+ 121:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[o]     : get OPMODE\n\r");
+ 536              		.loc 1 121 5 view .LVU86
+ 537 0014 4549     		ldr	r1, .L28+12
+ 538 0016 2046     		mov	r0, r4
+ 539 0018 FFF7FEFF 		bl	USART_Transmit
+ 540              	.LVL25:
+ 122:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[m]     : set OPMODE\n\r");
+ 541              		.loc 1 122 5 view .LVU87
+ 542 001c 4449     		ldr	r1, .L28+16
+ 543 001e 2046     		mov	r0, r4
+ 544 0020 FFF7FEFF 		bl	USART_Transmit
+ 545              	.LVL26:
+ 123:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[n]     : clear OPMODE\n\r");
+ 546              		.loc 1 123 5 view .LVU88
+ 547 0024 4349     		ldr	r1, .L28+20
+ 548 0026 2046     		mov	r0, r4
+ 549 0028 FFF7FEFF 		bl	USART_Transmit
+ 550              	.LVL27:
+ARM GAS  /tmp/ccBkAaDO.s 			page 17
+
+
+ 124:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[E]     : get DEV EUI\n\r");
+ 551              		.loc 1 124 5 view .LVU89
+ 552 002c 4249     		ldr	r1, .L28+24
+ 553 002e 2046     		mov	r0, r4
+ 554 0030 FFF7FEFF 		bl	USART_Transmit
+ 555              	.LVL28:
+ 125:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[e]     : set DEV EUI (0x70B3D58FF101787C)\n\r");
+ 556              		.loc 1 125 5 view .LVU90
+ 557 0034 4149     		ldr	r1, .L28+28
+ 558 0036 2046     		mov	r0, r4
+ 559 0038 FFF7FEFF 		bl	USART_Transmit
+ 560              	.LVL29:
+ 126:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[A]     : activate ABP\n\r");
+ 561              		.loc 1 126 5 view .LVU91
+ 562 003c 4049     		ldr	r1, .L28+32
+ 563 003e 2046     		mov	r0, r4
+ 564 0040 FFF7FEFF 		bl	USART_Transmit
+ 565              	.LVL30:
+ 127:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[R]     : reactivate\n\r");
+ 566              		.loc 1 127 5 view .LVU92
+ 567 0044 3F49     		ldr	r1, .L28+36
+ 568 0046 2046     		mov	r0, r4
+ 569 0048 FFF7FEFF 		bl	USART_Transmit
+ 570              	.LVL31:
+ 128:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[D]     : deactivate\n\r");
+ 571              		.loc 1 128 5 view .LVU93
+ 572 004c 3E49     		ldr	r1, .L28+40
+ 573 004e 2046     		mov	r0, r4
+ 574 0050 FFF7FEFF 		bl	USART_Transmit
+ 575              	.LVL32:
+ 129:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[T]     : activate OTA\n\r");
+ 576              		.loc 1 129 5 view .LVU94
+ 577 0054 3D49     		ldr	r1, .L28+44
+ 578 0056 2046     		mov	r0, r4
+ 579 0058 FFF7FEFF 		bl	USART_Transmit
+ 580              	.LVL33:
+ 130:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[j]     : join network request\n\r");
+ 581              		.loc 1 130 5 view .LVU95
+ 582 005c 3C49     		ldr	r1, .L28+48
+ 583 005e 2046     		mov	r0, r4
+ 584 0060 FFF7FEFF 		bl	USART_Transmit
+ 585              	.LVL34:
+ 131:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[N]     : get network status\n\r");
+ 586              		.loc 1 131 5 view .LVU96
+ 587 0064 3B49     		ldr	r1, .L28+52
+ 588 0066 2046     		mov	r0, r4
+ 589 0068 FFF7FEFF 		bl	USART_Transmit
+ 590              	.LVL35:
+ 132:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[K]     : get Radio Stack Configuration\n\r");
+ 591              		.loc 1 132 5 view .LVU97
+ 592 006c 3A49     		ldr	r1, .L28+56
+ 593 006e 2046     		mov	r0, r4
+ 594 0070 FFF7FEFF 		bl	USART_Transmit
+ 595              	.LVL36:
+ 133:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[S]     : set Radio Stack Configuration\n\r");
+ 596              		.loc 1 133 5 view .LVU98
+ 597 0074 3949     		ldr	r1, .L28+60
+ARM GAS  /tmp/ccBkAaDO.s 			page 18
+
+
+ 598 0076 2046     		mov	r0, r4
+ 599 0078 FFF7FEFF 		bl	USART_Transmit
+ 600              	.LVL37:
+ 134:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[Q]     : get link ADR\n\r");
+ 601              		.loc 1 134 5 view .LVU99
+ 602 007c 3849     		ldr	r1, .L28+64
+ 603 007e 2046     		mov	r0, r4
+ 604 0080 FFF7FEFF 		bl	USART_Transmit
+ 605              	.LVL38:
+ 135:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[W]     : set link ADR\n\r");
+ 606              		.loc 1 135 5 view .LVU100
+ 607 0084 3749     		ldr	r1, .L28+68
+ 608 0086 2046     		mov	r0, r4
+ 609 0088 FFF7FEFF 		bl	USART_Transmit
+ 610              	.LVL39:
+ 136:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[G]     : get support band\n\r");
+ 611              		.loc 1 136 5 view .LVU101
+ 612 008c 3649     		ldr	r1, .L28+72
+ 613 008e 2046     		mov	r0, r4
+ 614 0090 FFF7FEFF 		bl	USART_Transmit
+ 615              	.LVL40:
+ 137:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[C]     : get custom configuration\n\r");
+ 616              		.loc 1 137 5 view .LVU102
+ 617 0094 3549     		ldr	r1, .L28+76
+ 618 0096 2046     		mov	r0, r4
+ 619 0098 FFF7FEFF 		bl	USART_Transmit
+ 620              	.LVL41:
+ 138:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[O]     : set custom configuration\n\r");
+ 621              		.loc 1 138 5 view .LVU103
+ 622 009c 3449     		ldr	r1, .L28+80
+ 623 009e 2046     		mov	r0, r4
+ 624 00a0 FFF7FEFF 		bl	USART_Transmit
+ 625              	.LVL42:
+ 139:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[t]     : get RTC\n\r");
+ 626              		.loc 1 139 5 view .LVU104
+ 627 00a4 3349     		ldr	r1, .L28+84
+ 628 00a6 2046     		mov	r0, r4
+ 629 00a8 FFF7FEFF 		bl	USART_Transmit
+ 630              	.LVL43:
+ 140:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[*]     : set RTC\n\r");
+ 631              		.loc 1 140 5 view .LVU105
+ 632 00ac 3249     		ldr	r1, .L28+88
+ 633 00ae 2046     		mov	r0, r4
+ 634 00b0 FFF7FEFF 		bl	USART_Transmit
+ 635              	.LVL44:
+ 141:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[a]     : get RTC alarm\n\r");
+ 636              		.loc 1 141 5 view .LVU106
+ 637 00b4 3149     		ldr	r1, .L28+92
+ 638 00b6 2046     		mov	r0, r4
+ 639 00b8 FFF7FEFF 		bl	USART_Transmit
+ 640              	.LVL45:
+ 142:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[+]     : set RTC alarm\n\r");
+ 641              		.loc 1 142 5 view .LVU107
+ 642 00bc 3049     		ldr	r1, .L28+96
+ 643 00be 2046     		mov	r0, r4
+ 644 00c0 FFF7FEFF 		bl	USART_Transmit
+ 645              	.LVL46:
+ARM GAS  /tmp/ccBkAaDO.s 			page 19
+
+
+ 143:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[-]     : clear RTC alarm\n\r");
+ 646              		.loc 1 143 5 view .LVU108
+ 647 00c4 2F49     		ldr	r1, .L28+100
+ 648 00c6 2046     		mov	r0, r4
+ 649 00c8 FFF7FEFF 		bl	USART_Transmit
+ 650              	.LVL47:
+ 144:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[r]     : reset device\n\r");
+ 651              		.loc 1 144 5 view .LVU109
+ 652 00cc 2E49     		ldr	r1, .L28+104
+ 653 00ce 2046     		mov	r0, r4
+ 654 00d0 FFF7FEFF 		bl	USART_Transmit
+ 655              	.LVL48:
+ 145:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[p]     : ping device\n\r");
+ 656              		.loc 1 145 5 view .LVU110
+ 657 00d4 2D49     		ldr	r1, .L28+108
+ 658 00d6 2046     		mov	r0, r4
+ 659 00d8 FFF7FEFF 		bl	USART_Transmit
+ 660              	.LVL49:
+ 146:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[f]     : get firmware version\n\r");
+ 661              		.loc 1 146 5 view .LVU111
+ 662 00dc 2C49     		ldr	r1, .L28+112
+ 663 00de 2046     		mov	r0, r4
+ 664 00e0 FFF7FEFF 		bl	USART_Transmit
+ 665              	.LVL50:
+ 147:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[i]     : get device information\n\r");
+ 666              		.loc 1 147 5 view .LVU112
+ 667 00e4 2B49     		ldr	r1, .L28+116
+ 668 00e6 2046     		mov	r0, r4
+ 669 00e8 FFF7FEFF 		bl	USART_Transmit
+ 670              	.LVL51:
+ 148:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[s]     : get device status\n\r");
+ 671              		.loc 1 148 5 view .LVU113
+ 672 00ec 2A49     		ldr	r1, .L28+120
+ 673 00ee 2046     		mov	r0, r4
+ 674 00f0 FFF7FEFF 		bl	USART_Transmit
+ 675              	.LVL52:
+ 149:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[u]     : send unconfirmed radio message port 21 data 067104D2FB2E\n\r
+ 676              		.loc 1 149 5 view .LVU114
+ 677 00f4 2949     		ldr	r1, .L28+124
+ 678 00f6 2046     		mov	r0, r4
+ 679 00f8 FFF7FEFF 		bl	USART_Transmit
+ 680              	.LVL53:
+ 150:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[c]     : send confirmed radio message port 23 data 6701106700FF\n\r")
+ 681              		.loc 1 150 5 view .LVU115
+ 682 00fc 2849     		ldr	r1, .L28+128
+ 683 00fe 2046     		mov	r0, r4
+ 684 0100 FFF7FEFF 		bl	USART_Transmit
+ 685              	.LVL54:
+ 151:Src/STM32F4xx/usart.c ****     USART_Transmit(&huart2, "[Z]     : factory reset\n\r\n\r");
+ 686              		.loc 1 151 5 view .LVU116
+ 687 0104 2749     		ldr	r1, .L28+132
+ 688 0106 2046     		mov	r0, r4
+ 689 0108 FFF7FEFF 		bl	USART_Transmit
+ 690              	.LVL55:
+ 152:Src/STM32F4xx/usart.c ****     /* printf("[e|x]   : exit program\n\r"); */
+ 691              		.loc 1 152 5 view .LVU117
+ 692 010c 2649     		ldr	r1, .L28+136
+ARM GAS  /tmp/ccBkAaDO.s 			page 20
+
+
+ 693 010e 2046     		mov	r0, r4
+ 694 0110 FFF7FEFF 		bl	USART_Transmit
+ 695              	.LVL56:
+ 154:Src/STM32F4xx/usart.c **** }
+ 696              		.loc 1 154 5 view .LVU118
+ 697 0114 2549     		ldr	r1, .L28+140
+ 698 0116 2046     		mov	r0, r4
+ 699 0118 FFF7FEFF 		bl	USART_Transmit
+ 700              	.LVL57:
+ 155:Src/STM32F4xx/usart.c **** 
+ 701              		.loc 1 155 1 is_stmt 0 view .LVU119
+ 702 011c 10BD     		pop	{r4, pc}
+ 703              	.L29:
+ 704 011e 00BF     		.align	2
+ 705              	.L28:
+ 706 0120 00000000 		.word	huart2
+ 707 0124 00000000 		.word	.LC0
+ 708 0128 00000000 		.word	.LC6
+ 709 012c 24000000 		.word	.LC7
+ 710 0130 40000000 		.word	.LC8
+ 711 0134 58000000 		.word	.LC9
+ 712 0138 70000000 		.word	.LC10
+ 713 013c 8C000000 		.word	.LC11
+ 714 0140 A4000000 		.word	.LC12
+ 715 0144 D4000000 		.word	.LC13
+ 716 0148 F0000000 		.word	.LC14
+ 717 014c 08010000 		.word	.LC15
+ 718 0150 20010000 		.word	.LC16
+ 719 0154 3C010000 		.word	.LC17
+ 720 0158 60010000 		.word	.LC18
+ 721 015c 80010000 		.word	.LC19
+ 722 0160 AC010000 		.word	.LC20
+ 723 0164 D8010000 		.word	.LC21
+ 724 0168 F4010000 		.word	.LC22
+ 725 016c 10020000 		.word	.LC23
+ 726 0170 30020000 		.word	.LC24
+ 727 0174 58020000 		.word	.LC25
+ 728 0178 80020000 		.word	.LC26
+ 729 017c 94020000 		.word	.LC27
+ 730 0180 A8020000 		.word	.LC28
+ 731 0184 C4020000 		.word	.LC29
+ 732 0188 E0020000 		.word	.LC30
+ 733 018c FC020000 		.word	.LC31
+ 734 0190 18030000 		.word	.LC32
+ 735 0194 30030000 		.word	.LC33
+ 736 0198 54030000 		.word	.LC34
+ 737 019c 78030000 		.word	.LC35
+ 738 01a0 98030000 		.word	.LC36
+ 739 01a4 E0030000 		.word	.LC37
+ 740 01a8 24040000 		.word	.LC38
+ 741 01ac 40040000 		.word	.LC39
+ 742              		.cfi_endproc
+ 743              	.LFE136:
+ 745              		.section	.text.USART_ITCharManager,"ax",%progbits
+ 746              		.align	1
+ 747              		.global	USART_ITCharManager
+ 748              		.syntax unified
+ARM GAS  /tmp/ccBkAaDO.s 			page 21
+
+
+ 749              		.thumb
+ 750              		.thumb_func
+ 751              		.fpu fpv4-sp-d16
+ 753              	USART_ITCharManager:
+ 754              	.LVL58:
+ 755              	.LFB140:
+ 204:Src/STM32F4xx/usart.c **** 
+ 205:Src/STM32F4xx/usart.c **** /**
+ 206:Src/STM32F4xx/usart.c ****  * @brief  Handle text character just received.
+ 207:Src/STM32F4xx/usart.c ****  * @param  huart pointer to a UART_HandleTypeDef structure that contains
+ 208:Src/STM32F4xx/usart.c ****  *               the configuration information for the specified UART module.
+ 209:Src/STM32F4xx/usart.c ****  * @note To use inside USARx_IRQHandler function.
+ 210:Src/STM32F4xx/usart.c ****  *
+ 211:Src/STM32F4xx/usart.c ****  * @retval none
+ 212:Src/STM32F4xx/usart.c ****  */
+ 213:Src/STM32F4xx/usart.c **** void USART_ITCharManager(UART_HandleTypeDef *huart)
+ 214:Src/STM32F4xx/usart.c **** {
+ 756              		.loc 1 214 1 is_stmt 1 view -0
+ 757              		.cfi_startproc
+ 758              		@ args = 0, pretend = 0, frame = 0
+ 759              		@ frame_needed = 0, uses_anonymous_args = 0
+ 760              		.loc 1 214 1 is_stmt 0 view .LVU121
+ 761 0000 10B5     		push	{r4, lr}
+ 762              	.LCFI12:
+ 763              		.cfi_def_cfa_offset 8
+ 764              		.cfi_offset 4, -8
+ 765              		.cfi_offset 14, -4
+ 766 0002 0446     		mov	r4, r0
+ 215:Src/STM32F4xx/usart.c ****     uint8_t UART_Receive_IT_Char;
+ 767              		.loc 1 215 5 is_stmt 1 view .LVU122
+ 216:Src/STM32F4xx/usart.c **** 
+ 217:Src/STM32F4xx/usart.c ****     UART_Receive_IT_Char = (uint8_t)(huart->Instance->USART_DATA_REGISTER);
+ 768              		.loc 1 217 5 view .LVU123
+ 769              		.loc 1 217 43 is_stmt 0 view .LVU124
+ 770 0004 0368     		ldr	r3, [r0]
+ 771              		.loc 1 217 53 view .LVU125
+ 772 0006 5A68     		ldr	r2, [r3, #4]
+ 773              	.LVL59:
+ 218:Src/STM32F4xx/usart.c ****     /* Checks the buffer full or return carriage  */
+ 219:Src/STM32F4xx/usart.c ****     if ((huart->RxXferCount == 1U) || (UART_Receive_IT_Char == '\r'))
+ 774              		.loc 1 219 5 is_stmt 1 view .LVU126
+ 775              		.loc 1 219 15 is_stmt 0 view .LVU127
+ 776 0008 C38D     		ldrh	r3, [r0, #46]
+ 777 000a 9BB2     		uxth	r3, r3
+ 778              		.loc 1 219 8 view .LVU128
+ 779 000c 012B     		cmp	r3, #1
+ 780 000e 03D0     		beq	.L31
+ 781 0010 D2B2     		uxtb	r2, r2
+ 782              		.loc 1 219 36 discriminator 1 view .LVU129
+ 783 0012 0D2A     		cmp	r2, #13
+ 784 0014 00D0     		beq	.L31
+ 785              	.LVL60:
+ 786              	.L30:
+ 220:Src/STM32F4xx/usart.c ****     {
+ 221:Src/STM32F4xx/usart.c ****         huart->RxXferCount += 1U;
+ 222:Src/STM32F4xx/usart.c ****         huart->pRxBuffPtr -= 1U;
+ 223:Src/STM32F4xx/usart.c ****         *(huart->pRxBuffPtr) = '\0';
+ARM GAS  /tmp/ccBkAaDO.s 			page 22
+
+
+ 224:Src/STM32F4xx/usart.c **** 
+ 225:Src/STM32F4xx/usart.c ****         USART_Transmit(huart, "\n\r");
+ 226:Src/STM32F4xx/usart.c ****         while (HAL_IS_BIT_SET(huart->Instance->USART_STATUS_REGISTER, UART_FLAG_RXNE))
+ 227:Src/STM32F4xx/usart.c ****         {
+ 228:Src/STM32F4xx/usart.c ****         }
+ 229:Src/STM32F4xx/usart.c **** 
+ 230:Src/STM32F4xx/usart.c ****         __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
+ 231:Src/STM32F4xx/usart.c **** 
+ 232:Src/STM32F4xx/usart.c ****         /* Check if a transmit process is ongoing or not */
+ 233:Src/STM32F4xx/usart.c ****         if (huart->gState == HAL_UART_STATE_BUSY_TX_RX)
+ 234:Src/STM32F4xx/usart.c ****         {
+ 235:Src/STM32F4xx/usart.c ****             huart->gState = HAL_UART_STATE_BUSY_TX;
+ 236:Src/STM32F4xx/usart.c ****         }
+ 237:Src/STM32F4xx/usart.c ****         else
+ 238:Src/STM32F4xx/usart.c ****         {
+ 239:Src/STM32F4xx/usart.c ****             /* Disable the UART Parity Error Interrupt */
+ 240:Src/STM32F4xx/usart.c ****             __HAL_UART_DISABLE_IT(huart, UART_IT_PE);
+ 241:Src/STM32F4xx/usart.c **** 
+ 242:Src/STM32F4xx/usart.c ****             /* Disable the UART Error Interrupt: (Frame error, noise error, overrun error) */
+ 243:Src/STM32F4xx/usart.c ****             __HAL_UART_DISABLE_IT(huart, UART_IT_ERR);
+ 244:Src/STM32F4xx/usart.c **** 
+ 245:Src/STM32F4xx/usart.c ****             huart->gState = HAL_UART_STATE_READY;
+ 246:Src/STM32F4xx/usart.c ****         }
+ 247:Src/STM32F4xx/usart.c ****     }
+ 248:Src/STM32F4xx/usart.c **** }
+ 787              		.loc 1 248 1 view .LVU130
+ 788 0016 10BD     		pop	{r4, pc}
+ 789              	.LVL61:
+ 790              	.L31:
+ 221:Src/STM32F4xx/usart.c ****         huart->pRxBuffPtr -= 1U;
+ 791              		.loc 1 221 9 is_stmt 1 view .LVU131
+ 221:Src/STM32F4xx/usart.c ****         huart->pRxBuffPtr -= 1U;
+ 792              		.loc 1 221 28 is_stmt 0 view .LVU132
+ 793 0018 E38D     		ldrh	r3, [r4, #46]
+ 794 001a 9BB2     		uxth	r3, r3
+ 795 001c 0133     		adds	r3, r3, #1
+ 796 001e 9BB2     		uxth	r3, r3
+ 797 0020 E385     		strh	r3, [r4, #46]	@ movhi
+ 222:Src/STM32F4xx/usart.c ****         *(huart->pRxBuffPtr) = '\0';
+ 798              		.loc 1 222 9 is_stmt 1 view .LVU133
+ 222:Src/STM32F4xx/usart.c ****         *(huart->pRxBuffPtr) = '\0';
+ 799              		.loc 1 222 27 is_stmt 0 view .LVU134
+ 800 0022 A36A     		ldr	r3, [r4, #40]
+ 801 0024 5A1E     		subs	r2, r3, #1
+ 802 0026 A262     		str	r2, [r4, #40]
+ 223:Src/STM32F4xx/usart.c **** 
+ 803              		.loc 1 223 9 is_stmt 1 view .LVU135
+ 223:Src/STM32F4xx/usart.c **** 
+ 804              		.loc 1 223 30 is_stmt 0 view .LVU136
+ 805 0028 0022     		movs	r2, #0
+ 806 002a 03F8012C 		strb	r2, [r3, #-1]
+ 225:Src/STM32F4xx/usart.c ****         while (HAL_IS_BIT_SET(huart->Instance->USART_STATUS_REGISTER, UART_FLAG_RXNE))
+ 807              		.loc 1 225 9 is_stmt 1 view .LVU137
+ 808 002e 1249     		ldr	r1, .L37
+ 809 0030 2046     		mov	r0, r4
+ 810              	.LVL62:
+ 225:Src/STM32F4xx/usart.c ****         while (HAL_IS_BIT_SET(huart->Instance->USART_STATUS_REGISTER, UART_FLAG_RXNE))
+ARM GAS  /tmp/ccBkAaDO.s 			page 23
+
+
+ 811              		.loc 1 225 9 is_stmt 0 view .LVU138
+ 812 0032 FFF7FEFF 		bl	USART_Transmit
+ 813              	.LVL63:
+ 226:Src/STM32F4xx/usart.c ****         {
+ 814              		.loc 1 226 9 is_stmt 1 view .LVU139
+ 815              	.L33:
+ 228:Src/STM32F4xx/usart.c **** 
+ 816              		.loc 1 228 9 discriminator 1 view .LVU140
+ 226:Src/STM32F4xx/usart.c ****         {
+ 817              		.loc 1 226 15 discriminator 1 view .LVU141
+ 226:Src/STM32F4xx/usart.c ****         {
+ 818              		.loc 1 226 16 is_stmt 0 discriminator 1 view .LVU142
+ 819 0036 2368     		ldr	r3, [r4]
+ 820 0038 1A68     		ldr	r2, [r3]
+ 226:Src/STM32F4xx/usart.c ****         {
+ 821              		.loc 1 226 15 discriminator 1 view .LVU143
+ 822 003a 12F0200F 		tst	r2, #32
+ 823 003e FAD1     		bne	.L33
+ 230:Src/STM32F4xx/usart.c **** 
+ 824              		.loc 1 230 9 is_stmt 1 view .LVU144
+ 825 0040 DA68     		ldr	r2, [r3, #12]
+ 826 0042 22F02002 		bic	r2, r2, #32
+ 827 0046 DA60     		str	r2, [r3, #12]
+ 233:Src/STM32F4xx/usart.c ****         {
+ 828              		.loc 1 233 9 view .LVU145
+ 233:Src/STM32F4xx/usart.c ****         {
+ 829              		.loc 1 233 18 is_stmt 0 view .LVU146
+ 830 0048 94F83930 		ldrb	r3, [r4, #57]	@ zero_extendqisi2
+ 831 004c DBB2     		uxtb	r3, r3
+ 233:Src/STM32F4xx/usart.c ****         {
+ 832              		.loc 1 233 12 view .LVU147
+ 833 004e 232B     		cmp	r3, #35
+ 834 0050 0DD0     		beq	.L36
+ 240:Src/STM32F4xx/usart.c **** 
+ 835              		.loc 1 240 13 is_stmt 1 view .LVU148
+ 836 0052 2268     		ldr	r2, [r4]
+ 837 0054 D368     		ldr	r3, [r2, #12]
+ 838 0056 23F48073 		bic	r3, r3, #256
+ 839 005a D360     		str	r3, [r2, #12]
+ 243:Src/STM32F4xx/usart.c **** 
+ 840              		.loc 1 243 13 view .LVU149
+ 841 005c 2268     		ldr	r2, [r4]
+ 842 005e 5369     		ldr	r3, [r2, #20]
+ 843 0060 23F00103 		bic	r3, r3, #1
+ 844 0064 5361     		str	r3, [r2, #20]
+ 245:Src/STM32F4xx/usart.c ****         }
+ 845              		.loc 1 245 13 view .LVU150
+ 245:Src/STM32F4xx/usart.c ****         }
+ 846              		.loc 1 245 27 is_stmt 0 view .LVU151
+ 847 0066 2023     		movs	r3, #32
+ 848 0068 84F83930 		strb	r3, [r4, #57]
+ 849              		.loc 1 248 1 view .LVU152
+ 850 006c D3E7     		b	.L30
+ 851              	.L36:
+ 235:Src/STM32F4xx/usart.c ****         }
+ 852              		.loc 1 235 13 is_stmt 1 view .LVU153
+ 235:Src/STM32F4xx/usart.c ****         }
+ARM GAS  /tmp/ccBkAaDO.s 			page 24
+
+
+ 853              		.loc 1 235 27 is_stmt 0 view .LVU154
+ 854 006e 2123     		movs	r3, #33
+ 855 0070 84F83930 		strb	r3, [r4, #57]
+ 856 0074 CFE7     		b	.L30
+ 857              	.L38:
+ 858 0076 00BF     		.align	2
+ 859              	.L37:
+ 860 0078 00000000 		.word	.LC0
+ 861              		.cfi_endproc
+ 862              	.LFE140:
+ 864              		.section	.text.str2num,"ax",%progbits
+ 865              		.align	1
+ 866              		.global	str2num
+ 867              		.syntax unified
+ 868              		.thumb
+ 869              		.thumb_func
+ 870              		.fpu fpv4-sp-d16
+ 872              	str2num:
+ 873              	.LVL64:
+ 874              	.LFB141:
+ 249:Src/STM32F4xx/usart.c **** 
+ 250:Src/STM32F4xx/usart.c **** /**
+ 251:Src/STM32F4xx/usart.c ****  * @brief  This function converts a text string into a number.
+ 252:Src/STM32F4xx/usart.c ****  * @param  str       The pointer to the text string to convert.
+ 253:Src/STM32F4xx/usart.c ****  * @param  pnum      The pointer to the numerical variable.
+ 254:Src/STM32F4xx/usart.c ****  * @retval FlagStatus  SET or RESET related to the conversion.
+ 255:Src/STM32F4xx/usart.c ****  *
+ 256:Src/STM32F4xx/usart.c ****  * @retval enum 
+ 257:Src/STM32F4xx/usart.c ****  */
+ 258:Src/STM32F4xx/usart.c **** FlagStatus str2num(uint8_t *str, uint32_t *pnum)
+ 259:Src/STM32F4xx/usart.c **** {
+ 875              		.loc 1 259 1 is_stmt 1 view -0
+ 876              		.cfi_startproc
+ 877              		@ args = 0, pretend = 0, frame = 0
+ 878              		@ frame_needed = 0, uses_anonymous_args = 0
+ 879              		@ link register save eliminated.
+ 260:Src/STM32F4xx/usart.c ****     uint8_t  TxtStr_digit = 0U;
+ 880              		.loc 1 260 5 view .LVU156
+ 261:Src/STM32F4xx/usart.c ****     uint8_t  digit        = 0U;
+ 881              		.loc 1 261 5 view .LVU157
+ 262:Src/STM32F4xx/usart.c ****     uint32_t tenpwr       = 0U;
+ 882              		.loc 1 262 5 view .LVU158
+ 263:Src/STM32F4xx/usart.c ****     uint32_t number       = 0U;
+ 883              		.loc 1 263 5 view .LVU159
+ 264:Src/STM32F4xx/usart.c **** 
+ 265:Src/STM32F4xx/usart.c ****     while (*(str + digit) != '\0')
+ 884              		.loc 1 265 5 view .LVU160
+ 261:Src/STM32F4xx/usart.c ****     uint32_t tenpwr       = 0U;
+ 885              		.loc 1 261 14 is_stmt 0 view .LVU161
+ 886 0000 0023     		movs	r3, #0
+ 887              	.LVL65:
+ 888              	.L40:
+ 889              		.loc 1 265 11 is_stmt 1 view .LVU162
+ 890              		.loc 1 265 12 is_stmt 0 view .LVU163
+ 891 0002 C25C     		ldrb	r2, [r0, r3]	@ zero_extendqisi2
+ 892              		.loc 1 265 11 view .LVU164
+ 893 0004 4AB1     		cbz	r2, .L49
+ARM GAS  /tmp/ccBkAaDO.s 			page 25
+
+
+ 266:Src/STM32F4xx/usart.c ****     {
+ 267:Src/STM32F4xx/usart.c ****         if (((*(str + digit) >= '0') && (*(str + digit) <= '9')))
+ 894              		.loc 1 267 9 is_stmt 1 view .LVU165
+ 895              		.loc 1 267 38 is_stmt 0 view .LVU166
+ 896 0006 303A     		subs	r2, r2, #48
+ 897 0008 D2B2     		uxtb	r2, r2
+ 898              		.loc 1 267 12 view .LVU167
+ 899 000a 092A     		cmp	r2, #9
+ 900 000c 02D8     		bhi	.L41
+ 268:Src/STM32F4xx/usart.c ****         {
+ 269:Src/STM32F4xx/usart.c ****             digit++;
+ 901              		.loc 1 269 13 is_stmt 1 view .LVU168
+ 902              		.loc 1 269 18 is_stmt 0 view .LVU169
+ 903 000e 0133     		adds	r3, r3, #1
+ 904              	.LVL66:
+ 905              		.loc 1 269 18 view .LVU170
+ 906 0010 DBB2     		uxtb	r3, r3
+ 907              	.LVL67:
+ 908              		.loc 1 269 18 view .LVU171
+ 909 0012 F6E7     		b	.L40
+ 910              	.L41:
+ 270:Src/STM32F4xx/usart.c ****         }
+ 271:Src/STM32F4xx/usart.c ****         else
+ 272:Src/STM32F4xx/usart.c ****         {
+ 273:Src/STM32F4xx/usart.c ****             *pnum = 0U;
+ 911              		.loc 1 273 13 is_stmt 1 view .LVU172
+ 912              		.loc 1 273 19 is_stmt 0 view .LVU173
+ 913 0014 0020     		movs	r0, #0
+ 914              	.LVL68:
+ 915              		.loc 1 273 19 view .LVU174
+ 916 0016 0860     		str	r0, [r1]
+ 274:Src/STM32F4xx/usart.c ****             return RESET;
+ 917              		.loc 1 274 13 is_stmt 1 view .LVU175
+ 275:Src/STM32F4xx/usart.c ****         }
+ 276:Src/STM32F4xx/usart.c ****     }
+ 277:Src/STM32F4xx/usart.c **** 
+ 278:Src/STM32F4xx/usart.c ****     tenpwr = 1U;
+ 279:Src/STM32F4xx/usart.c ****     number = 0U;
+ 280:Src/STM32F4xx/usart.c **** 
+ 281:Src/STM32F4xx/usart.c ****     do
+ 282:Src/STM32F4xx/usart.c ****     {
+ 283:Src/STM32F4xx/usart.c ****         TxtStr_digit = (*(str + (--digit)));
+ 284:Src/STM32F4xx/usart.c ****         number += ((TxtStr_digit - '0') * tenpwr);
+ 285:Src/STM32F4xx/usart.c ****         tenpwr *= 10U;
+ 286:Src/STM32F4xx/usart.c ****     } while (digit);
+ 287:Src/STM32F4xx/usart.c **** 
+ 288:Src/STM32F4xx/usart.c ****     *pnum = number;
+ 289:Src/STM32F4xx/usart.c ****     return SET;
+ 290:Src/STM32F4xx/usart.c **** }
+ 918              		.loc 1 290 1 is_stmt 0 view .LVU176
+ 919 0018 7047     		bx	lr
+ 920              	.LVL69:
+ 921              	.L49:
+ 259:Src/STM32F4xx/usart.c ****     uint8_t  TxtStr_digit = 0U;
+ 922              		.loc 1 259 1 view .LVU177
+ 923 001a 30B4     		push	{r4, r5}
+ 924              	.LCFI13:
+ARM GAS  /tmp/ccBkAaDO.s 			page 26
+
+
+ 925              		.cfi_def_cfa_offset 8
+ 926              		.cfi_offset 4, -8
+ 927              		.cfi_offset 5, -4
+ 279:Src/STM32F4xx/usart.c **** 
+ 928              		.loc 1 279 12 view .LVU178
+ 929 001c 0025     		movs	r5, #0
+ 278:Src/STM32F4xx/usart.c ****     number = 0U;
+ 930              		.loc 1 278 12 view .LVU179
+ 931 001e 0122     		movs	r2, #1
+ 932              	.LVL70:
+ 933              	.L44:
+ 281:Src/STM32F4xx/usart.c ****     {
+ 934              		.loc 1 281 5 is_stmt 1 discriminator 1 view .LVU180
+ 283:Src/STM32F4xx/usart.c ****         number += ((TxtStr_digit - '0') * tenpwr);
+ 935              		.loc 1 283 9 discriminator 1 view .LVU181
+ 283:Src/STM32F4xx/usart.c ****         number += ((TxtStr_digit - '0') * tenpwr);
+ 936              		.loc 1 283 22 is_stmt 0 discriminator 1 view .LVU182
+ 937 0020 013B     		subs	r3, r3, #1
+ 938              	.LVL71:
+ 283:Src/STM32F4xx/usart.c ****         number += ((TxtStr_digit - '0') * tenpwr);
+ 939              		.loc 1 283 22 discriminator 1 view .LVU183
+ 940 0022 DBB2     		uxtb	r3, r3
+ 941              	.LVL72:
+ 283:Src/STM32F4xx/usart.c ****         number += ((TxtStr_digit - '0') * tenpwr);
+ 942              		.loc 1 283 22 discriminator 1 view .LVU184
+ 943 0024 C45C     		ldrb	r4, [r0, r3]	@ zero_extendqisi2
+ 944              	.LVL73:
+ 284:Src/STM32F4xx/usart.c ****         tenpwr *= 10U;
+ 945              		.loc 1 284 9 is_stmt 1 discriminator 1 view .LVU185
+ 284:Src/STM32F4xx/usart.c ****         tenpwr *= 10U;
+ 946              		.loc 1 284 34 is_stmt 0 discriminator 1 view .LVU186
+ 947 0026 303C     		subs	r4, r4, #48
+ 948              	.LVL74:
+ 284:Src/STM32F4xx/usart.c ****         tenpwr *= 10U;
+ 949              		.loc 1 284 16 discriminator 1 view .LVU187
+ 950 0028 02FB0455 		mla	r5, r2, r4, r5
+ 951              	.LVL75:
+ 285:Src/STM32F4xx/usart.c ****     } while (digit);
+ 952              		.loc 1 285 9 is_stmt 1 discriminator 1 view .LVU188
+ 285:Src/STM32F4xx/usart.c ****     } while (digit);
+ 953              		.loc 1 285 16 is_stmt 0 discriminator 1 view .LVU189
+ 954 002c 02EB8202 		add	r2, r2, r2, lsl #2
+ 955              	.LVL76:
+ 285:Src/STM32F4xx/usart.c ****     } while (digit);
+ 956              		.loc 1 285 16 discriminator 1 view .LVU190
+ 957 0030 5200     		lsls	r2, r2, #1
+ 958              	.LVL77:
+ 286:Src/STM32F4xx/usart.c **** 
+ 959              		.loc 1 286 13 is_stmt 1 discriminator 1 view .LVU191
+ 286:Src/STM32F4xx/usart.c **** 
+ 960              		.loc 1 286 5 is_stmt 0 discriminator 1 view .LVU192
+ 961 0032 002B     		cmp	r3, #0
+ 962 0034 F4D1     		bne	.L44
+ 288:Src/STM32F4xx/usart.c ****     return SET;
+ 963              		.loc 1 288 5 is_stmt 1 view .LVU193
+ 288:Src/STM32F4xx/usart.c ****     return SET;
+ 964              		.loc 1 288 11 is_stmt 0 view .LVU194
+ARM GAS  /tmp/ccBkAaDO.s 			page 27
+
+
+ 965 0036 0D60     		str	r5, [r1]
+ 289:Src/STM32F4xx/usart.c **** }
+ 966              		.loc 1 289 5 is_stmt 1 view .LVU195
+ 289:Src/STM32F4xx/usart.c **** }
+ 967              		.loc 1 289 12 is_stmt 0 view .LVU196
+ 968 0038 0120     		movs	r0, #1
+ 969              	.LVL78:
+ 970              		.loc 1 290 1 view .LVU197
+ 971 003a 30BC     		pop	{r4, r5}
+ 972              	.LCFI14:
+ 973              		.cfi_restore 5
+ 974              		.cfi_restore 4
+ 975              		.cfi_def_cfa_offset 0
+ 976              	.LVL79:
+ 977              		.loc 1 290 1 view .LVU198
+ 978 003c 7047     		bx	lr
+ 979              		.cfi_endproc
+ 980              	.LFE141:
+ 982              		.section	.text.num2str,"ax",%progbits
+ 983              		.align	1
+ 984              		.global	num2str
+ 985              		.syntax unified
+ 986              		.thumb
+ 987              		.thumb_func
+ 988              		.fpu fpv4-sp-d16
+ 990              	num2str:
+ 991              	.LVL80:
+ 992              	.LFB142:
+ 291:Src/STM32F4xx/usart.c **** 
+ 292:Src/STM32F4xx/usart.c **** /**
+ 293:Src/STM32F4xx/usart.c ****  * @brief  Convert a number nbr into a string str with 7 characters.
+ 294:Src/STM32F4xx/usart.c ****  * @param  nbr The number to be converted.
+ 295:Src/STM32F4xx/usart.c ****  * @param  str The container of the converted number into a text in decimal
+ 296:Src/STM32F4xx/usart.c ****  *         format.
+ 297:Src/STM32F4xx/usart.c ****  * @note   The decimal digits of the number must be maximum 7 so str has to be
+ 298:Src/STM32F4xx/usart.c ****  *         able to store at least 7 characters plus '\0'.
+ 299:Src/STM32F4xx/usart.c ****  *
+ 300:Src/STM32F4xx/usart.c ****  * @retval none
+ 301:Src/STM32F4xx/usart.c ****  */
+ 302:Src/STM32F4xx/usart.c **** void num2str(uint32_t nbr, uint8_t *str)
+ 303:Src/STM32F4xx/usart.c **** {
+ 993              		.loc 1 303 1 is_stmt 1 view -0
+ 994              		.cfi_startproc
+ 995              		@ args = 0, pretend = 0, frame = 0
+ 996              		@ frame_needed = 0, uses_anonymous_args = 0
+ 997              		@ link register save eliminated.
+ 304:Src/STM32F4xx/usart.c ****     uint8_t i = 0U;
+ 998              		.loc 1 304 5 view .LVU200
+ 305:Src/STM32F4xx/usart.c ****     uint32_t divisor = 0U;
+ 999              		.loc 1 305 5 view .LVU201
+ 306:Src/STM32F4xx/usart.c ****     uint8_t *pstrbuff;
+ 1000              		.loc 1 306 5 view .LVU202
+ 307:Src/STM32F4xx/usart.c **** 
+ 308:Src/STM32F4xx/usart.c ****     pstrbuff = str;
+ 1001              		.loc 1 308 5 view .LVU203
+ 309:Src/STM32F4xx/usart.c **** 
+ 310:Src/STM32F4xx/usart.c ****     /* Reset the text string */
+ARM GAS  /tmp/ccBkAaDO.s 			page 28
+
+
+ 311:Src/STM32F4xx/usart.c ****     for (i = 0U; i < 7U; i++)
+ 1002              		.loc 1 311 5 view .LVU204
+ 1003              		.loc 1 311 12 is_stmt 0 view .LVU205
+ 1004 0000 0023     		movs	r3, #0
+ 1005              		.loc 1 311 5 view .LVU206
+ 1006 0002 03E0     		b	.L51
+ 1007              	.LVL81:
+ 1008              	.L52:
+ 312:Src/STM32F4xx/usart.c ****     {
+ 313:Src/STM32F4xx/usart.c ****         *(pstrbuff + i) = '\0';
+ 1009              		.loc 1 313 9 is_stmt 1 discriminator 3 view .LVU207
+ 1010              		.loc 1 313 25 is_stmt 0 discriminator 3 view .LVU208
+ 1011 0004 0022     		movs	r2, #0
+ 1012 0006 CA54     		strb	r2, [r1, r3]
+ 311:Src/STM32F4xx/usart.c ****     {
+ 1013              		.loc 1 311 26 is_stmt 1 discriminator 3 view .LVU209
+ 311:Src/STM32F4xx/usart.c ****     {
+ 1014              		.loc 1 311 27 is_stmt 0 discriminator 3 view .LVU210
+ 1015 0008 0133     		adds	r3, r3, #1
+ 1016              	.LVL82:
+ 311:Src/STM32F4xx/usart.c ****     {
+ 1017              		.loc 1 311 27 discriminator 3 view .LVU211
+ 1018 000a DBB2     		uxtb	r3, r3
+ 1019              	.LVL83:
+ 1020              	.L51:
+ 311:Src/STM32F4xx/usart.c ****     {
+ 1021              		.loc 1 311 18 is_stmt 1 discriminator 1 view .LVU212
+ 311:Src/STM32F4xx/usart.c ****     {
+ 1022              		.loc 1 311 5 is_stmt 0 discriminator 1 view .LVU213
+ 1023 000c 062B     		cmp	r3, #6
+ 1024 000e F9D9     		bls	.L52
+ 314:Src/STM32F4xx/usart.c ****     }
+ 315:Src/STM32F4xx/usart.c **** 
+ 316:Src/STM32F4xx/usart.c ****     divisor = 1000000U;
+ 1025              		.loc 1 316 5 is_stmt 1 view .LVU214
+ 1026              	.LVL84:
+ 317:Src/STM32F4xx/usart.c **** 
+ 318:Src/STM32F4xx/usart.c ****     if (nbr) /* If nbr is different from zero then it is processed  */
+ 1027              		.loc 1 318 5 view .LVU215
+ 1028              		.loc 1 318 8 is_stmt 0 view .LVU216
+ 1029 0010 20B9     		cbnz	r0, .L58
+ 1030              	.LVL85:
+ 1031              	.L60:
+ 319:Src/STM32F4xx/usart.c ****     {
+ 320:Src/STM32F4xx/usart.c ****         while (!(nbr / divisor))
+ 321:Src/STM32F4xx/usart.c ****         {
+ 322:Src/STM32F4xx/usart.c ****             divisor /= 10U;
+ 323:Src/STM32F4xx/usart.c ****         }
+ 324:Src/STM32F4xx/usart.c **** 
+ 325:Src/STM32F4xx/usart.c ****         while (divisor >= 10U)
+ 326:Src/STM32F4xx/usart.c ****         {
+ 327:Src/STM32F4xx/usart.c ****             i = nbr / divisor;
+ 328:Src/STM32F4xx/usart.c ****             *pstrbuff++ = '0' + i;
+ 329:Src/STM32F4xx/usart.c ****             nbr = nbr - (i * divisor);
+ 330:Src/STM32F4xx/usart.c ****             divisor /= 10U;
+ 331:Src/STM32F4xx/usart.c ****         }
+ 332:Src/STM32F4xx/usart.c ****     }
+ARM GAS  /tmp/ccBkAaDO.s 			page 29
+
+
+ 333:Src/STM32F4xx/usart.c **** 
+ 334:Src/STM32F4xx/usart.c ****     *pstrbuff++ = '0' + nbr;
+ 1032              		.loc 1 334 5 is_stmt 1 view .LVU217
+ 1033              		.loc 1 334 23 is_stmt 0 view .LVU218
+ 1034 0012 3030     		adds	r0, r0, #48
+ 1035              	.LVL86:
+ 1036              		.loc 1 334 17 view .LVU219
+ 1037 0014 0870     		strb	r0, [r1]
+ 335:Src/STM32F4xx/usart.c ****     *pstrbuff++ = '\0';
+ 1038              		.loc 1 335 5 is_stmt 1 view .LVU220
+ 1039              	.LVL87:
+ 1040              		.loc 1 335 17 is_stmt 0 view .LVU221
+ 1041 0016 0023     		movs	r3, #0
+ 1042 0018 4B70     		strb	r3, [r1, #1]
+ 1043 001a 7047     		bx	lr
+ 1044              	.LVL88:
+ 1045              	.L58:
+ 316:Src/STM32F4xx/usart.c **** 
+ 1046              		.loc 1 316 13 view .LVU222
+ 1047 001c 104B     		ldr	r3, .L64
+ 1048              	.LVL89:
+ 1049              	.L53:
+ 320:Src/STM32F4xx/usart.c ****         {
+ 1050              		.loc 1 320 15 is_stmt 1 view .LVU223
+ 1051 001e 8342     		cmp	r3, r0
+ 1052 0020 04D9     		bls	.L63
+ 322:Src/STM32F4xx/usart.c ****         }
+ 1053              		.loc 1 322 13 view .LVU224
+ 322:Src/STM32F4xx/usart.c ****         }
+ 1054              		.loc 1 322 21 is_stmt 0 view .LVU225
+ 1055 0022 104A     		ldr	r2, .L64+4
+ 1056 0024 A2FB0323 		umull	r2, r3, r2, r3
+ 1057              	.LVL90:
+ 322:Src/STM32F4xx/usart.c ****         }
+ 1058              		.loc 1 322 21 view .LVU226
+ 1059 0028 DB08     		lsrs	r3, r3, #3
+ 1060              	.LVL91:
+ 322:Src/STM32F4xx/usart.c ****         }
+ 1061              		.loc 1 322 21 view .LVU227
+ 1062 002a F8E7     		b	.L53
+ 1063              	.L63:
+ 325:Src/STM32F4xx/usart.c ****         {
+ 1064              		.loc 1 325 15 is_stmt 1 view .LVU228
+ 1065 002c 092B     		cmp	r3, #9
+ 1066 002e F0D9     		bls	.L60
+ 303:Src/STM32F4xx/usart.c ****     uint8_t i = 0U;
+ 1067              		.loc 1 303 1 is_stmt 0 view .LVU229
+ 1068 0030 10B4     		push	{r4}
+ 1069              	.LCFI15:
+ 1070              		.cfi_def_cfa_offset 4
+ 1071              		.cfi_offset 4, -4
+ 1072              	.LVL92:
+ 1073              	.L57:
+ 327:Src/STM32F4xx/usart.c ****             *pstrbuff++ = '0' + i;
+ 1074              		.loc 1 327 13 is_stmt 1 view .LVU230
+ 327:Src/STM32F4xx/usart.c ****             *pstrbuff++ = '0' + i;
+ 1075              		.loc 1 327 21 is_stmt 0 view .LVU231
+ARM GAS  /tmp/ccBkAaDO.s 			page 30
+
+
+ 1076 0032 B0FBF3F2 		udiv	r2, r0, r3
+ 327:Src/STM32F4xx/usart.c ****             *pstrbuff++ = '0' + i;
+ 1077              		.loc 1 327 15 view .LVU232
+ 1078 0036 D2B2     		uxtb	r2, r2
+ 1079              	.LVL93:
+ 328:Src/STM32F4xx/usart.c ****             nbr = nbr - (i * divisor);
+ 1080              		.loc 1 328 13 is_stmt 1 view .LVU233
+ 328:Src/STM32F4xx/usart.c ****             nbr = nbr - (i * divisor);
+ 1081              		.loc 1 328 31 is_stmt 0 view .LVU234
+ 1082 0038 02F13004 		add	r4, r2, #48
+ 328:Src/STM32F4xx/usart.c ****             nbr = nbr - (i * divisor);
+ 1083              		.loc 1 328 25 view .LVU235
+ 1084 003c 01F8014B 		strb	r4, [r1], #1
+ 1085              	.LVL94:
+ 329:Src/STM32F4xx/usart.c ****             divisor /= 10U;
+ 1086              		.loc 1 329 13 is_stmt 1 view .LVU236
+ 329:Src/STM32F4xx/usart.c ****             divisor /= 10U;
+ 1087              		.loc 1 329 17 is_stmt 0 view .LVU237
+ 1088 0040 03FB1200 		mls	r0, r3, r2, r0
+ 1089              	.LVL95:
+ 330:Src/STM32F4xx/usart.c ****         }
+ 1090              		.loc 1 330 13 is_stmt 1 view .LVU238
+ 330:Src/STM32F4xx/usart.c ****         }
+ 1091              		.loc 1 330 21 is_stmt 0 view .LVU239
+ 1092 0044 074A     		ldr	r2, .L64+4
+ 1093              	.LVL96:
+ 330:Src/STM32F4xx/usart.c ****         }
+ 1094              		.loc 1 330 21 view .LVU240
+ 1095 0046 A2FB0323 		umull	r2, r3, r2, r3
+ 1096              	.LVL97:
+ 330:Src/STM32F4xx/usart.c ****         }
+ 1097              		.loc 1 330 21 view .LVU241
+ 1098 004a DB08     		lsrs	r3, r3, #3
+ 1099              	.LVL98:
+ 325:Src/STM32F4xx/usart.c ****         {
+ 1100              		.loc 1 325 15 is_stmt 1 view .LVU242
+ 1101 004c 092B     		cmp	r3, #9
+ 1102 004e F0D8     		bhi	.L57
+ 334:Src/STM32F4xx/usart.c ****     *pstrbuff++ = '\0';
+ 1103              		.loc 1 334 5 view .LVU243
+ 1104              	.LVL99:
+ 334:Src/STM32F4xx/usart.c ****     *pstrbuff++ = '\0';
+ 1105              		.loc 1 334 23 is_stmt 0 view .LVU244
+ 1106 0050 3030     		adds	r0, r0, #48
+ 1107              	.LVL100:
+ 334:Src/STM32F4xx/usart.c ****     *pstrbuff++ = '\0';
+ 1108              		.loc 1 334 17 view .LVU245
+ 1109 0052 0870     		strb	r0, [r1]
+ 1110              		.loc 1 335 5 is_stmt 1 view .LVU246
+ 1111              	.LVL101:
+ 1112              		.loc 1 335 17 is_stmt 0 view .LVU247
+ 1113 0054 0023     		movs	r3, #0
+ 1114              	.LVL102:
+ 1115              		.loc 1 335 17 view .LVU248
+ 1116 0056 4B70     		strb	r3, [r1, #1]
+ 336:Src/STM32F4xx/usart.c **** }
+ 1117              		.loc 1 336 1 view .LVU249
+ARM GAS  /tmp/ccBkAaDO.s 			page 31
+
+
+ 1118 0058 5DF8044B 		ldr	r4, [sp], #4
+ 1119              	.LCFI16:
+ 1120              		.cfi_restore 4
+ 1121              		.cfi_def_cfa_offset 0
+ 1122              	.LVL103:
+ 1123              		.loc 1 336 1 view .LVU250
+ 1124 005c 7047     		bx	lr
+ 1125              	.L65:
+ 1126 005e 00BF     		.align	2
+ 1127              	.L64:
+ 1128 0060 40420F00 		.word	1000000
+ 1129 0064 CDCCCCCC 		.word	-858993459
+ 1130              		.cfi_endproc
+ 1131              	.LFE142:
+ 1133              		.section	.text.num2hex,"ax",%progbits
+ 1134              		.align	1
+ 1135              		.global	num2hex
+ 1136              		.syntax unified
+ 1137              		.thumb
+ 1138              		.thumb_func
+ 1139              		.fpu fpv4-sp-d16
+ 1141              	num2hex:
+ 1142              	.LVL104:
+ 1143              	.LFB143:
+ 337:Src/STM32F4xx/usart.c **** 
+ 338:Src/STM32F4xx/usart.c **** /**
+ 339:Src/STM32F4xx/usart.c ****  * @brief  Convert an integer number into hexadecimal format.
+ 340:Src/STM32F4xx/usart.c ****  *
+ 341:Src/STM32F4xx/usart.c ****  * @param  num         The integer number to convert.
+ 342:Src/STM32F4xx/usart.c ****  * @param  HexFormat   The output format about hexadecimal number.
+ 343:Src/STM32F4xx/usart.c ****  *
+ 344:Src/STM32F4xx/usart.c ****  * @retval uint8_t*    The address of the string text for the converted hexadecimal number.
+ 345:Src/STM32F4xx/usart.c ****  */
+ 346:Src/STM32F4xx/usart.c **** uint8_t *num2hex(uint32_t num, eHexFormat HexFormat)
+ 347:Src/STM32F4xx/usart.c **** {
+ 1144              		.loc 1 347 1 is_stmt 1 view -0
+ 1145              		.cfi_startproc
+ 1146              		@ args = 0, pretend = 0, frame = 0
+ 1147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1148              		@ link register save eliminated.
+ 1149              		.loc 1 347 1 is_stmt 0 view .LVU252
+ 1150 0000 10B4     		push	{r4}
+ 1151              	.LCFI17:
+ 1152              		.cfi_def_cfa_offset 4
+ 1153              		.cfi_offset 4, -4
+ 348:Src/STM32F4xx/usart.c ****     static uint8_t HexValue[9U];
+ 1154              		.loc 1 348 5 is_stmt 1 view .LVU253
+ 349:Src/STM32F4xx/usart.c ****     uint8_t i         = 0U;
+ 1155              		.loc 1 349 5 view .LVU254
+ 1156              	.LVL105:
+ 350:Src/STM32F4xx/usart.c ****     uint8_t dummy     = 0U;
+ 1157              		.loc 1 350 5 view .LVU255
+ 351:Src/STM32F4xx/usart.c ****     uint8_t HexDigits = 0U;
+ 1158              		.loc 1 351 5 view .LVU256
+ 352:Src/STM32F4xx/usart.c **** 
+ 353:Src/STM32F4xx/usart.c ****     switch (HexFormat)
+ 1159              		.loc 1 353 5 view .LVU257
+ARM GAS  /tmp/ccBkAaDO.s 			page 32
+
+
+ 1160 0002 0329     		cmp	r1, #3
+ 1161 0004 0AD8     		bhi	.L76
+ 1162 0006 DFE801F0 		tbb	[pc, r1]
+ 1163              	.L69:
+ 1164 000a 02       		.byte	(.L71-.L69)/2
+ 1165 000b 09       		.byte	(.L76-.L69)/2
+ 1166 000c 05       		.byte	(.L70-.L69)/2
+ 1167 000d 07       		.byte	(.L68-.L69)/2
+ 1168              		.p2align 1
+ 1169              	.L71:
+ 347:Src/STM32F4xx/usart.c ****     static uint8_t HexValue[9U];
+ 1170              		.loc 1 347 1 is_stmt 0 view .LVU258
+ 1171 000e 0124     		movs	r4, #1
+ 1172              	.LVL106:
+ 1173              	.L67:
+ 354:Src/STM32F4xx/usart.c ****     {
+ 355:Src/STM32F4xx/usart.c ****     case HALFBYTE_F:
+ 356:Src/STM32F4xx/usart.c ****         HexDigits = 1U;
+ 357:Src/STM32F4xx/usart.c ****         break;
+ 358:Src/STM32F4xx/usart.c ****     case BYTE_F:
+ 359:Src/STM32F4xx/usart.c ****         HexDigits = 2U;
+ 360:Src/STM32F4xx/usart.c ****         break;
+ 361:Src/STM32F4xx/usart.c ****     case WORD_F:
+ 362:Src/STM32F4xx/usart.c ****         HexDigits = 4U;
+ 363:Src/STM32F4xx/usart.c ****         break;
+ 364:Src/STM32F4xx/usart.c ****     case DOUBLEWORD_F:
+ 365:Src/STM32F4xx/usart.c ****         HexDigits = 8U;
+ 366:Src/STM32F4xx/usart.c ****         break;
+ 367:Src/STM32F4xx/usart.c ****     default:
+ 368:Src/STM32F4xx/usart.c ****         HexDigits = 2U;
+ 369:Src/STM32F4xx/usart.c ****         break;
+ 370:Src/STM32F4xx/usart.c ****     }
+ 371:Src/STM32F4xx/usart.c **** 
+ 372:Src/STM32F4xx/usart.c ****     for (i = 0U; i < HexDigits; i++)
+ 1174              		.loc 1 372 5 is_stmt 1 view .LVU259
+ 1175              		.loc 1 372 12 is_stmt 0 view .LVU260
+ 1176 0010 0022     		movs	r2, #0
+ 1177              		.loc 1 372 5 view .LVU261
+ 1178 0012 0AE0     		b	.L72
+ 1179              	.LVL107:
+ 1180              	.L70:
+ 362:Src/STM32F4xx/usart.c ****         break;
+ 1181              		.loc 1 362 9 is_stmt 1 view .LVU262
+ 363:Src/STM32F4xx/usart.c ****     case DOUBLEWORD_F:
+ 1182              		.loc 1 363 9 view .LVU263
+ 362:Src/STM32F4xx/usart.c ****         break;
+ 1183              		.loc 1 362 19 is_stmt 0 view .LVU264
+ 1184 0014 0424     		movs	r4, #4
+ 363:Src/STM32F4xx/usart.c ****     case DOUBLEWORD_F:
+ 1185              		.loc 1 363 9 view .LVU265
+ 1186 0016 FBE7     		b	.L67
+ 1187              	.LVL108:
+ 1188              	.L68:
+ 365:Src/STM32F4xx/usart.c ****         break;
+ 1189              		.loc 1 365 9 is_stmt 1 view .LVU266
+ 366:Src/STM32F4xx/usart.c ****     default:
+ 1190              		.loc 1 366 9 view .LVU267
+ARM GAS  /tmp/ccBkAaDO.s 			page 33
+
+
+ 365:Src/STM32F4xx/usart.c ****         break;
+ 1191              		.loc 1 365 19 is_stmt 0 view .LVU268
+ 1192 0018 0824     		movs	r4, #8
+ 366:Src/STM32F4xx/usart.c ****     default:
+ 1193              		.loc 1 366 9 view .LVU269
+ 1194 001a F9E7     		b	.L67
+ 1195              	.LVL109:
+ 1196              	.L76:
+ 359:Src/STM32F4xx/usart.c ****         break;
+ 1197              		.loc 1 359 19 view .LVU270
+ 1198 001c 0224     		movs	r4, #2
+ 1199 001e F7E7     		b	.L67
+ 1200              	.LVL110:
+ 1201              	.L73:
+ 373:Src/STM32F4xx/usart.c ****     {
+ 374:Src/STM32F4xx/usart.c ****         HexValue[i] = '\0';
+ 375:Src/STM32F4xx/usart.c ****         dummy = (num & (0x0F << (((HexDigits - 1U) - i) * 4U))) >> (((HexDigits - 1U) - i) * 4U);
+ 376:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 377:Src/STM32F4xx/usart.c ****         {
+ 378:Src/STM32F4xx/usart.c ****             HexValue[i] = dummy + '0';
+ 379:Src/STM32F4xx/usart.c ****         }
+ 380:Src/STM32F4xx/usart.c ****         else
+ 381:Src/STM32F4xx/usart.c ****         {
+ 382:Src/STM32F4xx/usart.c ****             HexValue[i] = (dummy - 0x0AU) + 'A';
+ 1202              		.loc 1 382 13 is_stmt 1 view .LVU271
+ 1203              		.loc 1 382 43 is_stmt 0 view .LVU272
+ 1204 0020 3733     		adds	r3, r3, #55
+ 1205              	.LVL111:
+ 1206              		.loc 1 382 25 view .LVU273
+ 1207 0022 0D49     		ldr	r1, .L79
+ 1208 0024 8B54     		strb	r3, [r1, r2]
+ 1209              	.LVL112:
+ 1210              	.L74:
+ 372:Src/STM32F4xx/usart.c ****     {
+ 1211              		.loc 1 372 33 is_stmt 1 discriminator 2 view .LVU274
+ 372:Src/STM32F4xx/usart.c ****     {
+ 1212              		.loc 1 372 34 is_stmt 0 discriminator 2 view .LVU275
+ 1213 0026 0132     		adds	r2, r2, #1
+ 1214              	.LVL113:
+ 372:Src/STM32F4xx/usart.c ****     {
+ 1215              		.loc 1 372 34 discriminator 2 view .LVU276
+ 1216 0028 D2B2     		uxtb	r2, r2
+ 1217              	.LVL114:
+ 1218              	.L72:
+ 372:Src/STM32F4xx/usart.c ****     {
+ 1219              		.loc 1 372 18 is_stmt 1 discriminator 1 view .LVU277
+ 372:Src/STM32F4xx/usart.c ****     {
+ 1220              		.loc 1 372 5 is_stmt 0 discriminator 1 view .LVU278
+ 1221 002a A242     		cmp	r2, r4
+ 1222 002c 0DD2     		bcs	.L78
+ 374:Src/STM32F4xx/usart.c ****         dummy = (num & (0x0F << (((HexDigits - 1U) - i) * 4U))) >> (((HexDigits - 1U) - i) * 4U);
+ 1223              		.loc 1 374 9 is_stmt 1 view .LVU279
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1224              		.loc 1 375 9 view .LVU280
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1225              		.loc 1 375 52 is_stmt 0 view .LVU281
+ 1226 002e A31A     		subs	r3, r4, r2
+ARM GAS  /tmp/ccBkAaDO.s 			page 34
+
+
+ 1227 0030 013B     		subs	r3, r3, #1
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1228              		.loc 1 375 57 view .LVU282
+ 1229 0032 9900     		lsls	r1, r3, #2
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1230              		.loc 1 375 30 view .LVU283
+ 1231 0034 0F23     		movs	r3, #15
+ 1232 0036 8B40     		lsls	r3, r3, r1
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1233              		.loc 1 375 22 view .LVU284
+ 1234 0038 0340     		ands	r3, r3, r0
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1235              		.loc 1 375 65 view .LVU285
+ 1236 003a CB40     		lsrs	r3, r3, r1
+ 375:Src/STM32F4xx/usart.c ****         if (dummy < 0x0AU)
+ 1237              		.loc 1 375 15 view .LVU286
+ 1238 003c DBB2     		uxtb	r3, r3
+ 1239              	.LVL115:
+ 376:Src/STM32F4xx/usart.c ****         {
+ 1240              		.loc 1 376 9 is_stmt 1 view .LVU287
+ 376:Src/STM32F4xx/usart.c ****         {
+ 1241              		.loc 1 376 12 is_stmt 0 view .LVU288
+ 1242 003e 092B     		cmp	r3, #9
+ 1243 0040 EED8     		bhi	.L73
+ 378:Src/STM32F4xx/usart.c ****         }
+ 1244              		.loc 1 378 13 is_stmt 1 view .LVU289
+ 378:Src/STM32F4xx/usart.c ****         }
+ 1245              		.loc 1 378 33 is_stmt 0 view .LVU290
+ 1246 0042 3033     		adds	r3, r3, #48
+ 1247              	.LVL116:
+ 378:Src/STM32F4xx/usart.c ****         }
+ 1248              		.loc 1 378 25 view .LVU291
+ 1249 0044 0449     		ldr	r1, .L79
+ 1250 0046 8B54     		strb	r3, [r1, r2]
+ 1251 0048 EDE7     		b	.L74
+ 1252              	.LVL117:
+ 1253              	.L78:
+ 383:Src/STM32F4xx/usart.c ****         }
+ 384:Src/STM32F4xx/usart.c ****     }
+ 385:Src/STM32F4xx/usart.c ****     HexValue[i] = '\0';
+ 1254              		.loc 1 385 5 is_stmt 1 view .LVU292
+ 1255              		.loc 1 385 17 is_stmt 0 view .LVU293
+ 1256 004a 0348     		ldr	r0, .L79
+ 1257              	.LVL118:
+ 1258              		.loc 1 385 17 view .LVU294
+ 1259 004c 0023     		movs	r3, #0
+ 1260 004e 8354     		strb	r3, [r0, r2]
+ 386:Src/STM32F4xx/usart.c **** 
+ 387:Src/STM32F4xx/usart.c ****     return HexValue;
+ 1261              		.loc 1 387 5 is_stmt 1 view .LVU295
+ 388:Src/STM32F4xx/usart.c **** }
+ 1262              		.loc 1 388 1 is_stmt 0 view .LVU296
+ 1263 0050 5DF8044B 		ldr	r4, [sp], #4
+ 1264              	.LCFI18:
+ 1265              		.cfi_restore 4
+ 1266              		.cfi_def_cfa_offset 0
+ 1267              	.LVL119:
+ARM GAS  /tmp/ccBkAaDO.s 			page 35
+
+
+ 1268              		.loc 1 388 1 view .LVU297
+ 1269 0054 7047     		bx	lr
+ 1270              	.L80:
+ 1271 0056 00BF     		.align	2
+ 1272              	.L79:
+ 1273 0058 00000000 		.word	.LANCHOR0
+ 1274              		.cfi_endproc
+ 1275              	.LFE143:
+ 1277              		.comm	huart3,64,4
+ 1278              		.comm	huart2,64,4
+ 1279              		.section	.bss.HexValue.9177,"aw",%nobits
+ 1280              		.align	2
+ 1281              		.set	.LANCHOR0,. + 0
+ 1284              	HexValue.9177:
+ 1285 0000 00000000 		.space	9
+ 1285      00000000 
+ 1285      00
+ 1286              		.text
+ 1287              	.Letext0:
+ 1288              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 1289              		.file 3 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stdarg.h"
+ 1290              		.file 4 "/usr/include/newlib/stdio.h"
+ 1291              		.file 5 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h"
+ 1292              		.file 6 "/usr/include/newlib/sys/_types.h"
+ 1293              		.file 7 "/usr/include/newlib/sys/reent.h"
+ 1294              		.file 8 "/usr/include/newlib/sys/lock.h"
+ 1295              		.file 9 "/usr/include/newlib/sys/_stdint.h"
+ 1296              		.file 10 "/usr/include/newlib/ctype.h"
+ 1297              		.file 11 "Drivers/CMSIS/Include/core_cm4.h"
+ 1298              		.file 12 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h"
+ 1299              		.file 13 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1300              		.file 14 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 1301              		.file 15 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1302              		.file 16 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1303              		.file 17 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 1304              		.file 18 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 1305              		.file 19 "Inc/STM32F4xx_Inc/stm32f4xx_board_conf.h"
+ 1306              		.file 20 "Inc/Wimod_Inc/serial_device.h"
+ 1307              		.file 21 "Inc/STM32F4xx_Inc/usart.h"
+ 1308              		.file 22 "/usr/include/newlib/string.h"
+ 1309              		.file 23 "<built-in>"
+ARM GAS  /tmp/ccBkAaDO.s 			page 36
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 usart.c
+     /tmp/ccBkAaDO.s:18     .text.MX_USART2_UART_Init:0000000000000000 $t
+     /tmp/ccBkAaDO.s:26     .text.MX_USART2_UART_Init:0000000000000000 MX_USART2_UART_Init
+     /tmp/ccBkAaDO.s:85     .text.MX_USART2_UART_Init:000000000000002c $d
+                            *COM*:0000000000000040 huart2
+     /tmp/ccBkAaDO.s:91     .text.MX_USART3_UART_Init:0000000000000000 $t
+     /tmp/ccBkAaDO.s:98     .text.MX_USART3_UART_Init:0000000000000000 MX_USART3_UART_Init
+     /tmp/ccBkAaDO.s:156    .text.MX_USART3_UART_Init:000000000000002c $d
+                            *COM*:0000000000000040 huart3
+     /tmp/ccBkAaDO.s:162    .text.UART_Printf:0000000000000000 $t
+     /tmp/ccBkAaDO.s:169    .text.UART_Printf:0000000000000000 UART_Printf
+     /tmp/ccBkAaDO.s:235    .text.UART_Printf:0000000000000038 $d
+     /tmp/ccBkAaDO.s:240    .rodata.USART_TxWelcomeMessage.str1.4:0000000000000000 $d
+     /tmp/ccBkAaDO.s:263    .text.USART_TxWelcomeMessage:0000000000000000 $t
+     /tmp/ccBkAaDO.s:270    .text.USART_TxWelcomeMessage:0000000000000000 USART_TxWelcomeMessage
+     /tmp/ccBkAaDO.s:310    .text.USART_TxWelcomeMessage:0000000000000028 $d
+     /tmp/ccBkAaDO.s:320    .text.USART_Transmit_Data:0000000000000000 $t
+     /tmp/ccBkAaDO.s:327    .text.USART_Transmit_Data:0000000000000000 USART_Transmit_Data
+     /tmp/ccBkAaDO.s:373    .text.USART_Transmit:0000000000000000 $t
+     /tmp/ccBkAaDO.s:380    .text.USART_Transmit:0000000000000000 USART_Transmit
+     /tmp/ccBkAaDO.s:402    .rodata.USART_ShowMenu.str1.4:0000000000000000 $d
+     /tmp/ccBkAaDO.s:507    .text.USART_ShowMenu:0000000000000000 $t
+     /tmp/ccBkAaDO.s:514    .text.USART_ShowMenu:0000000000000000 USART_ShowMenu
+     /tmp/ccBkAaDO.s:706    .text.USART_ShowMenu:0000000000000120 $d
+     /tmp/ccBkAaDO.s:746    .text.USART_ITCharManager:0000000000000000 $t
+     /tmp/ccBkAaDO.s:753    .text.USART_ITCharManager:0000000000000000 USART_ITCharManager
+     /tmp/ccBkAaDO.s:860    .text.USART_ITCharManager:0000000000000078 $d
+     /tmp/ccBkAaDO.s:865    .text.str2num:0000000000000000 $t
+     /tmp/ccBkAaDO.s:872    .text.str2num:0000000000000000 str2num
+     /tmp/ccBkAaDO.s:983    .text.num2str:0000000000000000 $t
+     /tmp/ccBkAaDO.s:990    .text.num2str:0000000000000000 num2str
+     /tmp/ccBkAaDO.s:1128   .text.num2str:0000000000000060 $d
+     /tmp/ccBkAaDO.s:1134   .text.num2hex:0000000000000000 $t
+     /tmp/ccBkAaDO.s:1141   .text.num2hex:0000000000000000 num2hex
+     /tmp/ccBkAaDO.s:1164   .text.num2hex:000000000000000a $d
+     /tmp/ccBkAaDO.s:1168   .text.num2hex:000000000000000e $t
+     /tmp/ccBkAaDO.s:1273   .text.num2hex:0000000000000058 $d
+     /tmp/ccBkAaDO.s:1280   .bss.HexValue.9177:0000000000000000 $d
+     /tmp/ccBkAaDO.s:1284   .bss.HexValue.9177:0000000000000000 HexValue.9177
+
+UNDEFINED SYMBOLS
+HAL_UART_Init
+Error_Handler
+vsnprintf
+strlen
+HAL_UART_Transmit

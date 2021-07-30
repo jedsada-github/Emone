@@ -1,0 +1,8 @@
+vcom.c:34:6:vcom_Init	8	static
+vcom.c:67:6:vcom_Trace	8	static
+vcom.c:72:6:HAL_UART_TxCpltCallback	8	static
+vcom.c:78:6:vcom_DMA_TX_IRQHandler	8	static
+vcom.c:83:6:vcom_IRQHandler	8	static
+vcom.c:88:6:vcom_DeInit	8	static
+vcom.c:167:6:vcom_IoInit	0	static
+vcom.c:189:6:vcom_IoDeInit	0	static

@@ -1,0 +1,14 @@
+stm32l552e_eval_idd.c:29:11:BSP_IDD_Init	8	static
+stm32l552e_eval_idd.c:35:11:BSP_IDD_DeInit	0	static
+stm32l552e_eval_idd.c:40:11:BSP_IDD_Reset	0	static
+stm32l552e_eval_idd.c:45:11:BSP_IDD_EnterLowPower	0	static
+stm32l552e_eval_idd.c:50:11:BSP_IDD_ExitLowPower	0	static
+stm32l552e_eval_idd.c:55:11:BSP_IDD_StartMeasurement	8	static
+stm32l552e_eval_idd.c:78:11:BSP_IDD_Config	0	static
+stm32l552e_eval_idd.c:84:11:BSP_IDD_GetValue	24	static
+stm32l552e_eval_idd.c:105:11:BSP_IDD_EnableIT	0	static
+stm32l552e_eval_idd.c:110:11:BSP_IDD_ClearIT	0	static
+stm32l552e_eval_idd.c:115:11:BSP_IDD_GetITStatus	0	static
+stm32l552e_eval_idd.c:120:11:BSP_IDD_DisableIT	0	static
+stm32l552e_eval_idd.c:126:11:BSP_IDD_Callback	0	static
+stm32l552e_eval_idd.c:130:11:BSP_IDD_IRQHandler	0	static

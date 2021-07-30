@@ -1,0 +1,6 @@
+usart.c:47:6:MX_LPUART1_UART_Init	8	static
+usart.c:92:6:MX_USART3_UART_Init	8	static
+usart.c:135:6:HAL_UART_MspInit	200	static
+usart.c:305:6:HAL_UART_MspDeInit	8	static
+usart.c:359:6:HAL_UART_RxCpltCallback	8	static
+usart.c:368:9:UartGetChar	16	static,ignoring_inline_asm

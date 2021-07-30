@@ -1,0 +1,439 @@
+ARM GAS  /tmp/ccGGeP2b.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"stm32f4xx_board_conf.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.SystemClock_Config,"ax",%progbits
+  18              		.align	1
+  19              		.global	SystemClock_Config
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	SystemClock_Config:
+  27              	.LFB134:
+  28              		.file 1 "Src/STM32F4xx/stm32f4xx_board_conf.c"
+   1:Src/STM32F4xx/stm32f4xx_board_conf.c **** /**
+   2:Src/STM32F4xx/stm32f4xx_board_conf.c ****  ******************************************************************************
+   3:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * File Name          : stm32f4xx_board_conf.c
+   4:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * Description        : This file provides code for the Board Initialization 
+   5:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *
+   6:Src/STM32F4xx/stm32f4xx_board_conf.c ****  ******************************************************************************
+   7:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * @attention
+   8:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *
+   9:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  10:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * All rights reserved.</center></h2>
+  11:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *
+  12:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * This software component is licensed by ST under BSD 3-Clause license,
+  13:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * the "License"; You may not use this file except in compliance with the
+  14:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * License. You may obtain a copy of the License at:
+  15:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *                        opensource.org/licenses/BSD-3-Clause
+  16:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *
+  17:Src/STM32F4xx/stm32f4xx_board_conf.c ****  ******************************************************************************
+  18:Src/STM32F4xx/stm32f4xx_board_conf.c ****  */
+  19:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  20:Src/STM32F4xx/stm32f4xx_board_conf.c **** /* Includes ------------------------------------------------------------------*/
+  21:Src/STM32F4xx/stm32f4xx_board_conf.c **** #include "stm32f4xx_board_conf.h"
+  22:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  23:Src/STM32F4xx/stm32f4xx_board_conf.c **** /**
+  24:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * Initializes the STM32 Board.
+  25:Src/STM32F4xx/stm32f4xx_board_conf.c ****  */
+  26:Src/STM32F4xx/stm32f4xx_board_conf.c **** void STM32F4xx_Device_Init(void)
+  27:Src/STM32F4xx/stm32f4xx_board_conf.c **** {
+  28:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  29:Src/STM32F4xx/stm32f4xx_board_conf.c ****     HAL_Init();
+  30:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+ARM GAS  /tmp/ccGGeP2b.s 			page 2
+
+
+  31:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Configure the system clock */
+  32:Src/STM32F4xx/stm32f4xx_board_conf.c ****     SystemClock_Config();
+  33:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  34:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Initialize all configured peripherals */
+  35:Src/STM32F4xx/stm32f4xx_board_conf.c ****     MX_GPIO_Init();
+  36:Src/STM32F4xx/stm32f4xx_board_conf.c ****     MX_USART2_UART_Init();
+  37:Src/STM32F4xx/stm32f4xx_board_conf.c ****     MX_USART3_UART_Init();
+  38:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  39:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Initialize LORA Port */
+  40:Src/STM32F4xx/stm32f4xx_board_conf.c ****     if (!WiMOD_LoRaWAN_Init(&huart3))
+  41:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+  42:Src/STM32F4xx/stm32f4xx_board_conf.c ****         USART_Transmit(&huart2, "!Error:  Couldn't open lora port\r\n");
+  43:Src/STM32F4xx/stm32f4xx_board_conf.c ****     }
+  44:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  45:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Send message to UART port */
+  46:Src/STM32F4xx/stm32f4xx_board_conf.c ****     USART_TxWelcomeMessage();
+  47:Src/STM32F4xx/stm32f4xx_board_conf.c ****     USART_ShowMenu();
+  48:Src/STM32F4xx/stm32f4xx_board_conf.c **** }
+  49:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  50:Src/STM32F4xx/stm32f4xx_board_conf.c **** /**
+  51:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * @brief System Clock Configuration
+  52:Src/STM32F4xx/stm32f4xx_board_conf.c ****  * @retval None
+  53:Src/STM32F4xx/stm32f4xx_board_conf.c ****  */
+  54:Src/STM32F4xx/stm32f4xx_board_conf.c **** void SystemClock_Config(void)
+  55:Src/STM32F4xx/stm32f4xx_board_conf.c **** {
+  29              		.loc 1 55 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 80
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 30B5     		push	{r4, r5, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 12
+  36              		.cfi_offset 4, -12
+  37              		.cfi_offset 5, -8
+  38              		.cfi_offset 14, -4
+  39 0002 95B0     		sub	sp, sp, #84
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 96
+  56:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitTypeDef RCC_OscInitStruct = { 0U };
+  42              		.loc 1 56 5 view .LVU1
+  43              		.loc 1 56 24 is_stmt 0 view .LVU2
+  44 0004 3022     		movs	r2, #48
+  45 0006 0021     		movs	r1, #0
+  46 0008 08A8     		add	r0, sp, #32
+  47 000a FFF7FEFF 		bl	memset
+  48              	.LVL0:
+  57:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0U };
+  49              		.loc 1 57 5 is_stmt 1 view .LVU3
+  50              		.loc 1 57 24 is_stmt 0 view .LVU4
+  51 000e 0024     		movs	r4, #0
+  52 0010 0394     		str	r4, [sp, #12]
+  53 0012 0494     		str	r4, [sp, #16]
+  54 0014 0594     		str	r4, [sp, #20]
+  55 0016 0694     		str	r4, [sp, #24]
+  56 0018 0794     		str	r4, [sp, #28]
+  58:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  59:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /** Configure the main internal regulator output voltage
+ARM GAS  /tmp/ccGGeP2b.s 			page 3
+
+
+  60:Src/STM32F4xx/stm32f4xx_board_conf.c ****      */
+  61:Src/STM32F4xx/stm32f4xx_board_conf.c ****     __HAL_RCC_PWR_CLK_ENABLE();
+  57              		.loc 1 61 5 is_stmt 1 view .LVU5
+  58              	.LBB2:
+  59              		.loc 1 61 5 view .LVU6
+  60 001a 0194     		str	r4, [sp, #4]
+  61              		.loc 1 61 5 view .LVU7
+  62 001c 1C4B     		ldr	r3, .L3
+  63 001e 1A6C     		ldr	r2, [r3, #64]
+  64 0020 42F08052 		orr	r2, r2, #268435456
+  65 0024 1A64     		str	r2, [r3, #64]
+  66              		.loc 1 61 5 view .LVU8
+  67 0026 1B6C     		ldr	r3, [r3, #64]
+  68 0028 03F08053 		and	r3, r3, #268435456
+  69 002c 0193     		str	r3, [sp, #4]
+  70              		.loc 1 61 5 view .LVU9
+  71 002e 019B     		ldr	r3, [sp, #4]
+  72              	.LBE2:
+  73              		.loc 1 61 5 view .LVU10
+  62:Src/STM32F4xx/stm32f4xx_board_conf.c ****     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  74              		.loc 1 62 5 view .LVU11
+  75              	.LBB3:
+  76              		.loc 1 62 5 view .LVU12
+  77 0030 0294     		str	r4, [sp, #8]
+  78              		.loc 1 62 5 view .LVU13
+  79 0032 184B     		ldr	r3, .L3+4
+  80 0034 1A68     		ldr	r2, [r3]
+  81 0036 42F48042 		orr	r2, r2, #16384
+  82 003a 1A60     		str	r2, [r3]
+  83              		.loc 1 62 5 view .LVU14
+  84 003c 1B68     		ldr	r3, [r3]
+  85 003e 03F48043 		and	r3, r3, #16384
+  86 0042 0293     		str	r3, [sp, #8]
+  87              		.loc 1 62 5 view .LVU15
+  88 0044 029B     		ldr	r3, [sp, #8]
+  89              	.LBE3:
+  90              		.loc 1 62 5 view .LVU16
+  63:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /** Initializes the CPU, AHB and APB busses clocks
+  64:Src/STM32F4xx/stm32f4xx_board_conf.c ****      */
+  65:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  91              		.loc 1 65 5 view .LVU17
+  92              		.loc 1 65 38 is_stmt 0 view .LVU18
+  93 0046 0123     		movs	r3, #1
+  94 0048 0893     		str	r3, [sp, #32]
+  66:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  95              		.loc 1 66 5 is_stmt 1 view .LVU19
+  96              		.loc 1 66 32 is_stmt 0 view .LVU20
+  97 004a 4FF48033 		mov	r3, #65536
+  98 004e 0993     		str	r3, [sp, #36]
+  67:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  99              		.loc 1 67 5 is_stmt 1 view .LVU21
+ 100              		.loc 1 67 36 is_stmt 0 view .LVU22
+ 101 0050 0225     		movs	r5, #2
+ 102 0052 0E95     		str	r5, [sp, #56]
+  68:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 103              		.loc 1 68 5 is_stmt 1 view .LVU23
+ 104              		.loc 1 68 37 is_stmt 0 view .LVU24
+ARM GAS  /tmp/ccGGeP2b.s 			page 4
+
+
+ 105 0054 4FF48003 		mov	r3, #4194304
+ 106 0058 0F93     		str	r3, [sp, #60]
+  69:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLM = 8U;
+ 107              		.loc 1 69 5 is_stmt 1 view .LVU25
+ 108              		.loc 1 69 32 is_stmt 0 view .LVU26
+ 109 005a 0823     		movs	r3, #8
+ 110 005c 1093     		str	r3, [sp, #64]
+  70:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLN = 336U;
+ 111              		.loc 1 70 5 is_stmt 1 view .LVU27
+ 112              		.loc 1 70 32 is_stmt 0 view .LVU28
+ 113 005e 4FF4A873 		mov	r3, #336
+ 114 0062 1193     		str	r3, [sp, #68]
+  71:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+ 115              		.loc 1 71 5 is_stmt 1 view .LVU29
+ 116              		.loc 1 71 32 is_stmt 0 view .LVU30
+ 117 0064 1295     		str	r5, [sp, #72]
+  72:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_OscInitStruct.PLL.PLLQ = 7U;
+ 118              		.loc 1 72 5 is_stmt 1 view .LVU31
+ 119              		.loc 1 72 32 is_stmt 0 view .LVU32
+ 120 0066 0723     		movs	r3, #7
+ 121 0068 1393     		str	r3, [sp, #76]
+  73:Src/STM32F4xx/stm32f4xx_board_conf.c ****     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 122              		.loc 1 73 5 is_stmt 1 view .LVU33
+ 123              		.loc 1 73 9 is_stmt 0 view .LVU34
+ 124 006a 08A8     		add	r0, sp, #32
+ 125 006c FFF7FEFF 		bl	HAL_RCC_OscConfig
+ 126              	.LVL1:
+  74:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+  75:Src/STM32F4xx/stm32f4xx_board_conf.c ****         Error_Handler();
+  76:Src/STM32F4xx/stm32f4xx_board_conf.c ****     }
+  77:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /** Initializes the CPU, AHB and APB busses clocks
+  78:Src/STM32F4xx/stm32f4xx_board_conf.c ****      */
+  79:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PC
+ 127              		.loc 1 79 5 is_stmt 1 view .LVU35
+ 128              		.loc 1 79 38 is_stmt 0 view .LVU36
+ 129 0070 0F23     		movs	r3, #15
+ 130 0072 0393     		str	r3, [sp, #12]
+  80:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitStruct.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
+ 131              		.loc 1 80 5 is_stmt 1 view .LVU37
+ 132              		.loc 1 80 38 is_stmt 0 view .LVU38
+ 133 0074 0495     		str	r5, [sp, #16]
+  81:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;
+ 134              		.loc 1 81 5 is_stmt 1 view .LVU39
+ 135              		.loc 1 81 38 is_stmt 0 view .LVU40
+ 136 0076 0594     		str	r4, [sp, #20]
+  82:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+ 137              		.loc 1 82 5 is_stmt 1 view .LVU41
+ 138              		.loc 1 82 38 is_stmt 0 view .LVU42
+ 139 0078 4FF4A053 		mov	r3, #5120
+ 140 007c 0693     		str	r3, [sp, #24]
+  83:Src/STM32F4xx/stm32f4xx_board_conf.c ****     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+ 141              		.loc 1 83 5 is_stmt 1 view .LVU43
+ 142              		.loc 1 83 38 is_stmt 0 view .LVU44
+ 143 007e 4FF48053 		mov	r3, #4096
+ 144 0082 0793     		str	r3, [sp, #28]
+  84:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  85:Src/STM32F4xx/stm32f4xx_board_conf.c ****     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+ARM GAS  /tmp/ccGGeP2b.s 			page 5
+
+
+ 145              		.loc 1 85 5 is_stmt 1 view .LVU45
+ 146              		.loc 1 85 9 is_stmt 0 view .LVU46
+ 147 0084 0521     		movs	r1, #5
+ 148 0086 03A8     		add	r0, sp, #12
+ 149 0088 FFF7FEFF 		bl	HAL_RCC_ClockConfig
+ 150              	.LVL2:
+  86:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+  87:Src/STM32F4xx/stm32f4xx_board_conf.c ****         Error_Handler();
+  88:Src/STM32F4xx/stm32f4xx_board_conf.c ****     }
+  89:Src/STM32F4xx/stm32f4xx_board_conf.c **** }
+ 151              		.loc 1 89 1 view .LVU47
+ 152 008c 15B0     		add	sp, sp, #84
+ 153              	.LCFI2:
+ 154              		.cfi_def_cfa_offset 12
+ 155              		@ sp needed
+ 156 008e 30BD     		pop	{r4, r5, pc}
+ 157              	.L4:
+ 158              		.align	2
+ 159              	.L3:
+ 160 0090 00380240 		.word	1073887232
+ 161 0094 00700040 		.word	1073770496
+ 162              		.cfi_endproc
+ 163              	.LFE134:
+ 165              		.section	.rodata.STM32F4xx_Device_Init.str1.4,"aMS",%progbits,1
+ 166              		.align	2
+ 167              	.LC0:
+ 168 0000 21457272 		.ascii	"!Error:  Couldn't open lora port\015\012\000"
+ 168      6F723A20 
+ 168      20436F75 
+ 168      6C646E27 
+ 168      74206F70 
+ 169              		.section	.text.STM32F4xx_Device_Init,"ax",%progbits
+ 170              		.align	1
+ 171              		.global	STM32F4xx_Device_Init
+ 172              		.syntax unified
+ 173              		.thumb
+ 174              		.thumb_func
+ 175              		.fpu fpv4-sp-d16
+ 177              	STM32F4xx_Device_Init:
+ 178              	.LFB133:
+  27:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+ 179              		.loc 1 27 1 is_stmt 1 view -0
+ 180              		.cfi_startproc
+ 181              		@ args = 0, pretend = 0, frame = 0
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183 0000 08B5     		push	{r3, lr}
+ 184              	.LCFI3:
+ 185              		.cfi_def_cfa_offset 8
+ 186              		.cfi_offset 3, -8
+ 187              		.cfi_offset 14, -4
+  29:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+ 188              		.loc 1 29 5 view .LVU49
+ 189 0002 FFF7FEFF 		bl	HAL_Init
+ 190              	.LVL3:
+  32:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+ 191              		.loc 1 32 5 view .LVU50
+ 192 0006 FFF7FEFF 		bl	SystemClock_Config
+ARM GAS  /tmp/ccGGeP2b.s 			page 6
+
+
+ 193              	.LVL4:
+  35:Src/STM32F4xx/stm32f4xx_board_conf.c ****     MX_USART2_UART_Init();
+ 194              		.loc 1 35 5 view .LVU51
+ 195 000a FFF7FEFF 		bl	MX_GPIO_Init
+ 196              	.LVL5:
+  36:Src/STM32F4xx/stm32f4xx_board_conf.c ****     MX_USART3_UART_Init();
+ 197              		.loc 1 36 5 view .LVU52
+ 198 000e FFF7FEFF 		bl	MX_USART2_UART_Init
+ 199              	.LVL6:
+  37:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+ 200              		.loc 1 37 5 view .LVU53
+ 201 0012 FFF7FEFF 		bl	MX_USART3_UART_Init
+ 202              	.LVL7:
+  40:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+ 203              		.loc 1 40 5 view .LVU54
+  40:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+ 204              		.loc 1 40 10 is_stmt 0 view .LVU55
+ 205 0016 0748     		ldr	r0, .L9
+ 206 0018 FFF7FEFF 		bl	WiMOD_LoRaWAN_Init
+ 207              	.LVL8:
+  40:Src/STM32F4xx/stm32f4xx_board_conf.c ****     {
+ 208              		.loc 1 40 8 view .LVU56
+ 209 001c 20B1     		cbz	r0, .L8
+ 210              	.L6:
+  46:Src/STM32F4xx/stm32f4xx_board_conf.c ****     USART_ShowMenu();
+ 211              		.loc 1 46 5 is_stmt 1 view .LVU57
+ 212 001e FFF7FEFF 		bl	USART_TxWelcomeMessage
+ 213              	.LVL9:
+  47:Src/STM32F4xx/stm32f4xx_board_conf.c **** }
+ 214              		.loc 1 47 5 view .LVU58
+ 215 0022 FFF7FEFF 		bl	USART_ShowMenu
+ 216              	.LVL10:
+  48:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+ 217              		.loc 1 48 1 is_stmt 0 view .LVU59
+ 218 0026 08BD     		pop	{r3, pc}
+ 219              	.L8:
+  42:Src/STM32F4xx/stm32f4xx_board_conf.c ****     }
+ 220              		.loc 1 42 9 is_stmt 1 view .LVU60
+ 221 0028 0349     		ldr	r1, .L9+4
+ 222 002a 0448     		ldr	r0, .L9+8
+ 223 002c FFF7FEFF 		bl	USART_Transmit
+ 224              	.LVL11:
+ 225 0030 F5E7     		b	.L6
+ 226              	.L10:
+ 227 0032 00BF     		.align	2
+ 228              	.L9:
+ 229 0034 00000000 		.word	huart3
+ 230 0038 00000000 		.word	.LC0
+ 231 003c 00000000 		.word	huart2
+ 232              		.cfi_endproc
+ 233              	.LFE133:
+ 235              		.section	.text.Error_Handler,"ax",%progbits
+ 236              		.align	1
+ 237              		.global	Error_Handler
+ 238              		.syntax unified
+ 239              		.thumb
+ 240              		.thumb_func
+ARM GAS  /tmp/ccGGeP2b.s 			page 7
+
+
+ 241              		.fpu fpv4-sp-d16
+ 243              	Error_Handler:
+ 244              	.LFB135:
+  90:Src/STM32F4xx/stm32f4xx_board_conf.c **** 
+  91:Src/STM32F4xx/stm32f4xx_board_conf.c **** /**
+  92:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *  @brief  This function is executed in case of error occurrence.
+  93:Src/STM32F4xx/stm32f4xx_board_conf.c ****  *  @retval None
+  94:Src/STM32F4xx/stm32f4xx_board_conf.c ****  */
+  95:Src/STM32F4xx/stm32f4xx_board_conf.c **** void Error_Handler(void)
+  96:Src/STM32F4xx/stm32f4xx_board_conf.c **** { 
+ 245              		.loc 1 96 1 view -0
+ 246              		.cfi_startproc
+ 247              		@ args = 0, pretend = 0, frame = 0
+ 248              		@ frame_needed = 0, uses_anonymous_args = 0
+ 249              		@ link register save eliminated.
+  97:Src/STM32F4xx/stm32f4xx_board_conf.c ****     /* User can add his own implementation to report the HAL error return state */
+  98:Src/STM32F4xx/stm32f4xx_board_conf.c **** }
+ 250              		.loc 1 98 1 view .LVU62
+ 251 0000 7047     		bx	lr
+ 252              		.cfi_endproc
+ 253              	.LFE135:
+ 255              		.comm	huart3,64,4
+ 256              		.comm	huart2,64,4
+ 257              		.text
+ 258              	.Letext0:
+ 259              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 260              		.file 3 "/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h"
+ 261              		.file 4 "/usr/include/newlib/sys/_types.h"
+ 262              		.file 5 "/usr/include/newlib/sys/reent.h"
+ 263              		.file 6 "/usr/include/newlib/sys/lock.h"
+ 264              		.file 7 "/usr/include/newlib/sys/_stdint.h"
+ 265              		.file 8 "/usr/include/newlib/ctype.h"
+ 266              		.file 9 "Drivers/CMSIS/Include/core_cm4.h"
+ 267              		.file 10 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h"
+ 268              		.file 11 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 269              		.file 12 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 270              		.file 13 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h"
+ 271              		.file 14 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h"
+ 272              		.file 15 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 273              		.file 16 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 274              		.file 17 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 275              		.file 18 "Inc/STM32F4xx_Inc/usart.h"
+ 276              		.file 19 "Inc/Wimod_Inc/serial_device.h"
+ 277              		.file 20 "Inc/STM32F4xx_Inc/stm32f4xx_board_conf.h"
+ 278              		.file 21 "Inc/STM32F4xx_Inc/gpio.h"
+ 279              		.file 22 "Inc/Wimod_Inc/wimod_lorawan_api.h"
+ 280              		.file 23 "<built-in>"
+ARM GAS  /tmp/ccGGeP2b.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 stm32f4xx_board_conf.c
+     /tmp/ccGGeP2b.s:18     .text.SystemClock_Config:0000000000000000 $t
+     /tmp/ccGGeP2b.s:26     .text.SystemClock_Config:0000000000000000 SystemClock_Config
+     /tmp/ccGGeP2b.s:160    .text.SystemClock_Config:0000000000000090 $d
+     /tmp/ccGGeP2b.s:166    .rodata.STM32F4xx_Device_Init.str1.4:0000000000000000 $d
+     /tmp/ccGGeP2b.s:170    .text.STM32F4xx_Device_Init:0000000000000000 $t
+     /tmp/ccGGeP2b.s:177    .text.STM32F4xx_Device_Init:0000000000000000 STM32F4xx_Device_Init
+     /tmp/ccGGeP2b.s:229    .text.STM32F4xx_Device_Init:0000000000000034 $d
+                            *COM*:0000000000000040 huart3
+                            *COM*:0000000000000040 huart2
+     /tmp/ccGGeP2b.s:236    .text.Error_Handler:0000000000000000 $t
+     /tmp/ccGGeP2b.s:243    .text.Error_Handler:0000000000000000 Error_Handler
+
+UNDEFINED SYMBOLS
+memset
+HAL_RCC_OscConfig
+HAL_RCC_ClockConfig
+HAL_Init
+MX_GPIO_Init
+MX_USART2_UART_Init
+MX_USART3_UART_Init
+WiMOD_LoRaWAN_Init
+USART_TxWelcomeMessage
+USART_ShowMenu
+USART_Transmit

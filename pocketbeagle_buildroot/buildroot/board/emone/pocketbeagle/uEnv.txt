@@ -1,0 +1,8 @@
+#Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
+
+uname_r=4.14-xenomai
+fdtfile=am335x-pocketbeagle.dtb
+bootpart=0:1
+bootdir=
+bootargs=console=ttyS4,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext4 rootwait
+uenvcmd=run loadimage;run loadfdt;printenv bootargs;bootz ${loadaddr} - ${fdtaddr};

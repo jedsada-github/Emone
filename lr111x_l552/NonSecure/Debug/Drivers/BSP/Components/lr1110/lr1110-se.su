@@ -1,0 +1,15 @@
+lr1110-se.c:367:33:convert_key_id_from_se_to_lr1110	0	static
+lr1110-se.c:69:23:SecureElementInit	40	static
+lr1110-se.c:114:23:SecureElementSetKey	32	static
+lr1110-se.c:148:23:SecureElementComputeAesCmac	312	static
+lr1110-se.c:174:23:SecureElementVerifyAesCmac	40	static
+lr1110-se.c:191:23:SecureElementAesEncrypt	32	static
+lr1110-se.c:207:23:SecureElementDeriveAndStoreKey	32	static
+lr1110-se.c:225:23:SecureElementProcessJoinAccept	80	static
+lr1110-se.c:311:23:SecureElementRandomNumber	8	static
+lr1110-se.c:321:23:SecureElementSetDevEui	8	static
+lr1110-se.c:331:10:SecureElementGetDevEui	0	static
+lr1110-se.c:336:23:SecureElementSetJoinEui	8	static
+lr1110-se.c:346:10:SecureElementGetJoinEui	0	static
+lr1110-se.c:351:23:SecureElementSetPin	8	static
+lr1110-se.c:362:10:SecureElementGetPin	0	static
